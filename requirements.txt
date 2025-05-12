@@ -1,0 +1,7 @@
+fastapi==0.115.12
+uvicorn==0.34.2
+asyncpg==0.30.0
+SQLAlchemy==2.0.40
+piccolo==1.25.0
+piccolo-admin==1.10.0
+itsdangerous==2.2.0

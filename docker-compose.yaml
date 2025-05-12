@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  culture_aggregator:
+    build:
+      context: .
+      args:
+        ENV: development
+    ports:
+      - "8002:8000"
+    volumes:
+      - .:/app
+    container_name: culture_aggregator
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql+asyncpg://admin:postgres@postgres:5432/culture_aggregator
+      - PICCOLO_CONF=piccolo_conf
+      - PYTHONPATH=/app
+    depends_on:
+      - postgres
+    networks:
+      - culture_aggregator_network
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  postgres:
+    image: postgres:17.5
+    container_name: postgres
+    environment:
+      POSTGRES_DB: culture_aggregator
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - culture_aggregator_network
+
+networks:
+  culture_aggregator_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

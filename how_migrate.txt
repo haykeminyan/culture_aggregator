@@ -1,0 +1,2 @@
+piccolo migrations new <app_name> --auto
+piccolo migrations forwards <app_name>
