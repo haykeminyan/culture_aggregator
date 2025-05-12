@@ -3,11 +3,19 @@ from api.apps.exhibitions.models import CulturalSite
 from fastapi import FastAPI
 from api.apps.users.models import AdminUser, Sessions
 from starlette.middleware.sessions import SessionMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+
 
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="super-secret")
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:8002"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # 🔐 Session middleware для CSRF и логина
 
 # 🛠 Подключаем админку
