@@ -1,2 +1,4 @@
-piccolo migrations new <app_name> --auto
-piccolo migrations forwards <app_name>
+piccolo --diagnose
+
+piccolo migrations new exhibitions --auto
+piccolo migrations forwards exhibitions

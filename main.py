@@ -1,10 +1,9 @@
 from piccolo_admin.endpoints import create_admin
-from api.apps.exhibitions.models import CulturalSite
+from api.apps.exhibitions.models import Exhibition
 from fastapi import FastAPI
 from api.apps.users.models import AdminUser, Sessions
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
-
 
 
 app = FastAPI()
@@ -20,8 +19,10 @@ app.add_middleware(
 
 # 🛠 Подключаем админку
 admin = create_admin(
-    tables=[CulturalSite],
-    auth_table=AdminUser,  # 👈 здесь кастомная модель
+    tables=[
+        Exhibition,
+        AdminUser],
+    auth_table=AdminUser,
     session_table=Sessions,
 )
 
