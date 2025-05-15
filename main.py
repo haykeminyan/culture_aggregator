@@ -1,6 +1,8 @@
 from piccolo_admin.endpoints import create_admin
 from api.apps.exhibitions.models import Exhibition
 from fastapi import FastAPI
+
+from api.apps.exhibitions.routers import exhibition_router
 from api.apps.users.models import AdminUser, Sessions
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,7 +29,7 @@ admin = create_admin(
 )
 
 app.mount("/admin/", admin)
-
+app.include_router(exhibition_router)
 @app.get("/")
 def read_root():
     return {"message": "Hello from culture aggregator!"}
