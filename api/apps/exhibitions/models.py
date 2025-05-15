@@ -21,6 +21,9 @@ class ExhibitionMeta(Table):
         self.updated_at = now()
         return super().save(*args, **kwargs)
 
+    class Meta:
+        app_name = "exhibitions"
+
 
 # Main features of exhibition
 class Exhibition(ExhibitionMeta):
@@ -36,6 +39,9 @@ class Exhibition(ExhibitionMeta):
             self.slug = slugify(self.title)
         return super().save(*args, **kwargs)  # ⛔️ не await, а return
 
+    class Meta:
+        app_name = "exhibitions"
+
 
 # Geolocation
 class ExhibitionGeo(Table):
@@ -45,22 +51,47 @@ class ExhibitionGeo(Table):
     country: Varchar = Varchar(length=200)
     city: Varchar = Varchar(length=200)
 
+    class Meta:
+        app_name = "exhibitions"
+
 
 class ExhibitionDetails(Table):
     description: Text = Text()
+
+    class Meta:
+        app_name = "exhibitions"
 
 
 class ExhibitionCategory(Table):
     title: Varchar = Varchar(length=200)
     slug: Varchar = Varchar(length=200, unique=True)
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        return super().save(*args, **kwargs)
+
+    class Meta:
+        app_name = "exhibitions"
+
 
 class ExhibitionTag(Table):
     tag: Varchar = Varchar(length=200)
     slug: Varchar = Varchar(length=200, unique=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.tag)
+        return super().save(*args, **kwargs)
+
+    class Meta:
+        app_name = "exhibitions"
 
 
 # Many-to-Many
 class ExhibitionTagLink(Table):
     exhibition: ForeignKey = ForeignKey(references=Exhibition)
     tag: ForeignKey = ForeignKey(references=ExhibitionTag)
+
+    class Meta:
+        app_name = "exhibitions"

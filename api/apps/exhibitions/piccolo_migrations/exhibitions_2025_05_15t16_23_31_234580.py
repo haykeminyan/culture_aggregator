@@ -1,8 +1,6 @@
 from piccolo.apps.migrations.auto.migration_manager import MigrationManager
 from piccolo.columns.column_types import ForeignKey
 from piccolo.columns.column_types import Serial
-from piccolo.columns.column_types import Timestamp
-from piccolo.columns.column_types import Timestamptz
 from piccolo.columns.indexes import IndexMethod
 from piccolo.table import Table
 
@@ -46,7 +44,7 @@ class ExhibitionGeo(Table, tablename="exhibition_geo", schema=None):
     )
 
 
-ID = "2025-05-14T14:18:30:965042"
+ID = "2025-05-15T16:23:31:234580"
 VERSION = "1.25.0"
 DESCRIPTION = ""
 
@@ -54,30 +52,6 @@ DESCRIPTION = ""
 async def forwards():
     manager = MigrationManager(
         migration_id=ID, app_name="exhibitions", description=DESCRIPTION
-    )
-
-    manager.alter_column(
-        table_class_name="Exhibition",
-        tablename="exhibition",
-        column_name="created_at",
-        db_column_name="created_at",
-        params={},
-        old_params={},
-        column_class=Timestamptz,
-        old_column_class=Timestamp,
-        schema=None,
-    )
-
-    manager.alter_column(
-        table_class_name="Exhibition",
-        tablename="exhibition",
-        column_name="updated_at",
-        db_column_name="updated_at",
-        params={},
-        old_params={},
-        column_class=Timestamptz,
-        old_column_class=Timestamp,
-        schema=None,
     )
 
     manager.alter_column(
@@ -113,30 +87,6 @@ async def forwards():
         old_params={"references": ExhibitionDetails},
         column_class=ForeignKey,
         old_column_class=ForeignKey,
-        schema=None,
-    )
-
-    manager.alter_column(
-        table_class_name="ExhibitionMeta",
-        tablename="exhibition_meta",
-        column_name="created_at",
-        db_column_name="created_at",
-        params={},
-        old_params={},
-        column_class=Timestamptz,
-        old_column_class=Timestamp,
-        schema=None,
-    )
-
-    manager.alter_column(
-        table_class_name="ExhibitionMeta",
-        tablename="exhibition_meta",
-        column_name="updated_at",
-        db_column_name="updated_at",
-        params={},
-        old_params={},
-        column_class=Timestamptz,
-        old_column_class=Timestamp,
         schema=None,
     )
 

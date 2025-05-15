@@ -1,5 +1,6 @@
 from piccolo_admin.endpoints import create_admin
-from api.apps.exhibitions.models import Exhibition
+from api.apps.exhibitions.models import Exhibition, ExhibitionGeo, ExhibitionDetails, ExhibitionCategory, ExhibitionTag, \
+    ExhibitionTagLink
 from fastapi import FastAPI
 
 from api.apps.exhibitions.routers import exhibition_router
@@ -23,6 +24,11 @@ app.add_middleware(
 admin = create_admin(
     tables=[
         Exhibition,
+        ExhibitionGeo,
+        ExhibitionDetails,
+        ExhibitionCategory,
+        ExhibitionTag,
+        ExhibitionTagLink,
         AdminUser],
     auth_table=AdminUser,
     session_table=Sessions,
