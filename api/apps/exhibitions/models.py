@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from piccolo.table import Table
 from piccolo.columns import (
-    Varchar,
-    Text,
-    Timestamptz,
     Boolean,
     DoublePrecision,
     ForeignKey,
+    Text,
+    Timestamptz,
+    Varchar,
 )
+from piccolo.table import Table
 
 from api.apps.exhibitions.utils import now, slugify
+
 
 class ExhibitionMeta(Table):
     created_at: Timestamptz = Timestamptz(timezone=True, default=now)
@@ -22,7 +23,7 @@ class ExhibitionMeta(Table):
         return super().save(*args, **kwargs)
 
     class Meta:
-        app_name = "exhibitions"
+        app_name = 'exhibitions'
 
 
 # Main features of exhibition
@@ -30,9 +31,9 @@ class Exhibition(ExhibitionMeta):
     title: Varchar = Varchar(length=200)
     slug: Varchar = Varchar(length=200, unique=True)
     short_description: Varchar = Varchar(length=200)
-    category: ForeignKey = ForeignKey(references="ExhibitionCategory")
-    geo: ForeignKey = ForeignKey(references="ExhibitionGeo")
-    details: ForeignKey = ForeignKey(references="ExhibitionDetails")
+    category: ForeignKey = ForeignKey(references='ExhibitionCategory')
+    geo: ForeignKey = ForeignKey(references='ExhibitionGeo')
+    details: ForeignKey = ForeignKey(references='ExhibitionDetails')
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -40,7 +41,7 @@ class Exhibition(ExhibitionMeta):
         return super().save(*args, **kwargs)  # ⛔️ не await, а return
 
     class Meta:
-        app_name = "exhibitions"
+        app_name = 'exhibitions'
 
 
 # Geolocation
@@ -52,14 +53,14 @@ class ExhibitionGeo(Table):
     city: Varchar = Varchar(length=200)
 
     class Meta:
-        app_name = "exhibitions"
+        app_name = 'exhibitions'
 
 
 class ExhibitionDetails(Table):
     description: Text = Text()
 
     class Meta:
-        app_name = "exhibitions"
+        app_name = 'exhibitions'
 
 
 class ExhibitionCategory(Table):
@@ -72,7 +73,7 @@ class ExhibitionCategory(Table):
         return super().save(*args, **kwargs)
 
     class Meta:
-        app_name = "exhibitions"
+        app_name = 'exhibitions'
 
 
 class ExhibitionTag(Table):
@@ -85,7 +86,7 @@ class ExhibitionTag(Table):
         return super().save(*args, **kwargs)
 
     class Meta:
-        app_name = "exhibitions"
+        app_name = 'exhibitions'
 
 
 # Many-to-Many
@@ -94,4 +95,4 @@ class ExhibitionTagLink(Table):
     tag: ForeignKey = ForeignKey(references=ExhibitionTag)
 
     class Meta:
-        app_name = "exhibitions"
+        app_name = 'exhibitions'

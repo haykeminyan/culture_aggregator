@@ -1,11 +1,10 @@
 from piccolo.apps.migrations.auto.migration_manager import MigrationManager
-from piccolo.columns.column_types import ForeignKey
-from piccolo.columns.column_types import Serial
+from piccolo.columns.column_types import ForeignKey, Serial
 from piccolo.columns.indexes import IndexMethod
 from piccolo.table import Table
 
 
-class ExhibitionCategory(Table, tablename="exhibition_category", schema=None):
+class ExhibitionCategory(Table, tablename='exhibition_category', schema=None):
     id = Serial(
         null=False,
         primary_key=True,
@@ -13,12 +12,12 @@ class ExhibitionCategory(Table, tablename="exhibition_category", schema=None):
         index=False,
         index_method=IndexMethod.btree,
         choices=None,
-        db_column_name="id",
+        db_column_name='id',
         secret=False,
     )
 
 
-class ExhibitionDetails(Table, tablename="exhibition_details", schema=None):
+class ExhibitionDetails(Table, tablename='exhibition_details', schema=None):
     id = Serial(
         null=False,
         primary_key=True,
@@ -26,12 +25,12 @@ class ExhibitionDetails(Table, tablename="exhibition_details", schema=None):
         index=False,
         index_method=IndexMethod.btree,
         choices=None,
-        db_column_name="id",
+        db_column_name='id',
         secret=False,
     )
 
 
-class ExhibitionGeo(Table, tablename="exhibition_geo", schema=None):
+class ExhibitionGeo(Table, tablename='exhibition_geo', schema=None):
     id = Serial(
         null=False,
         primary_key=True,
@@ -39,52 +38,54 @@ class ExhibitionGeo(Table, tablename="exhibition_geo", schema=None):
         index=False,
         index_method=IndexMethod.btree,
         choices=None,
-        db_column_name="id",
+        db_column_name='id',
         secret=False,
     )
 
 
-ID = "2025-05-15T16:23:31:234580"
-VERSION = "1.25.0"
-DESCRIPTION = ""
+ID = '2025-05-15T16:23:31:234580'
+VERSION = '1.25.0'
+DESCRIPTION = ''
 
 
 async def forwards():
     manager = MigrationManager(
-        migration_id=ID, app_name="exhibitions", description=DESCRIPTION
+        migration_id=ID,
+        app_name='exhibitions',
+        description=DESCRIPTION,
     )
 
     manager.alter_column(
-        table_class_name="Exhibition",
-        tablename="exhibition",
-        column_name="category",
-        db_column_name="category",
-        params={"references": ExhibitionCategory},
-        old_params={"references": ExhibitionCategory},
+        table_class_name='Exhibition',
+        tablename='exhibition',
+        column_name='category',
+        db_column_name='category',
+        params={'references': ExhibitionCategory},
+        old_params={'references': ExhibitionCategory},
         column_class=ForeignKey,
         old_column_class=ForeignKey,
         schema=None,
     )
 
     manager.alter_column(
-        table_class_name="Exhibition",
-        tablename="exhibition",
-        column_name="geo",
-        db_column_name="geo",
-        params={"references": ExhibitionGeo},
-        old_params={"references": ExhibitionGeo},
+        table_class_name='Exhibition',
+        tablename='exhibition',
+        column_name='geo',
+        db_column_name='geo',
+        params={'references': ExhibitionGeo},
+        old_params={'references': ExhibitionGeo},
         column_class=ForeignKey,
         old_column_class=ForeignKey,
         schema=None,
     )
 
     manager.alter_column(
-        table_class_name="Exhibition",
-        tablename="exhibition",
-        column_name="details",
-        db_column_name="details",
-        params={"references": ExhibitionDetails},
-        old_params={"references": ExhibitionDetails},
+        table_class_name='Exhibition',
+        tablename='exhibition',
+        column_name='details',
+        db_column_name='details',
+        params={'references': ExhibitionDetails},
+        old_params={'references': ExhibitionDetails},
         column_class=ForeignKey,
         old_column_class=ForeignKey,
         schema=None,
