@@ -1,16 +1,20 @@
 from piccolo_admin.endpoints import create_admin
+
+from api.apps.exhibitions.api_routes import router as exhibition_router_api
+from api.apps.exhibitions.views import router as exhibition_router_view
 from api.apps.exhibitions.models import Exhibition, ExhibitionGeo, ExhibitionDetails, ExhibitionCategory, ExhibitionTag, \
     ExhibitionTagLink
 from fastapi import FastAPI
 
-from api.apps.exhibitions.routers import exhibition_router
 from api.apps.users.models import AdminUser, Sessions
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 
 
+
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="super-secret")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://127.0.0.1:8002"],
@@ -35,7 +39,5 @@ admin = create_admin(
 )
 
 app.mount("/admin/", admin)
-app.include_router(exhibition_router)
-@app.get("/")
-def read_root():
-    return {"message": "Hello from culture aggregator!"}
+app.include_router(exhibition_router_api)
+app.include_router(exhibition_router_view)
