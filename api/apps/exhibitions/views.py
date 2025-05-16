@@ -49,7 +49,7 @@ async def get_by_slug_html(request: Request, slug: str):
     response_class=HTMLResponse,
     include_in_schema=False,
 )
-async def get_all_exhibitions_by_category_html(request: Request, category_slug: str):
+async def get_by_category_html(request: Request, category_slug: str):
     context = await ExhibitionService.get_by_category(category_slug)
     context['request'] = request
     return templates.TemplateResponse('exhibitions/body.html', context)
