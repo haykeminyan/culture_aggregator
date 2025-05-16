@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix='', tags=['Exhibitions Views'])
 
 
-@router.get('/exhibitions', response_class=HTMLResponse, include_in_schema=False)
+@router.get('/', response_class=HTMLResponse, include_in_schema=False)
 async def get_all_html(
     request: Request,
     limit: int = Query(10),
@@ -23,7 +23,7 @@ async def get_all_html(
     return templates.TemplateResponse('exhibitions/body.html', context)
 
 
-@router.post('/', response_class=HTMLResponse, include_in_schema=False)
+@router.post('/exhibition', response_class=HTMLResponse, include_in_schema=False)
 async def create_html(request: Request, data: ExhibitionCreate):
     context = await ExhibitionService.create(data)
     context['request'] = request

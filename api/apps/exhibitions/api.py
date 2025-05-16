@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix='/api', tags=['Exhibitions API'])
 
 
-@router.get('/exhibitions')
+@router.get('/')
 async def get_all_json(
     limit: int = Query(10),
     offset: int = Query(0),
@@ -18,7 +18,7 @@ async def get_all_json(
     return await ExhibitionService(limit, offset).get_all()
 
 
-@router.post('/')
+@router.post('/exhibition')
 async def create_api(data: ExhibitionCreate):
     return await ExhibitionService.create(data)
 
