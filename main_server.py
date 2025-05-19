@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from piccolo_admin.endpoints import create_admin
 from starlette.middleware.sessions import SessionMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from api.apps.exhibitions.api import router as exhibition_router_api
 from api.apps.exhibitions.models import (
@@ -45,3 +46,4 @@ admin = create_admin(
 app.mount('/admin/', admin)
 app.include_router(exhibition_router_api)
 app.include_router(exhibition_router_view)
+app.mount("/ui/", StaticFiles(directory="ui/static/css/"), name="static")

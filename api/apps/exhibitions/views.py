@@ -20,8 +20,7 @@ async def get_all_html(
 ):
     context = await ExhibitionService(limit, offset).get_all()
     context['request'] = request
-    return templates.TemplateResponse('exhibitions/body.html', context)
-
+    return templates.TemplateResponse('exhibitions/list.html', context)
 
 @router.post('/exhibition', response_class=HTMLResponse, include_in_schema=False)
 async def create_html(request: Request, data: ExhibitionCreate):

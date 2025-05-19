@@ -1,0 +1,99 @@
+{% extends "exhibitions/base.html" %}
+{% block content %}
+
+<div x-data="{ category: '', search: '' }" class="p-4">
+    <form method="GET"
+          action="/exhibitions"
+          class="flex flex-col gap-4"
+    >
+        <input type="text"
+               name="search"
+               x-model="search"
+               placeholder="Search exhibitions..."
+               class="w-full border rounded px-4 py-2 shadow-sm"
+        />
+
+        <div class="flex flex-wrap gap-2">
+            <template x-for="cat in ['art', 'history', 'science']">
+                <button type="button"
+                        class="px-3 py-1 rounded border"
+                        :class="{ 'bg-blue-500 text-white': category === cat }"
+                        @click="category = cat">
+                    <span x-text="cat"></span>
+                </button>
+            </template>
+
+            <button type="button"
+                    class="text-red-500 underline"
+                    @click="category = ''">
+                Reset
+            </button>
+        </div>
+
+        <!-- Скрытые поля для GET -->
+        <input type="hidden" name="category" :value="category">
+        <input type="hidden" name="search" :value="search">
+
+        <button type="submit"
+                class="bg-green-600 text-white px-4 py-2 rounded shadow">
+            Apply Filters
+        </button>
+    </form>
+</div>
+
+<!-- Server-side rendered exhibitions list -->
+<!-- CHARITY LIST -->
+            <div class="exhibition-list">
+                {% if results %}
+                    {% for exhibition in results %}
+                        <div class="exhibition-card">
+                            <div class="exhibition-content">
+                                <h3 class="exhibition-title">
+                                    {{ exhibition.title }}
+                                </h3>
+                                <span class="tag">{{ exhibition.geo.city }}</span>
+<span class="tag">{{ exhibition.geo.country }}</span>
+                                <p class="exhibition-short-description">{{ exhibition.short_description }}</p>
+                                <div class="charity-meta flex flex-col space-y-3 mt-4">
+                                    <div class="charity-tags flex flex-wrap gap-2">
+                                        {% if exhibition.city %}<span class="tag">{{ exhibition.city }}</span>{% endif %}
+                                        <span class="tag">{{ exhibition.country }}</span>
+                                    </div>
+
+                                </div>
+                                <br />
+                                <div class="charity-contact">
+                                    {% if exhibition.website %}
+                                        <p class="flex items-center">
+                                            🌐 <a href="{{ exhibition.website }}"
+    target="_blank"
+    class="text-blue-600 hover:underline ml-1">Website</a>
+                                        </p>
+                                    {% endif %}
+                                    {% if exhibition.email %}
+                                        <p class="flex items-center">
+                                            📧 <a href="mailto:{{ exhibition.email }}"
+    class="text-blue-600 hover:underline ml-1">{{ exhibition.email }}</a>
+                                        </p>
+                                    {% endif %}
+                                    {% if exhibition.city_phone %}
+                                        <p class="flex items-center">
+                                            📞 <span class="ml-1">{{ exhibition.city_phone }}</span>
+                                        </p>
+                                    {% endif %}
+                                    {% if exhibition.mobile_phone %}
+                                        <p class="flex items-center">
+                                            📱 <span class="ml-1">{{ exhibition.mobile_phone }}</span>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No charity organizations found.</p>
+                {% endif %}
+            </div>
+
+
+{% endblock %}

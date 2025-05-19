@@ -1,0 +1,439 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  background: #f8f9fa;
+  padding: 20px;
+}
+
+.tag {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* CHARITY CARDS */
+.exhibition-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  flex-direction: column;
+  gap: 20px;
+}
+@media (max-width: 780px) {
+  .exhibition-list {
+    display: flex;
+  }
+}
+@media (max-width: 1056px) {
+  .exhibition-list {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.exhibition-card {
+  display: flex;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+  gap: 15px;
+  border: var(--border-color);
+}
+
+.charity-image img {
+  width: 240px;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.charity-image {
+  transition:
+    transform 0.4s ease-in-out,
+    box-shadow 0.3s ease-in-out;
+}
+.charity-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+}
+.exhibition-content {
+  flex: 1;
+}
+
+.exhibition-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.exhibition-title:hover,
+.exhibition-title a:hover {
+  transform: scale(1.08);
+  text-decoration: none !important; /* Убираем подчеркивание */
+}
+
+.exhibition-short-description {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.charity-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #888;
+}
+
+.charity-tags {
+  display: flex;
+  gap: 8px;
+}
+
+.verified {
+  color: green;
+  font-weight: bold;
+}
+
+.not-verified {
+  color: red;
+  font-weight: bold;
+}
+
+@media (max-width: 575px) {
+  .charity-contact {
+    display: grid;
+    gap: 10px;
+  }
+}
+
+.charity-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Разделяем блоки */
+  margin-top: 16px;
+}
+
+.charity-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; /* Пространство между тегами */
+}
+
+.charity-tags .tag {
+  background: var(--color-location);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: capitalize;
+  display: inline-block;
+
+  transition: background 0.3s ease;
+}
+
+.charity-tags .tag:hover {
+  background: #0056b3;
+}
+
+.charity-status {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.verified {
+  color: #28a745;
+}
+
+.not-verified {
+  color: #dc3545;
+}
+
+.filters {
+  display: block;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 38px;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+  bottom: 10px;
+  position: relative;
+}
+/* Categories */
+.category {
+  border: 1px solid #8ac8f3;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: capitalize;
+  color: var(--categories-tags-text);
+}
+.category:hover {
+  background: #8ac8f3;
+}
+/* Remove button */
+.remove-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.filter-section-categories,
+.filter-section-tag {
+  display: flex;
+  flex-direction: column; /* Ensures elements are stacked vertically */
+  align-items: flex-start; /* Align items to the left */
+  position: relative;
+}
+#category-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.category-filter,
+.tag-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px; /* Adjust spacing between buttons */
+}
+.remove-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.remove-btn {
+  padding: 5px;
+  margin-left: 5px;
+  bottom: 3px;
+  position: relative;
+}
+.remove-btn {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--remove-button); /* Circle border */
+  border-radius: 50%; /* Makes it a circle */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  background: none;
+  color: var(--remove-button);
+  transition: all 0.3s ease;
+  transform: scale(0.7);
+}
+
+.remove-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Light hover effect */
+  transform: scale(0.8);
+}
+
+.remove-btn:active {
+  transform: scale(0.9); /* Click effect */
+}
+.news-category-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.category.active {
+  background-color: #8ac8f3; /* blue */
+  color: var(--categories-tags-text);
+  border-color: #3b82f6;
+}
+.category-footer {
+  border: 1px solid #8ac8f3;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--categories-tags-text);
+}
+.charity-contact {
+  display: grid;
+  gap: 8px;
+}
+@media (max-width: 1057px) {
+  .charity-contact {
+    display: flex;
+    justify-content: left;
+    gap: 25px;
+  }
+}
+.search-form {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  gap: 10px;
+  transition: box-shadow 0.3s ease;
+  border: var(--border-color);
+  border-radius: 999px;
+}
+
+.search-form:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+@media (max-width: 930px) {
+  .search-form {
+    padding: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .exhibition-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .charity-image,
+  .charity-tags {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .charity-contact {
+    justify-content: center;
+  }
+
+  .charity-image img {
+    width: 50%;
+    height: auto;
+    display: block;
+  }
+  .charity-image img {
+    width: 50%;
+    height: auto;
+  }
+}
+
+.exhibition-list {
+  margin-top: 20px;
+}
+@media (max-width: 1120px) {
+  .exhibition-list {
+    margin-top: 20px;
+  }
+}
+@media (max-width: 750px) {
+  .charity-contact {
+    display: grid;
+    justify-content: center;
+    gap: 10px;
+  }
+}
+.filter-section-categories,
+.filter-section-tag {
+  top: 5px;
+  position: relative;
+}
+
+@media (max-width: 1160px) {
+  .filters {
+    grid-template-columns: repeat(1, 1fr); /* Fixed 3 columns */
+    overflow-x: auto; /* Optional scroll if too narrow */
+    padding: 20px;
+  }
+  .date-picker-wrapper {
+    left: 80px;
+  }
+  .filter-section-categories,
+  .filter-section-tag {
+    left: 12px;
+    top: 5px;
+    position: relative;
+    width: 320px;
+  }
+}
+.search-text {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: none;
+  background-color: var(--border-color);
+  border-radius: 999px;
+  outline: none;
+  font-size: 16px;
+}
+
+.search-button {
+  padding: 10px 18px;
+  background-color: #2e7dff;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #1b5edc;
+}
+
+.remove-btn {
+  padding: 10px 14px;
+  border-radius: 50%;
+  font-size: 16px;
+  top: 0;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+@media (max-width: 500px) {
+  .search-text {
+    transform: scale(0.85);
+  }
+  .filter-section-categories {
+    left: 10px;
+    top: -20px;
+    transform: scale(0.87);
+  }
+}
+
+@media (max-width: 410px) {
+  .filter-section-categories {
+    right: -30px;
+  }
+}
+
+@media (max-width: 380px) {
+  .search-text {
+    transform: scale(0.9);
+  }
+  .filter-section-categories {
+    right: -25px;
+    transform: scale(0.9);
+  }
+}

@@ -6,7 +6,7 @@ from api.apps.exhibitions.models import (
     Exhibition,
     ExhibitionCategory,
     ExhibitionDetails,
-    ExhibitionGeo,
+    ExhibitionGeo, ExhibitionMeta,
 )
 from api.apps.exhibitions.schemas import ExhibitionCreate
 from api.apps.exhibitions.utils import slugify
@@ -22,7 +22,7 @@ class ExhibitionService:
     async def get_all(self) -> dict:
         total = await Exhibition.count()
         exhibitions = (
-            await Exhibition.objects()
+            await Exhibition.objects().prefetch(Exhibition.geo)
             .limit(self.limit)
             .offset(self.offset)
             .order_by(Exhibition.created_at, ascending=False)
