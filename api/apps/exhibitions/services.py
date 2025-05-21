@@ -22,7 +22,7 @@ class ExhibitionService:
     async def get_all(self) -> dict:
         total = await Exhibition.count()
         exhibitions = (
-            await Exhibition.objects().prefetch(Exhibition.geo)
+            await Exhibition.objects().prefetch(Exhibition.geo).prefetch(Exhibition.category).prefetch(Exhibition.details)
             .limit(self.limit)
             .offset(self.offset)
             .order_by(Exhibition.created_at, ascending=False)
@@ -73,7 +73,6 @@ class ExhibitionService:
             details=details['id'],
             geo=geo['id'],
         )
-
         return {'message': 'Exhibition created', 'exhibition': exhibition.to_dict()}
 
     @staticmethod
