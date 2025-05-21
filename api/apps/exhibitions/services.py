@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from starlette.exceptions import HTTPException
 
@@ -8,7 +9,7 @@ from api.apps.exhibitions.models import (
     ExhibitionDetails,
     ExhibitionGeo, ExhibitionMeta,
 )
-from api.apps.exhibitions.schemas import ExhibitionCreate
+from api.apps.exhibitions.schemas import ExhibitionCreate, ExhibitionUpdate
 from api.apps.exhibitions.utils import slugify
 
 logger = logging.getLogger(__name__)
@@ -74,6 +75,57 @@ class ExhibitionService:
             geo=geo['id'],
         )
         return {'message': 'Exhibition created', 'exhibition': exhibition.to_dict()}
+
+    @staticmethod
+    async def update(slug: str, data: ExhibitionUpdate):
+        existing = await Exhibition.select().where(Exhibition.slug == slug).first()
+        if not existing:
+            raise HTTPException(status_code=404, detail="Exhibition not found")
+
+        category_slug = data.category.slug or slugify(data.category.title)
+        category = await ExhibitionCategory.select().where(
+            ExhibitionCategory.slug == category_slug
+        ).first()
+
+        if not category:
+            category = await ExhibitionCategory.objects().create(
+                title=data.category.title,
+                slug=category_slug,
+            )
+
+        geo = await ExhibitionGeo.objects().create(
+            location=data.geo.location,
+            latitude=data.geo.latitude,
+            longitude=data.geo.longitude,
+            country=data.geo.country,
+            city=data.geo.city,
+        )
+
+        # Создание details
+        details = await ExhibitionDetails.objects().create(
+            description=data.details.description,
+        )
+        logger.error('!'*199)
+        logger.error(Exhibition.slug)
+        update_data = {
+            Exhibition.title: data.title,
+            Exhibition.updated_at: datetime.now(),
+            Exhibition.short_description: data.short_description,
+            Exhibition.category: category["id"],
+            Exhibition.geo: geo["id"],
+            Exhibition.details: details["id"],
+        }
+
+        await Exhibition.update(update_data).where(Exhibition.slug == slug)
+
+        # Загружаем новый slug (если был обновлён)
+        updated_slug = data.slug if getattr(data, "slug", None) else slug
+        updated_exhibition = await Exhibition.select().where(Exhibition.slug == updated_slug).first()
+
+        return {
+            "message": "Exhibition updated",
+            "exhibition": updated_exhibition
+        }
 
     @staticmethod
     async def delete(slug: str):

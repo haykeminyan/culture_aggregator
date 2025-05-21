@@ -92,4 +92,12 @@ class ExhibitionCreateInput:
     geo: ExhibitionGeoInput
     details: ExhibitionDetailsInput
 
+@strawberry.input
+class ExhibitionUpdateInput:
+    title: str
+    short_description: str
+    category: ExhibitionCategoryInput
+    geo: ExhibitionGeoInput
+    details: ExhibitionDetailsInput
+
 

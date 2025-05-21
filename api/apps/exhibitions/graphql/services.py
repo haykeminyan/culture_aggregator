@@ -1,7 +1,7 @@
 import logging
 
 
-from api.apps.exhibitions.graphql.types import ExhibitionCreateInput
+from api.apps.exhibitions.graphql.types import ExhibitionCreateInput, ExhibitionUpdateInput
 from api.apps.exhibitions.models import (
     Exhibition,
     ExhibitionCategory,
@@ -52,6 +52,11 @@ class ExhibitionServiceGraphQL:
     @staticmethod
     async def create_with_full_data( data: ExhibitionCreateInput):
         exhibition = await ExhibitionService.create(data)
+        return await ExhibitionServiceGraphQL.extract_all_data_graphql(exhibition)
+
+    @staticmethod
+    async def update(slug: str,  data: ExhibitionUpdateInput):
+        exhibition = await ExhibitionService.update(slug, data)
         return await ExhibitionServiceGraphQL.extract_all_data_graphql(exhibition)
 
     @staticmethod

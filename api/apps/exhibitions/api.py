@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Query
 
-from api.apps.exhibitions.schemas import ExhibitionCreate
+from api.apps.exhibitions.schemas import ExhibitionCreate, ExhibitionUpdate
 from api.apps.exhibitions.services import ExhibitionService
 
 logger = logging.getLogger(__name__)
@@ -21,6 +21,10 @@ async def get_all_json(
 @router.post('/exhibition')
 async def create_api(data: ExhibitionCreate):
     return await ExhibitionService.create(data)
+
+@router.put('/exhibition/{slug}')
+async def update_api(slug: str, data: ExhibitionUpdate):
+    return await ExhibitionService.update(slug, data)
 
 
 @router.delete('/exhibitions/{slug}')
