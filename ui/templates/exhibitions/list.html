@@ -1,6 +1,7 @@
 {% extends "exhibitions/base.html" %}
 {% block content %}
 
+
 <div x-data="{ category: '', search: '' }" class="p-4">
     <form method="GET"
           action="/exhibitions"
@@ -12,40 +13,29 @@
                placeholder="Search exhibitions..."
                class="w-full border rounded px-4 py-2 shadow-sm"
         />
+                <div class="filter-section-categories">
+                    <span class="filter-label">{{"Search with categories"}}</span>
+                    <div class="category-filter">
+                                {% for category in categories %}
+<a href="/categories/{{ category.slug }}/" class="category block px-2 py-1 border rounded">
+  {{ category.title }}
+</a>
 
-        <div class="flex flex-wrap gap-2">
-            <template x-for="cat in ['art', 'history', 'science']">
-                <button type="button"
-                        class="px-3 py-1 rounded border"
-                        :class="{ 'bg-blue-500 text-white': category === cat }"
-                        @click="category = cat">
-                    <span x-text="cat"></span>
-                </button>
-            </template>
+                        {% endfor %}
+                        <button class="remove-btn" ><a href="/">×</a></button>
+                    </div>
+                </div>
 
-            <button type="button"
-                    class="text-red-500 underline"
-                    @click="category = ''">
-                Reset
-            </button>
-        </div>
 
-        <!-- Скрытые поля для GET -->
-        <input type="hidden" name="category" :value="category">
-        <input type="hidden" name="search" :value="search">
 
-        <button type="submit"
-                class="bg-green-600 text-white px-4 py-2 rounded shadow">
-            Apply Filters
-        </button>
     </form>
 </div>
 
 <!-- Server-side rendered exhibitions list -->
 <!-- CHARITY LIST -->
             <div class="exhibition-list">
-                {% if results %}
-                    {% for exhibition in results %}
+                {% if exhibitions %}
+                    {% for exhibition in exhibitions %}
                         <div class="exhibition-card">
                             <div class="exhibition-content">
                                 <a href='/exhibition/{{exhibition.slug}}'>
@@ -94,5 +84,12 @@
                 {% endif %}
             </div>
 
+<ul class="mb-6">
+  {% for exhibition in exhibitions %}
+   {{ exhibition.name }}
+  {% endfor %}
+</ul>
+
+{% include "exhibitions/pagination.html" %}
 
 {% endblock %}

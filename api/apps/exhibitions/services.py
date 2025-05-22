@@ -32,7 +32,7 @@ class ExhibitionService:
             'total': total,
             'limit': self.limit,
             'offset': self.offset,
-            'results': [e.to_dict() for e in exhibitions],
+            'exhibitions': [e.to_dict() for e in exhibitions],
         }
 
     @staticmethod
@@ -152,7 +152,6 @@ class ExhibitionService:
         )
         if not category:
             raise HTTPException(status_code=404, detail='Category not found')
-
         exhibitions = (
             await Exhibition.select()
             .where(
@@ -163,5 +162,20 @@ class ExhibitionService:
 
         if not exhibitions:
             raise HTTPException(status_code=404, detail='Exhibition not found')
-
         return exhibitions
+
+    @staticmethod
+    async def get_categories():
+        categories = await ExhibitionCategory.objects()
+        categories.sort(key=lambda c: c.title, reverse=False)
+        return categories
+
+    @staticmethod
+    def get_pagination_context(limit: int, offset: int, total: int):
+        return {
+            "limit": limit,
+            "offset": offset,
+            "total": total,
+            "next_offset": offset + limit if offset + limit < total else None,
+            "prev_offset": offset - limit if offset - limit >= 0 else None,
+        }

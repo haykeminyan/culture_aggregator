@@ -37,6 +37,6 @@ async def get_by_slug_api(slug: str):
     return await ExhibitionService.get_by_slug(slug)
 
 
-@router.get('/categories/{category_slug}/exhibitions')
+@router.get('/categories/{category_slug}/')
 async def get_by_category_api(category_slug: str):
     return await ExhibitionService.get_by_category(category_slug)

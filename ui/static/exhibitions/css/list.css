@@ -437,3 +437,8 @@ body {
     transform: scale(0.9);
   }
 }
+
+.pagination{
+  position: relative;
+  justify-content: center;
+}

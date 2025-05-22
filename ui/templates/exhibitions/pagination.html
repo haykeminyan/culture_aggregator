@@ -1,0 +1,35 @@
+<div class="pagination flex items-center gap-2 text-sm">
+  {% set current_page = offset // limit + 1 %}
+  {% set total_pages = (total // limit) + (1 if total % limit > 0 else 0) %}
+
+{% if current_page > 1 %}
+  {% if current_page - 1 == 1 %}
+    <a href="/" class="px-2 py-1 border rounded">←</a>
+  {% else %}
+    <a href="?limit={{ limit }}&offset={{ (current_page - 2) * limit }}" class="px-2 py-1 border rounded">←</a>
+  {% endif %}
+{% endif %}
+
+
+{% for page in range(1, total_pages + 1) %}
+  {% if page == 1 or page == total_pages or (current_page - 2 <= page <= current_page + 2) %}
+    {% if page == current_page %}
+      <span class="px-3 py-1 border rounded font-bold bg-gray-200">{{ page }}</span>
+    {% else %}
+      {% if page == 1 %}
+        <a href="/" class="px-2 py-1 border rounded">{{ page }}</a>
+      {% else %}
+        <a href="?limit={{ limit }}&offset={{ (page - 1) * limit }}" class="px-2 py-1 border rounded">{{ page }}</a>
+      {% endif %}
+    {% endif %}
+  {% elif page == 2 and current_page > 4 %}
+    <span>…</span>
+  {% elif page == total_pages - 1 and current_page < total_pages - 3 %}
+    <span>…</span>
+  {% endif %}
+{% endfor %}
+
+  {% if current_page < total_pages %}
+    <a href="?limit={{ limit }}&offset={{ current_page * limit }}" class="px-2 py-1 border rounded">→</a>
+  {% endif %}
+</div>

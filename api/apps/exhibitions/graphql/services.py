@@ -21,7 +21,7 @@ class ExhibitionServiceGraphQL:
 
 
     @staticmethod
-    async def extract_all_data_graphql(exhibition: Exhibition) -> dict:
+    async def extract_all_data(exhibition: Exhibition) -> dict:
         exhibition_category_full = await ExhibitionCategory.select().where(
             ExhibitionCategory.id == exhibition["exhibition"]["category"]
         ).first()

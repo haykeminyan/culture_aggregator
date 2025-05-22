@@ -18,8 +18,23 @@ async def get_all_html(
     limit: int = Query(10),
     offset: int = Query(0),
 ):
-    context = await ExhibitionService(limit, offset).get_all()
-    context['request'] = request
+    service = ExhibitionService(limit, offset)
+    data = await service.get_all()
+
+    exhibitions = data['exhibitions']
+
+    total = data['total']
+    limit = data['limit']
+    offset = data['offset']
+
+    context = {
+        "request": request,
+        "exhibitions": exhibitions,
+        "categories": await service.get_categories(),
+        **ExhibitionService.get_pagination_context(limit, offset, total)
+    }
+
+
     return templates.TemplateResponse('exhibitions/list.html', context)
 
 @router.post('/exhibition', response_class=HTMLResponse, include_in_schema=False)
@@ -44,11 +59,22 @@ async def get_by_slug_html(request: Request, slug: str):
 
 
 @router.get(
-    '/categories/{category_slug}/exhibitions',
+    '/categories/{category_slug}/',
     response_class=HTMLResponse,
     include_in_schema=False,
 )
-async def get_by_category_html(request: Request, category_slug: str):
-    context = await ExhibitionService.get_by_category(category_slug)
-    context['request'] = request
-    return templates.TemplateResponse('exhibitions/body.html', context)
+async def get_by_category_html(request: Request, category_slug: str,
+    limit: int = Query(10),
+    offset: int = Query(0),
+                               ):
+    exhibitions = await ExhibitionService.get_by_category(category_slug)
+    total = len(exhibitions)
+
+    context = {
+        "exhibitions": exhibitions,
+        "request": request,
+        "category_slug": category_slug,
+        **ExhibitionService.get_pagination_context(limit, offset, total)
+    }
+
+    return templates.TemplateResponse('exhibitions/list.html', context)

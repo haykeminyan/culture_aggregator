@@ -41,7 +41,7 @@ app.mount('/admin/', admin)
 # ✅ Static & Routers
 app.include_router(exhibition_router_api)
 app.include_router(exhibition_router_view)
-app.mount("/ui/", StaticFiles(directory="ui/static/css/"), name="static")
+app.mount("/ui/", StaticFiles(directory="ui/static/"), name="static")
 
 # ✅ PubSub & GraphQL
 
