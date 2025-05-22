@@ -36,11 +36,11 @@ async def delete_html(request: Request, slug: str):
     return templates.TemplateResponse('exhibitions/body.html', context)
 
 
-@router.get('/exhibitions/{slug}', response_class=HTMLResponse, include_in_schema=False)
+@router.get('/exhibition/{slug}', response_class=HTMLResponse, include_in_schema=False)
 async def get_by_slug_html(request: Request, slug: str):
     context = await ExhibitionService.get_by_slug(slug)
     context['request'] = request
-    return templates.TemplateResponse('exhibitions/body.html', context)
+    return templates.TemplateResponse('exhibitions/detail.html', context)
 
 
 @router.get(

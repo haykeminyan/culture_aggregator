@@ -48,32 +48,29 @@
                     {% for exhibition in results %}
                         <div class="exhibition-card">
                             <div class="exhibition-content">
+                                <a href='/exhibition/{{exhibition.slug}}'>
                                 <h3 class="exhibition-title">
                                     {{ exhibition.title }}
                                 </h3>
+
                                 <span class="tag">{{ exhibition.geo.city }}</span>
 <span class="tag">{{ exhibition.geo.country }}</span>
                                 <p class="exhibition-short-description">{{ exhibition.short_description }}</p>
-                                <div class="charity-meta flex flex-col space-y-3 mt-4">
-                                    <div class="charity-tags flex flex-wrap gap-2">
-                                        {% if exhibition.city %}<span class="tag">{{ exhibition.city }}</span>{% endif %}
-                                        <span class="tag">{{ exhibition.country }}</span>
-                                    </div>
 
-                                </div>
                                 <br />
                                 <div class="charity-contact">
-                                    {% if exhibition.website %}
+                                    {% if exhibition.contact.website %}
                                         <p class="flex items-center">
-                                            🌐 <a href="{{ exhibition.website }}"
+                                            🌐 <a href="{{ exhibition.contact.website }}"
     target="_blank"
     class="text-blue-600 hover:underline ml-1">Website</a>
                                         </p>
                                     {% endif %}
-                                    {% if exhibition.email %}
+                                    {% if exhibition.contact.youtube %}
                                         <p class="flex items-center">
-                                            📧 <a href="mailto:{{ exhibition.email }}"
-    class="text-blue-600 hover:underline ml-1">{{ exhibition.email }}</a>
+                                            🎬 <a href="{{ exhibition.contact.youtube }}"
+    target="_blank"
+    class="text-blue-600 hover:underline ml-1">YouTube</a>
                                         </p>
                                     {% endif %}
                                     {% if exhibition.city_phone %}
@@ -87,8 +84,10 @@
                                         </p>
                                     {% endif %}
                                 </div>
+                                                 </a>
                             </div>
                         </div>
+
                     {% endfor %}
                 {% else %}
                     <p>No charity organizations found.</p>

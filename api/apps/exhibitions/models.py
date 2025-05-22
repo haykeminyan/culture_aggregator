@@ -11,7 +11,9 @@ from piccolo.columns import (
 from piccolo.table import Table
 
 from api.apps.exhibitions.utils import now, slugify
+import logging
 
+logger = logging.getLogger(__name__)
 
 class ExhibitionMeta(Table):
     created_at: Timestamptz = Timestamptz(timezone=True, default=now)
@@ -31,18 +33,43 @@ class Exhibition(ExhibitionMeta):
     title: Varchar = Varchar(length=200)
     slug: Varchar = Varchar(length=200, unique=True)
     short_description: Varchar = Varchar(length=200)
+    start_date: Timestamptz = Timestamptz(null=True)
+    end_date: Timestamptz = Timestamptz(null=True)
+    price: Varchar = Varchar(length=100, null=True)
+    organizer_name: Varchar = Varchar(length=200, null=True)
+
     category: ForeignKey = ForeignKey(references='ExhibitionCategory')
     geo: ForeignKey = ForeignKey(references='ExhibitionGeo')
     details: ForeignKey = ForeignKey(references='ExhibitionDetails')
+    contact: ForeignKey = ForeignKey(references='ExhibitionContacts')
+
+    # TODO need to add for all fields this validations as schemas only for /docs... not for FUCKING PICCOLO
+    def validate(self):
+        if not self.title:
+            logger.error('Title cannot be empty')
+            raise ValueError("Title can not be empty")
+        elif ' ' in self.slug:
+            logger.error('Slug must be non-empty and without spaces.')
+            raise ValueError("Slug must be non-empty and without spaces.")
 
     def save(self, *args, **kwargs):
+        self.validate()
         if not self.slug:
             self.slug = slugify(self.title)
-        return super().save(*args, **kwargs)  # ⛔️ не await, а return
+        return super().save(*args, **kwargs)
 
     class Meta:
         app_name = 'exhibitions'
 
+class ExhibitionContacts(Table):
+    website: Varchar = Varchar(length=200)
+    youtube: Varchar = Varchar(length=200)
+    linkedin: Varchar = Varchar(length=200)
+    tiktok: Varchar = Varchar(length=200)
+    instagram: Varchar = Varchar(length=200)
+
+    class Meta:
+        app_name = 'exhibitions'
 
 # Geolocation
 class ExhibitionGeo(Table):
@@ -54,6 +81,9 @@ class ExhibitionGeo(Table):
 
     class Meta:
         app_name = 'exhibitions'
+
+    def __str__(self):
+        return self.location
 
 
 class ExhibitionDetails(Table):

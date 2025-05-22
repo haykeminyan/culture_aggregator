@@ -9,7 +9,7 @@ from strawberry.subscriptions import GRAPHQL_TRANSPORT_WS_PROTOCOL
 from api.apps.exhibitions.graphql.schema import schema
 from api.apps.exhibitions.models import (
     Exhibition, ExhibitionCategory, ExhibitionDetails,
-    ExhibitionGeo, ExhibitionTag, ExhibitionTagLink,
+    ExhibitionGeo, ExhibitionTag, ExhibitionTagLink, ExhibitionContacts,
 )
 from api.apps.users.models import AdminUser, Sessions
 from api.apps.exhibitions.api import router as exhibition_router_api
@@ -32,7 +32,7 @@ app.add_middleware(
 
 # ✅ Admin
 admin = create_admin(
-    tables=[Exhibition, ExhibitionGeo, ExhibitionDetails, ExhibitionCategory, ExhibitionTag, ExhibitionTagLink, AdminUser],
+    tables=[Exhibition, ExhibitionGeo, ExhibitionDetails, ExhibitionContacts, ExhibitionCategory, ExhibitionTag, ExhibitionTagLink, AdminUser],
     auth_table=AdminUser,
     session_table=Sessions,
 )

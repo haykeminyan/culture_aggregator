@@ -1,5 +1,8 @@
-from pydantic import BaseModel, Field, PrivateAttr
+from typing import Annotated
+
+from pydantic import BaseModel, Field, PrivateAttr, HttpUrl, constr, StringConstraints
 from datetime import datetime, timezone
+
 
 
 class ExhibitionCreateGeo(BaseModel):
@@ -12,12 +15,15 @@ class ExhibitionCreateGeo(BaseModel):
 
 class ExhibitionCreateCategory(BaseModel):
     title: str
-    slug: str | None = None
+    slug: str
 
 
 class ExhibitionCreateDetails(BaseModel):
     description: str
 
+class ExhibitionContactsIn(BaseModel):
+    youtube: HttpUrl
+    linkedin: HttpUrl
 
 class ExhibitionCreate(BaseModel):
     title: str
