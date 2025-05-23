@@ -4,25 +4,30 @@
 
 <div x-data="{ category: '', search: '' }" class="p-4">
     <form method="GET"
-          action="/exhibitions"
+          action="{{ request.url.path }}"
           class="flex flex-col gap-4"
     >
-        <input type="text"
-               name="search"
-               x-model="search"
-               placeholder="Search exhibitions..."
-               class="w-full border rounded px-4 py-2 shadow-sm"
-        />
+<input type="text"
+       name="search"
+       value="{{ search }}"
+       placeholder="Search exhibitions..."
+       class="w-full border rounded px-4 py-2 shadow-sm" />
+
+
                 <div class="filter-section-categories">
                     <span class="filter-label">{{"Search with categories"}}</span>
                     <div class="category-filter">
                                 {% for category in categories %}
-<a href="/categories/{{ category.slug }}/" class="category block px-2 py-1 border rounded">
+<a href="/categories/{{ category.slug }}/?{% if search %}search={{ search }}{% endif %}" class="category block px-2 py-1 border rounded">
   {{ category.title }}
 </a>
 
+
+
+
                         {% endfor %}
-                        <button class="remove-btn" ><a href="/">×</a></button>
+                        <a href="/exhibitions/?{% if search %}search={{ search }}{% endif %}" class="remove-btn">×</a>
+
                     </div>
                 </div>
 

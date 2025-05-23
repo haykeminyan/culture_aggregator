@@ -166,7 +166,7 @@ class ExhibitionService:
 
     @staticmethod
     async def get_categories():
-        categories = await ExhibitionCategory.objects()
+        categories = list(set(await ExhibitionCategory.objects()))
         categories.sort(key=lambda c: c.title, reverse=False)
         return categories
 

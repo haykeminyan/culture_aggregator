@@ -94,7 +94,7 @@ class ExhibitionDetails(Table):
 
 
 class ExhibitionCategory(Table):
-    title: Varchar = Varchar(length=200)
+    title: Varchar = Varchar(length=200, unique=True)
     slug: Varchar = Varchar(length=200, unique=True)
 
     def save(self, *args, **kwargs):

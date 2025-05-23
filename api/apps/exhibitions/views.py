@@ -11,10 +11,10 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='', tags=['Exhibitions Views'])
 
-
 @router.get('/', response_class=HTMLResponse, include_in_schema=False)
 async def get_all_html(
     request: Request,
+    search: str = Query("", alias="search"),
     limit: int = Query(10),
     offset: int = Query(0),
 ):
@@ -23,19 +23,22 @@ async def get_all_html(
 
     exhibitions = data['exhibitions']
 
-    total = data['total']
-    limit = data['limit']
-    offset = data['offset']
+    if search:
+        exhibitions = [e for e in exhibitions if search.lower() in e['title'].lower()]
+
+    total = len(exhibitions)  # пересчёт общего количества после фильтрации
+    paginated_exhibitions = exhibitions[offset:offset + limit]
 
     context = {
         "request": request,
-        "exhibitions": exhibitions,
+        "exhibitions": paginated_exhibitions,
         "categories": await service.get_categories(),
+        "search": search,
         **ExhibitionService.get_pagination_context(limit, offset, total)
     }
 
-
     return templates.TemplateResponse('exhibitions/list.html', context)
+
 
 @router.post('/exhibition', response_class=HTMLResponse, include_in_schema=False)
 async def create_html(request: Request, data: ExhibitionCreate):
@@ -59,22 +62,31 @@ async def get_by_slug_html(request: Request, slug: str):
 
 
 @router.get(
-    '/categories/{category_slug}/',
+    "/categories/{category_slug}/",
     response_class=HTMLResponse,
     include_in_schema=False,
 )
-async def get_by_category_html(request: Request, category_slug: str,
+async def get_by_category_html(
+    request: Request,
+    category_slug: str,
     limit: int = Query(10),
     offset: int = Query(0),
-                               ):
+    search: str = Query("", alias="search"),
+):
     exhibitions = await ExhibitionService.get_by_category(category_slug)
+
+    if search:
+        exhibitions = [e for e in exhibitions if search.lower() in e["title"].lower()]
+
     total = len(exhibitions)
+    paginated_exhibitions = exhibitions[offset:offset + limit]
 
     context = {
-        "exhibitions": exhibitions,
+        "exhibitions": paginated_exhibitions,
         "request": request,
         "category_slug": category_slug,
-        **ExhibitionService.get_pagination_context(limit, offset, total)
+        "search": search,
+        **ExhibitionService.get_pagination_context(limit, offset, total),
     }
 
-    return templates.TemplateResponse('exhibitions/list.html', context)
+    return templates.TemplateResponse("exhibitions/list.html", context)
