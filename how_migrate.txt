@@ -2,3 +2,18 @@ piccolo --diagnose
 
 piccolo migrations new exhibitions --auto
 piccolo migrations forwards exhibitions
+
+
+psql -U admin -d culture_aggregator
+
+
+DROP TABLE IF EXISTS exhibition_tag_link CASCADE;
+DROP TABLE IF EXISTS exhibition_tag CASCADE;
+DROP TABLE IF EXISTS exhibition CASCADE;
+DROP TABLE IF EXISTS exhibition_media CASCADE;
+DROP TABLE IF EXISTS exhibition_contacts CASCADE;
+DROP TABLE IF EXISTS exhibition_category CASCADE;
+DROP TABLE IF EXISTS exhibition_details CASCADE;
+DROP TABLE IF EXISTS exhibition_geo CASCADE;
+DROP TABLE IF EXISTS exhibition_media CASCADE;
+DROP TABLE IF EXISTS exhibition_meta CASCADE;

@@ -1,8 +1,10 @@
 from typing import Annotated
 
+from piccolo.columns import JSON
 from pydantic import BaseModel, Field, PrivateAttr, HttpUrl, constr, StringConstraints
 from datetime import datetime, timezone
 
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 class ExhibitionCreateGeo(BaseModel):
@@ -29,6 +31,7 @@ class ExhibitionCreate(BaseModel):
     title: str
     slug: str
     short_description: str
+    image: list[str]
     category: ExhibitionCreateCategory
     geo: ExhibitionCreateGeo
     details: ExhibitionCreateDetails

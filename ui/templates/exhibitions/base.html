@@ -10,7 +10,12 @@
 <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/list.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/header.css') }}">
 {% endblock %}
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 <body class="p-8">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -20,6 +25,7 @@
     <img src="{{ url_for('static', path='exhibitions/img/logo.png') }}"
          alt="logo"
          class="top-left-logo" />
+
 
     <!-- dropdown.html -->
     <div class="dropdown-container">
@@ -41,5 +47,8 @@
 <!-- FILTERS -->
 
     {% block content %}{% endblock %}
+{% block scripts %}
+  <script src="/static/exhibitions/js/swiper.js"></script>
+{% endblock %}
 </body>
 </html>

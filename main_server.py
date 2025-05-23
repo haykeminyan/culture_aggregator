@@ -9,12 +9,12 @@ from strawberry.subscriptions import GRAPHQL_TRANSPORT_WS_PROTOCOL
 from api.apps.exhibitions.graphql.schema import schema
 from api.apps.exhibitions.models import (
     Exhibition, ExhibitionCategory, ExhibitionDetails,
-    ExhibitionGeo, ExhibitionTag, ExhibitionTagLink, ExhibitionContacts,
+    ExhibitionGeo, ExhibitionTag, ExhibitionTagLink, ExhibitionContacts, ExhibitionMedia,
 )
 from api.apps.users.models import AdminUser, Sessions
 from api.apps.exhibitions.api import router as exhibition_router_api
 from api.apps.exhibitions.views import router as exhibition_router_view
-
+from api.apps.admin.api import router as admin_router_api
 
 
 
@@ -32,7 +32,7 @@ app.add_middleware(
 
 # ✅ Admin
 admin = create_admin(
-    tables=[Exhibition, ExhibitionGeo, ExhibitionDetails, ExhibitionContacts, ExhibitionCategory, ExhibitionTag, ExhibitionTagLink, AdminUser],
+    tables=[Exhibition, ExhibitionGeo, ExhibitionDetails, ExhibitionContacts, ExhibitionCategory, ExhibitionTag, ExhibitionTagLink, ExhibitionMedia, AdminUser],
     auth_table=AdminUser,
     session_table=Sessions,
 )
@@ -43,7 +43,8 @@ app.include_router(exhibition_router_api)
 app.include_router(exhibition_router_view)
 app.include_router(exhibition_router_view, prefix="/categories")
 app.include_router(exhibition_router_view, prefix="/exhibitions")
-app.mount("/ui/", StaticFiles(directory="ui/static/"), name="static")
+app.include_router(admin_router_api, prefix="/adminka")
+app.mount("/static/", StaticFiles(directory="ui/static/"), name="static")
 
 # ✅ PubSub & GraphQL
 

@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import datetime
 
@@ -7,7 +8,7 @@ from api.apps.exhibitions.models import (
     Exhibition,
     ExhibitionCategory,
     ExhibitionDetails,
-    ExhibitionGeo, ExhibitionMeta,
+    ExhibitionGeo, ExhibitionMeta, ExhibitionMedia,
 )
 from api.apps.exhibitions.schemas import ExhibitionCreate, ExhibitionUpdate
 from api.apps.exhibitions.utils import slugify
@@ -23,16 +24,22 @@ class ExhibitionService:
     async def get_all(self) -> dict:
         total = await Exhibition.count()
         exhibitions = (
-            await Exhibition.objects().prefetch(Exhibition.geo).prefetch(Exhibition.category).prefetch(Exhibition.details).prefetch(Exhibition.contact)
+            await Exhibition.objects().prefetch(Exhibition.geo).prefetch(Exhibition.category).prefetch(Exhibition.details).prefetch(Exhibition.contact).prefetch(Exhibition.media)
             .limit(self.limit)
             .offset(self.offset)
             .order_by(Exhibition.created_at, ascending=False)
         )
+        result = []
+        for e in exhibitions:
+            data = e.to_dict()
+            raw_images = e.media["images"] if e.media else "[]"
+            data["images"] = json.loads(raw_images) if isinstance(raw_images, str) else raw_images
+            result.append(data)
         return {
             'total': total,
             'limit': self.limit,
             'offset': self.offset,
-            'exhibitions': [e.to_dict() for e in exhibitions],
+            'exhibitions': result,
         }
 
     @staticmethod

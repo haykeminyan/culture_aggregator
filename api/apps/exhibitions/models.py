@@ -6,7 +6,7 @@ from piccolo.columns import (
     ForeignKey,
     Text,
     Timestamptz,
-    Varchar,
+    Varchar, JSON,
 )
 from piccolo.table import Table
 
@@ -42,6 +42,8 @@ class Exhibition(ExhibitionMeta):
     geo: ForeignKey = ForeignKey(references='ExhibitionGeo')
     details: ForeignKey = ForeignKey(references='ExhibitionDetails')
     contact: ForeignKey = ForeignKey(references='ExhibitionContacts')
+    media: ForeignKey = ForeignKey(references='ExhibitionMedia')
+
 
     # TODO need to add for all fields this validations as schemas only for /docs... not for FUCKING PICCOLO
     def validate(self):
@@ -70,6 +72,10 @@ class ExhibitionContacts(Table):
 
     class Meta:
         app_name = 'exhibitions'
+
+class ExhibitionMedia(Table):
+    images = JSON(null=True)
+
 
 # Geolocation
 class ExhibitionGeo(Table):

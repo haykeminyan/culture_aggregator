@@ -2,6 +2,7 @@
 {% block content %}
 
 
+
 <div x-data="{ category: '', search: '' }" class="p-4">
     <form method="GET"
           action="{{ request.url.path }}"
@@ -43,7 +44,25 @@
                     {% for exhibition in exhibitions %}
                         <div class="exhibition-card">
                             <div class="exhibition-content">
-                                <a href='/exhibition/{{exhibition.slug}}'>
+
+<div class="exhibition-gallery swiper w-full max-w-xl">
+  <div class="swiper-wrapper">
+    {% for image in exhibition.images %}
+      <div class="swiper-slide">
+        <img src="/static/{{ image }}" class="w-full h-64 object-cover rounded" />
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Навигация -->
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-button-next"></div>
+  <div class="swiper-pagination"></div>
+</div>
+
+
+
+<a href='/exhibition/{{exhibition.slug}}'>
                                 <h3 class="exhibition-title">
                                     {{ exhibition.title }}
                                 </h3>
