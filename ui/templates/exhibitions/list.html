@@ -47,11 +47,17 @@
 
 <div class="exhibition-gallery swiper w-full max-w-xl">
   <div class="swiper-wrapper">
+      {% if exhibition.images%}
     {% for image in exhibition.images %}
       <div class="swiper-slide">
         <img src="/static/{{ image }}" class="w-full h-64 object-cover rounded" />
       </div>
     {% endfor %}
+      {%else %}
+           <div class="swiper-slide">
+        <img src="/static/exhibitions/img/default_image.png" class="w-full h-64 object-cover rounded" />
+      </div>
+      {%endif%}
   </div>
 
   <!-- Навигация -->
@@ -73,16 +79,16 @@
 
                                 <br />
                                 <div class="charity-contact">
-                                    {% if exhibition.contact.website %}
+                                    {% if exhibition.contacts.website %}
                                         <p class="flex items-center">
-                                            🌐 <a href="{{ exhibition.contact.website }}"
+                                            🌐 <a href="{{ exhibition.contacts.website }}"
     target="_blank"
     class="text-blue-600 hover:underline ml-1">Website</a>
                                         </p>
                                     {% endif %}
-                                    {% if exhibition.contact.youtube %}
+                                    {% if exhibition.contacts.youtube %}
                                         <p class="flex items-center">
-                                            🎬 <a href="{{ exhibition.contact.youtube }}"
+                                            🎬 <a href="{{ exhibition.contacts.youtube }}"
     target="_blank"
     class="text-blue-600 hover:underline ml-1">YouTube</a>
                                         </p>

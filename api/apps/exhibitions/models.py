@@ -41,7 +41,7 @@ class Exhibition(ExhibitionMeta):
     category: ForeignKey = ForeignKey(references='ExhibitionCategory')
     geo: ForeignKey = ForeignKey(references='ExhibitionGeo')
     details: ForeignKey = ForeignKey(references='ExhibitionDetails')
-    contact: ForeignKey = ForeignKey(references='ExhibitionContacts')
+    contacts: ForeignKey = ForeignKey(references='ExhibitionContacts')
     media: ForeignKey = ForeignKey(references='ExhibitionMedia')
 
 

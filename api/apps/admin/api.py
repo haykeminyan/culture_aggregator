@@ -1,14 +1,17 @@
 # routes/admin/exhibitions.py
-from fastapi import APIRouter, Request, UploadFile, File, Form
+from fastapi import HTTPException
+from typing import Optional
+
+from fastapi import APIRouter, UploadFile, File, Form
 from fastapi.responses import HTMLResponse
-from piccolo.columns import DoublePrecision
 from starlette.responses import JSONResponse
-from piccolo.utils.sync import run_sync
-from api.apps.exhibitions.models import Exhibition, ExhibitionCategory, ExhibitionDetails, ExhibitionGeo, ExhibitionMedia
+
+from api.apps.admin.services import AdminService
+from api.apps.exhibitions.models import Exhibition, ExhibitionDetails, ExhibitionGeo, ExhibitionMedia, \
+    ExhibitionContacts, ExhibitionCategory
 
 import os
 
-from api.apps.exhibitions.utils import slugify
 import logging
 
 logger = logging.getLogger(__name__)
@@ -18,20 +21,25 @@ UPLOAD_DIR = "ui/static/exhibitions/exhibition_pictures"
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-@router.post("/adminka/exhibitions/create/", response_class=HTMLResponse)
+@router.post("/exhibitions/create/", response_class=HTMLResponse)
 async def create_exhibition(
-    title: str = Form(...),
-    slug: str = Form(...),
-    short_description: str = Form(...),
-    category_title: str = Form(...),
-    category_slug: str = Form(...),
-    details: str = Form(...),
-    location: str = Form(...),
-    latitude: float = Form(...),
-    longitude: float = Form(...),
-    country: str = Form(...),
-    city: str = Form(...),
-    images: list[UploadFile] = File(...),
+    title: str = Form(default='title'),
+    slug: str = Form(default='slug'),
+    images: Optional[list[UploadFile]] = File(default=None, include_in_schema=False),
+    short_description: str = Form(default='Very short description'),
+    category_title: str = Form(default='category title'),
+    category_slug: str = Form(default='category slug'),
+    details: str = Form(default='full information about exhibition'),
+    location: str = Form(default='Location'),
+    latitude: float = Form(default=40.1814),
+    longitude: float = Form(default=44.5144),
+    country: str = Form(default='Armenia'),
+    city: str = Form(default='Yerevan'),
+    website: str = Form(default='https://baregorc.com'),
+    youtube: str = Form(default='https://www.youtube.com'),
+    instagram: str = Form(default='https://www.instagram.com'),
+    linkedin: str = Form(default='https://www.linkedin.com'),
+    tiktok: str = Form(default='https://www.tiktok.com'),
 ):
 
     if " " in slug:
@@ -42,45 +50,26 @@ async def create_exhibition(
     if exists:
         return JSONResponse({"error": "Exhibition with this slug already exists."}, status_code=400)
 
-    existing_title = await ExhibitionCategory.select().where(ExhibitionCategory.title == category_title).first()
-    existing_slug = await ExhibitionCategory.select().where(ExhibitionCategory.slug == category_slug).first()
-
-    if existing_title and existing_slug:
-        if existing_title['id'] == existing_slug['id']:
-            category = existing_title
-        else:
-            return JSONResponse(
-                {"error": "This title belongs to a different category than this slug."},
-                status_code=400
-            )
-    elif existing_title:
-        return JSONResponse(
-            {"error": "Category with this title already exists with another slug."},
-            status_code=400
-        )
-
-    elif existing_slug:
-        return JSONResponse(
-            {"error": "Category with this slug already exists with another title."},
-            status_code=400
-        )
-    else:
-        category = await ExhibitionCategory.objects().create(title=category_title, slug=category_slug)
+    category = await AdminService().check_unique_category_title_slug(category_title, category_slug)
 
     details = await ExhibitionDetails.objects().create(description=details)
     geo = await ExhibitionGeo.objects().create(location=location, city=city, country=country, latitude=latitude, longitude=longitude)
+    contacts = await ExhibitionContacts.objects().create(website=website, youtube=youtube, instagram=instagram, linkedin=linkedin, tiktok=tiktok)
 
     # Сохраняем изображения и формируем список путей
     saved_paths = []
-    for image in images:
-        filename = os.path.join(UPLOAD_DIR, image.filename)
-        with open(filename, "wb") as buffer:
-            buffer.write(await image.read())
-        relative_path = os.path.relpath(filename, "ui/static")
-        saved_paths.append(relative_path)
+    media = None
+    if images:
+        for image in images:
+            filename = os.path.join(UPLOAD_DIR, image.filename)
+            with open(filename, "wb") as buffer:
+                buffer.write(await image.read())
+            relative_path = os.path.relpath(filename, "ui/static")
+            saved_paths.append(relative_path)
 
-    # ✅ Создаём медиа
-    media = await ExhibitionMedia.objects().create(images=saved_paths)
+        # ✅ Создаём медиа
+        media = await ExhibitionMedia.objects().create(images=saved_paths)
+
 
     # ✅ Теперь создаём выставку и привязываем media
     await Exhibition.objects().create(
@@ -90,7 +79,51 @@ async def create_exhibition(
         category=category['id'],
         details=details["id"],
         geo=geo["id"],
-        media=media["id"],
+        contacts=contacts["id"],
+        media=media["id"] if media else None,
     )
 
     return HTMLResponse("<div class='text-green-600'>Exhibition created successfully!</div>")
+
+
+
+@router.put("/exhibitions/{exhibition_slug}/", response_class=HTMLResponse)
+async def update_exhibition(
+    exhibition_slug: str,
+    title: str = Form(...),
+    images: Optional[list[UploadFile]] = File(default=None, include_in_schema=False),
+    short_description: str = Form(...),
+    category_title: str = Form(...),
+    category_slug: str = Form(...),
+    details: str = Form(...),
+    location: str = Form(...),
+    latitude: float = Form(...),
+    longitude: float = Form(...),
+    country: str = Form(...),
+    city: str = Form(...),
+    website: str = Form(...),
+    youtube: str = Form(...),
+    instagram: str = Form(...),
+    linkedin: str = Form(...),
+    tiktok: str = Form(...),
+):
+    exhibition = await Exhibition.objects().where(Exhibition.slug == exhibition_slug).first()
+    if not exhibition:
+        raise HTTPException(status_code=404, detail="Exhibition not found")
+    exhibition.title = title
+    exhibition.slug = exhibition_slug
+    exhibition.short_description = short_description
+    await exhibition.save()
+
+    # update categories fields
+    category = await ExhibitionCategory.objects().get(ExhibitionCategory.id == exhibition.category)
+    category.title = category_title
+    category.slug = category_slug
+    await category.save()
+
+    # update details fields
+    details_obj = await ExhibitionDetails.objects().get(ExhibitionDetails.id == exhibition.details)
+    details_obj.description = details
+    await details_obj.save()
+
+    return HTMLResponse(f"<div class='text-green-600'>Exhibition {exhibition_slug} updated successfully!</div>")

@@ -24,7 +24,7 @@ class ExhibitionService:
     async def get_all(self) -> dict:
         total = await Exhibition.count()
         exhibitions = (
-            await Exhibition.objects().prefetch(Exhibition.geo).prefetch(Exhibition.category).prefetch(Exhibition.details).prefetch(Exhibition.contact).prefetch(Exhibition.media)
+            await Exhibition.objects().prefetch(Exhibition.geo).prefetch(Exhibition.category).prefetch(Exhibition.details).prefetch(Exhibition.contacts).prefetch(Exhibition.media)
             .limit(self.limit)
             .offset(self.offset)
             .order_by(Exhibition.created_at, ascending=False)
