@@ -1,12 +1,11 @@
+
 <div class="pagination flex items-center gap-2 text-sm">
   {% set current_page = offset // limit + 1 %}
   {% set total_pages = (total // limit) + (1 if total % limit > 0 else 0) %}
-
   {% if current_page > 1 %}
     <a href="{{ request.url.path }}?limit={{ limit }}&offset={{ (current_page - 2) * limit }}{% if search %}&search={{ search }}{% endif %}"
        class="px-2 py-1 border rounded">←</a>
   {% endif %}
-
   {% for page in range(1, total_pages + 1) %}
     {% if page == 1 or page == total_pages or (current_page - 2 <= page <= current_page + 2) %}
       {% if page == current_page %}

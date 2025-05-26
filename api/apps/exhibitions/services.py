@@ -17,29 +17,53 @@ logger = logging.getLogger(__name__)
 
 
 class ExhibitionService:
-    def __init__(self, limit: int = 10, offset: int = 0):
+    def __init__(self, limit: int = 10, offset: int = 0, search: str = ""):
         self.limit = limit
         self.offset = offset
+        self.search = search
 
     async def get_all(self) -> dict:
-        total = await Exhibition.count()
-        exhibitions = (
-            await Exhibition.objects().prefetch(Exhibition.geo).prefetch(Exhibition.category).prefetch(Exhibition.details).prefetch(Exhibition.contacts).prefetch(Exhibition.media)
-            .limit(self.limit)
-            .offset(self.offset)
+        # Фильтр по поиску
+        filter_ = Exhibition.title.ilike(f"%{self.search}%") if self.search else None
+
+        # Получаем общее количество записей
+        count_query = Exhibition.select(Exhibition.id)
+        if filter_:
+            count_query = count_query.where(filter_)
+        total = len(await count_query.run())
+
+        # Загружаем записи с фильтром и пагинацией
+        query = (
+            Exhibition.objects()
             .order_by(Exhibition.created_at, ascending=False)
+            .prefetch(
+                Exhibition.geo,
+                Exhibition.category,
+                Exhibition.details,
+                Exhibition.contacts,
+                Exhibition.media
+            )
         )
-        result = []
-        for e in exhibitions:
-            data = e.to_dict()
-            raw_images = e.media["images"] if e.media else "[]"
-            data["images"] = json.loads(raw_images) if isinstance(raw_images, str) else raw_images
-            result.append(data)
+        if filter_:
+            query = query.where(filter_)
+
+        exhibitions = await query.offset(self.offset).limit(self.limit)
+
+        # Преобразование в список словарей
+        result = [
+            {
+                **e.to_dict(),
+                "images": json.loads(e.media["images"]) if isinstance(e.media and e.media["images"],
+                                                                      str) else e.media.get("images", [])
+            }
+            for e in exhibitions
+        ]
+
         return {
-            'total': total,
-            'limit': self.limit,
-            'offset': self.offset,
-            'exhibitions': result,
+            "total": total,
+            "limit": self.limit,
+            "offset": self.offset,
+            "exhibitions": result,
         }
 
     @staticmethod

@@ -18,24 +18,17 @@ async def get_all_html(
     limit: int = Query(10),
     offset: int = Query(0),
 ):
-    service = ExhibitionService(limit, offset)
+    service = ExhibitionService(limit, offset, search)
     data = await service.get_all()
-
-    exhibitions = data['exhibitions']
-
-    if search:
-        exhibitions = [e for e in exhibitions if search.lower() in e['title'].lower()]
-
-    total = len(exhibitions)  # пересчёт общего количества после фильтрации
-    paginated_exhibitions = exhibitions[offset:offset + limit]
 
     context = {
         "request": request,
-        "exhibitions": paginated_exhibitions,
+        "exhibitions": data['exhibitions'],
         "categories": await service.get_categories(),
         "search": search,
-        **ExhibitionService.get_pagination_context(limit, offset, total)
+        **ExhibitionService.get_pagination_context(limit, offset, data["total"])
     }
+
 
     return templates.TemplateResponse('exhibitions/list.html', context)
 
