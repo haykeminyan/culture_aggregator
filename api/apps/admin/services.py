@@ -12,7 +12,6 @@ class AdminService:
 	async def check_unique_category_title_slug(title: str, slug: str) ->CategoryDict:
 		existing_title = await ExhibitionCategory.select().where(ExhibitionCategory.title == title).first()
 		existing_slug = await ExhibitionCategory.select().where(ExhibitionCategory.slug == slug).first()
-
 		if existing_title and existing_slug:
 			if existing_title['id'] == existing_slug['id']:
 				category = existing_title

@@ -103,6 +103,10 @@ class ExhibitionCategory(Table):
     title: Varchar = Varchar(length=200, unique=True)
     slug: Varchar = Varchar(length=200, unique=True)
 
+    @property
+    def label(self) -> str:
+        return f"{self.title} ({self.slug})"
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -110,6 +114,7 @@ class ExhibitionCategory(Table):
 
     class Meta:
         app_name = 'exhibitions'
+        display_column = "title"
 
 
 class ExhibitionTag(Table):

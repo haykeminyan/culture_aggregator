@@ -83,7 +83,7 @@ async def create_exhibition(
         media=media["id"] if media else None,
     )
 
-    return HTMLResponse("<div class='text-green-600'>Exhibition created successfully!</div>")
+    return HTMLResponse(f"<div class='text-green-600'>Exhibition {title} created successfully!</div>")
 
 
 
@@ -110,20 +110,63 @@ async def update_exhibition(
     exhibition = await Exhibition.objects().where(Exhibition.slug == exhibition_slug).first()
     if not exhibition:
         raise HTTPException(status_code=404, detail="Exhibition not found")
+
     exhibition.title = title
-    exhibition.slug = exhibition_slug
     exhibition.short_description = short_description
-    await exhibition.save()
 
     # update categories fields
-    category = await ExhibitionCategory.objects().get(ExhibitionCategory.id == exhibition.category)
-    category.title = category_title
-    category.slug = category_slug
-    await category.save()
+    category = await ExhibitionCategory.objects().where(ExhibitionCategory.slug == category_slug).first()
+    if category:
+        exhibition.category = category["id"]
+    else:
+        new_category = await ExhibitionCategory.objects().create(
+            title=category_title,
+            slug=category_slug
+        )
+        exhibition.category = new_category["id"]
+
+
+    # update contacts fields
+    geo = await ExhibitionGeo.objects().get(ExhibitionGeo.id == exhibition.geo)
+    geo.location = location
+    geo.latitude = latitude
+    geo.longitude = longitude
+    geo.country = country
+    geo.city = city
+    await geo.save()
+
+    # update geo fields
+    contacts = await ExhibitionContacts.objects().get(ExhibitionContacts.id == exhibition.contacts)
+    contacts.website = website
+    contacts.youtube = youtube
+    contacts.instagram = instagram
+    contacts.linkedin = linkedin
+    contacts.tiktok = tiktok
+    await contacts.save()
+
+    # update images
+    media = await ExhibitionMedia.objects().get(ExhibitionMedia.id == exhibition.media)
+    if images:
+        saved_paths = []
+        for image in images:
+            filename = os.path.join(UPLOAD_DIR, image.filename)
+            with open(filename, "wb") as buffer:
+                buffer.write(await image.read())
+            relative_path = os.path.relpath(filename, "ui/static")
+            saved_paths.append(relative_path)
+
+        if media:
+            media.images = saved_paths
+            await media.save()
+        else:
+            new_media = await ExhibitionMedia.objects().create(images=saved_paths)
+            exhibition.media = new_media["id"]
 
     # update details fields
     details_obj = await ExhibitionDetails.objects().get(ExhibitionDetails.id == exhibition.details)
     details_obj.description = details
     await details_obj.save()
+
+    await exhibition.save()
 
     return HTMLResponse(f"<div class='text-green-600'>Exhibition {exhibition_slug} updated successfully!</div>")
