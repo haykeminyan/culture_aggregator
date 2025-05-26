@@ -169,6 +169,10 @@ class ExhibitionService:
 
         if not exhibitions:
             raise HTTPException(status_code=404, detail='Exhibition not found')
+        for elem in exhibitions:
+            images = await ExhibitionMedia.select().where(ExhibitionMedia.id==elem['media']).first()
+            elem['images'] = json.loads(images['images'])
+        logger.error(exhibitions)
         return exhibitions
 
     @staticmethod

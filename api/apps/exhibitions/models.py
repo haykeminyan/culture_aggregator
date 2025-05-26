@@ -26,6 +26,7 @@ class ExhibitionMeta(Table):
 
     class Meta:
         app_name = 'exhibitions'
+        table_name = 'exhibitions_meta'
 
 
 # Main features of exhibition
@@ -62,6 +63,7 @@ class Exhibition(ExhibitionMeta):
 
     class Meta:
         app_name = 'exhibitions'
+        table_name = 'exhibitions'
 
 class ExhibitionContacts(Table):
     website: Varchar = Varchar(length=200)
@@ -72,6 +74,7 @@ class ExhibitionContacts(Table):
 
     class Meta:
         app_name = 'exhibitions'
+        table_name = 'exhibitions_contacts'
 
 class ExhibitionMedia(Table):
     images = JSON(null=True)
@@ -87,6 +90,7 @@ class ExhibitionGeo(Table):
 
     class Meta:
         app_name = 'exhibitions'
+        table_name = 'exhibitions_geo'
 
     def __str__(self):
         return self.location
@@ -97,6 +101,7 @@ class ExhibitionDetails(Table):
 
     class Meta:
         app_name = 'exhibitions'
+        table_name = 'exhibitions_details'
 
 
 class ExhibitionCategory(Table):
@@ -115,6 +120,7 @@ class ExhibitionCategory(Table):
     class Meta:
         app_name = 'exhibitions'
         display_column = "title"
+        table_name = 'exhibitions_category'
 
 
 class ExhibitionTag(Table):
