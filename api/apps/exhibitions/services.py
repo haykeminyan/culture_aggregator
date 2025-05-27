@@ -2,6 +2,7 @@ import json
 import logging
 from datetime import datetime
 from datetime import datetime, timezone, timedelta
+import asyncio
 
 from fastapi import Query
 from starlette.exceptions import HTTPException
@@ -172,6 +173,27 @@ class ExhibitionService:
         exhibition = await Exhibition.select().where(Exhibition.slug == slug).first()
         if not exhibition:
             raise HTTPException(status_code=404, detail='Exhibition not found')
+        images_task = ExhibitionService.fill_exhibition_with_images(exhibition)
+        details_task = ExhibitionService.fill_exhibition_with_details(exhibition)
+
+        results = await asyncio.gather(images_task, details_task)
+
+        for updated in results:
+            exhibition.update(updated)
+        return exhibition
+
+    # the main problem is that exhibition with relations 1:N contains id
+    # and I need to add values
+    @staticmethod
+    async def fill_exhibition_with_images(exhibition: dict) -> dict:
+        images = await ExhibitionMedia.select().where(ExhibitionMedia.id==exhibition['media']).first()
+        exhibition['images'] = json.loads(images['images'])
+        return exhibition
+
+    @staticmethod
+    async def fill_exhibition_with_details(exhibition: dict) -> dict:
+        details =  await ExhibitionDetails.select().where(ExhibitionDetails.id == exhibition['details']).first()
+        exhibition['details'] = details['description']
         return exhibition
 
     @staticmethod
@@ -195,11 +217,11 @@ class ExhibitionService:
 
         if not exhibitions:
             raise HTTPException(status_code=404, detail='Exhibition not found')
+        filled_exhibitions = []
         for elem in exhibitions:
-            images = await ExhibitionMedia.select().where(ExhibitionMedia.id==elem['media']).first()
-            elem['images'] = json.loads(images['images'])
-        logger.error(exhibitions)
-        return exhibitions
+            filled = await ExhibitionService.fill_exhibition_with_images(elem)
+            filled_exhibitions.append(filled)
+        return filled_exhibitions
 
     @staticmethod
     async def get_categories():
@@ -230,7 +252,8 @@ class ExhibitionService:
 
         all_exhibitions = await Exhibition.objects().where(Exhibition.created_at >= from_date).where(
             Exhibition.created_at <= until_date)
+        filled_exhibitions = []
         for elem in all_exhibitions:
-            images = await ExhibitionMedia.select().where(ExhibitionMedia.id==elem['media']).first()
-            elem['images'] = json.loads(images['images'])
-        return all_exhibitions
+            filled = await ExhibitionService.fill_exhibition_with_images(elem)
+            filled_exhibitions.append(filled)
+        return filled_exhibitions

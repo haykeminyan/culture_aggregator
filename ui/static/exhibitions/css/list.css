@@ -491,3 +491,16 @@ body {
   form.filter-form button:hover {
     background: #4338ca;
   }
+
+  .swiper-button-next,
+.swiper-button-prev {
+  color: #1f2937; /* Tailwind gray-800 */
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 1.5rem;
+}
+

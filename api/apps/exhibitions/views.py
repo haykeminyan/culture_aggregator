@@ -2,6 +2,8 @@ import logging
 
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse
+from datetime import datetime
+
 
 from api.apps.exhibitions.schemas import ExhibitionCreate
 from api.apps.exhibitions.services import ExhibitionService
@@ -51,6 +53,8 @@ async def delete_html(request: Request, slug: str):
 async def get_by_slug_html(request: Request, slug: str):
     context = await ExhibitionService.get_by_slug(slug)
     context['request'] = request
+    context['start_date_readable'] = datetime.fromisoformat(str(context['start_date'])).strftime("%d %B %Y at %H:%M")
+    context['end_date_readable'] = datetime.fromisoformat(str(context['end_date'])).strftime("%d %B %Y at %H:%M")
     return templates.TemplateResponse('exhibitions/detail.html', context)
 
 

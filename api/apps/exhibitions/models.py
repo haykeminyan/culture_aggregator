@@ -37,6 +37,7 @@ class Exhibition(ExhibitionMeta):
     start_date: Timestamptz = Timestamptz(null=True)
     end_date: Timestamptz = Timestamptz(null=True)
     price: Varchar = Varchar(length=100, null=True)
+    currency: Varchar = Varchar(length=100, null=True, default='AMD')
     organizer_name: Varchar = Varchar(length=200, null=True)
 
     category: ForeignKey = ForeignKey(references='ExhibitionCategory')
@@ -59,6 +60,7 @@ class Exhibition(ExhibitionMeta):
         self.validate()
         if not self.slug:
             self.slug = slugify(self.title)
+        self.currency = self.currency.upper()
         return super().save(*args, **kwargs)
 
     class Meta:
