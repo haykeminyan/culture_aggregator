@@ -1,7 +1,9 @@
 import json
 import logging
 from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
+from fastapi import Query
 from starlette.exceptions import HTTPException
 
 from api.apps.exhibitions.models import (
@@ -31,6 +33,7 @@ class ExhibitionService:
         if filter_:
             count_query = count_query.where(filter_)
         total = len(await count_query.run())
+
 
         # Загружаем записи с фильтром и пагинацией
         query = (
@@ -136,8 +139,7 @@ class ExhibitionService:
         details = await ExhibitionDetails.objects().create(
             description=data.details.description,
         )
-        logger.error('!'*199)
-        logger.error(Exhibition.slug)
+
         update_data = {
             Exhibition.title: data.title,
             Exhibition.updated_at: datetime.now(),
@@ -214,3 +216,21 @@ class ExhibitionService:
             "next_offset": offset + limit if offset + limit < total else None,
             "prev_offset": offset - limit if offset - limit >= 0 else None,
         }
+
+    @staticmethod
+    async def get_exhibition_by_dates(from_date: str = Query(...), until_date: str = Query(...)):
+        try:
+            from_date = datetime.strptime(from_date, '%Y-%m-%d').replace(tzinfo=timezone.utc)
+            until_date = datetime.strptime(until_date, '%Y-%m-%d').replace(tzinfo=timezone.utc) + timedelta(days=1)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+
+        if from_date > until_date:
+            from_date, until_date = until_date, from_date
+
+        all_exhibitions = await Exhibition.objects().where(Exhibition.created_at >= from_date).where(
+            Exhibition.created_at <= until_date)
+        for elem in all_exhibitions:
+            images = await ExhibitionMedia.select().where(ExhibitionMedia.id==elem['media']).first()
+            elem['images'] = json.loads(images['images'])
+        return all_exhibitions

@@ -28,7 +28,7 @@ app = FastAPI(docs_url=None, redoc_url=None)
 
 @app.get("/docs", include_in_schema=False)
 async def custom_docs(user: BaseUser = Depends(require_admin_user)):
-    return get_swagger_ui_html(openapi_url="/openapi.json", title="Jopa Armena")
+    return get_swagger_ui_html(openapi_url="/openapi.json", title="Piccolo Bitch")
 
 app.add_middleware(SessionMiddleware, secret_key='super-secret')
 app.add_middleware(

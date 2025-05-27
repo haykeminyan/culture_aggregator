@@ -36,6 +36,16 @@
 
     </form>
 </div>
+<form action="/filter/" method="get" class="filter-form">
+  <label for="from_date">С:</label>
+  <input type="date" id="from_date" name="from_date" required>
+
+  <label for="until_date">По:</label>
+  <input type="date" id="until_date" name="until_date" required>
+
+  <button type="submit">Filter</button>
+</form>
+
 
 <!-- Server-side rendered exhibitions list -->
 <!-- CHARITY LIST -->

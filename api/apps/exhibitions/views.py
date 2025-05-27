@@ -83,3 +83,27 @@ async def get_by_category_html(
     }
 
     return templates.TemplateResponse("exhibitions/list.html", context)
+
+
+
+@router.get('/filter', response_class=HTMLResponse, include_in_schema=False)
+async def get_by_date_api(
+    request: Request,
+    from_date: str = Query(...),
+    until_date: str = Query(...),
+    limit: int = Query(10),
+    offset: int = Query(0),
+):
+    exhibitions = await ExhibitionService.get_exhibition_by_dates(from_date, until_date)
+    total = len(exhibitions)
+    paginated_exhibitions = exhibitions[offset:offset + limit]
+
+    context = {
+        'request': request,
+        'exhibitions': paginated_exhibitions,
+        'from_date': from_date,
+        'until_date': until_date,
+        **ExhibitionService.get_pagination_context(limit, offset, total),
+    }
+
+    return templates.TemplateResponse('exhibitions/list.html', context)

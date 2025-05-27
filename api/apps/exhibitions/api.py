@@ -1,7 +1,10 @@
 import logging
+from datetime import datetime, timezone, timedelta
 
 from fastapi import APIRouter, Query
+from starlette.exceptions import HTTPException
 
+from api.apps.exhibitions.models import Exhibition
 from api.apps.exhibitions.schemas import ExhibitionCreate, ExhibitionUpdate
 from api.apps.exhibitions.services import ExhibitionService
 
@@ -40,3 +43,8 @@ async def get_by_slug_api(slug: str):
 @router.get('/categories/{category_slug}/')
 async def get_by_category_api(category_slug: str):
     return await ExhibitionService.get_by_category(category_slug)
+
+
+@router.get('/filter')
+async def get_by_date_api(from_date: str = Query(...), until_date: str = Query(...)):
+    return await ExhibitionService.get_exhibition_by_dates(from_date, until_date)
