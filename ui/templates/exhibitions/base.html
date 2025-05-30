@@ -1,54 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Exhibitions</title>
-    <script src="https://unpkg.com/htmx.org@2.0"></script>
-    <script src="https://unpkg.com/alpinejs" defer></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-{% block stylesheets %}
-<link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/list.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/header.css') }}">
-{% endblock %}
-
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-</head>
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-<body class="p-8">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<!-- HEADER -->
-<div class="header">
-    <img src="{{ url_for('static', path='exhibitions/img/logo.png') }}"
-         alt="logo"
-         class="top-left-logo" />
-
-
-    <!-- dropdown.html -->
-    <div class="dropdown-container">
-        <div class="dropdown-content" id="dropdownMenu">
-            <div class="service-item">
-                <div class="title-line">
-                    <span class="plus">+</span>
-                    <span class="service-title">      <a href='https://baregorc.com'> class="filter-link">
-                        <h4>{{ "Charity Organization" }}</h4>
-                    </a></span>
+    <head>
+        <meta charset="UTF-8">
+        <title>Exhibitions</title>
+        <script src="https://unpkg.com/htmx.org@2.0"></script>
+        <script src="https://unpkg.com/alpinejs" defer></script>
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+        {% block stylesheets %}
+            <link rel="stylesheet"
+                  href="{{ url_for('static', path='exhibitions/css/list.css') }}">
+            <link rel="stylesheet"
+                  href="{{ url_for('static', path='exhibitions/css/header.css') }}">
+        {% endblock %}
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    </head>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <body class="p-8">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <!-- HEADER -->
+        <div class="header">
+            <img src="{{ url_for('static', path='exhibitions/img/logo.png') }}"
+                 alt="logo"
+                 class="top-left-logo" />
+            <!-- dropdown.html -->
+            <div class="dropdown-container">
+                <div class="dropdown-content" id="dropdownMenu">
+                    <div class="service-item">
+                        <div class="title-line">
+                            <span class="plus">+</span>
+                            <span class="service-title">      <a href='https://baregorc.com'> class="filter-link">
+                                <h4>{{ "Charity Organization" }}</h4>
+                            </a></span>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div class="nav">
+                <a href='/'>
+                    <h1 class="text-2xl font-bold mb-4">🎨 Exhibitions</h1>
+                </a>
+            </div>
         </div>
-    </div>
-    <div class="nav">
-        <a href='/'>   <h1 class="text-2xl font-bold mb-4">🎨 Exhibitions</h1></a>
-    </div>
-</div>
-<!-- FILTERS -->
-
-    {% block content %}{% endblock %}
-{% block scripts %}
-  <script src="/static/exhibitions/js/swiper.js"></script>
-{% endblock %}
-</body>
+        <!-- FILTERS -->
+        {% block content %}{% endblock %}
+        {% block scripts %}<script src="/static/exhibitions/js/swiper.js"></script>{% endblock %}
+    </body>
 </html>

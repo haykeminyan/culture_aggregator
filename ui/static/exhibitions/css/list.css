@@ -432,61 +432,61 @@ body {
   }
 }
 
-.pagination{
+.pagination {
   position: relative;
   justify-content: center;
 }
 
-  form.filter-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-    background: #f9fafb;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    font-family: system-ui, sans-serif;
-  }
+form.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  background: #f9fafb;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-family: system-ui, sans-serif;
+}
 
-  form.filter-form label {
-    font-weight: 500;
-    margin-right: 0.25rem;
-    color: #374151;
-  }
+form.filter-form label {
+  font-weight: 500;
+  margin-right: 0.25rem;
+  color: #374151;
+}
 
-  form.filter-form input[type="date"] {
-    padding: 0.4rem 0.6rem;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    background: white;
-    color: #111827;
-    transition: border 0.2s ease;
-  }
+form.filter-form input[type="date"] {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: white;
+  color: #111827;
+  transition: border 0.2s ease;
+}
 
-  form.filter-form input[type="date"]:focus {
-    border-color: #6366f1;
-    outline: none;
-  }
+form.filter-form input[type="date"]:focus {
+  border-color: #6366f1;
+  outline: none;
+}
 
-  form.filter-form button {
-    background: #4f46e5;
-    color: white;
-    border: none;
-    padding: 0.5rem 1.2rem;
-    font-size: 0.95rem;
-    font-weight: 500;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
+form.filter-form button {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
 
-  form.filter-form button:hover {
-    background: #4338ca;
-  }
+form.filter-form button:hover {
+  background: #4338ca;
+}
 
-  .swiper-button-next,
+.swiper-button-next,
 .swiper-button-prev {
   color: #1f2937; /* Tailwind gray-800 */
   width: 2.5rem;
@@ -498,18 +498,20 @@ body {
   font-size: 1.5rem;
 }
 
-.image{
+.image {
   width: auto;
   height: auto;
 }
 
-.p-8{
+.p-8 {
   max-width: 1180px;
   margin: auto;
 }
 
 .category {
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 .category:hover {
   background-color: #ebf8ff; /* blue-100 */
@@ -521,9 +523,9 @@ body {
 
 input.w-full {
   width: 50%;
-margin: auto;
+  margin: auto;
 }
 
-.pagination{
+.pagination {
   margin-top: 30px;
 }

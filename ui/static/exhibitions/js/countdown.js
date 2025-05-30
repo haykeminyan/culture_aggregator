@@ -9,13 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const endBad = endDateStr;
-  const cleaned = endBad.replace(' at ', ', ');
+  const cleaned = endBad.replace(" at ", ", ");
 
-// Create Date object
-const date = new Date(cleaned);
+  // Create Date object
+  const date = new Date(cleaned);
 
-// Get timestamp in milliseconds
-const end = date.getTime();
+  // Get timestamp in milliseconds
+  const end = date.getTime();
   const interval = setInterval(() => {
     const now = new Date().getTime();
     const diff = end - now;

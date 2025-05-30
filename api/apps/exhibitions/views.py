@@ -2,8 +2,6 @@ import logging
 
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse
-from datetime import datetime
-
 
 from api.apps.exhibitions.schemas import ExhibitionCreate
 from api.apps.exhibitions.services import ExhibitionService
@@ -13,10 +11,11 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='', tags=['Exhibitions Views'])
 
+
 @router.get('/', response_class=HTMLResponse, include_in_schema=False)
 async def get_all_html(
     request: Request,
-    search: str = Query("", alias="search"),
+    search: str = Query('', alias='search'),
     limit: int = Query(10),
     offset: int = Query(0),
 ):
@@ -24,11 +23,11 @@ async def get_all_html(
     data = await service.get_all()
 
     context = {
-        "request": request,
-        "exhibitions": data['exhibitions'],
-        "categories": await service.get_categories(),
-        "search": search,
-        **ExhibitionService.get_pagination_context(limit, offset, data["total"])
+        'request': request,
+        'exhibitions': data['exhibitions'],
+        'categories': await service.get_categories(),
+        'search': search,
+        **ExhibitionService.get_pagination_context(limit, offset, data['total']),
     }
 
     return templates.TemplateResponse('exhibitions/list.html', context)
@@ -57,7 +56,7 @@ async def get_by_slug_html(request: Request, slug: str):
 
 
 @router.get(
-    "/categories/{category_slug}/",
+    '/categories/{category_slug}/',
     response_class=HTMLResponse,
     include_in_schema=False,
 )
@@ -66,28 +65,27 @@ async def get_by_category_html(
     category_slug: str,
     limit: int = Query(10),
     offset: int = Query(0),
-    search: str = Query("", alias="search"),
+    search: str = Query('', alias='search'),
 ):
     exhibitions = await ExhibitionService.get_by_category(category_slug)
     categories = await ExhibitionService.get_categories()
 
     if search:
-        exhibitions = [e for e in exhibitions if search.lower() in e["title"].lower()]
+        exhibitions = [e for e in exhibitions if search.lower() in e['title'].lower()]
 
     total = len(exhibitions)
-    paginated_exhibitions = exhibitions[offset:offset + limit]
+    paginated_exhibitions = exhibitions[offset : offset + limit]
 
     context = {
-        "exhibitions": paginated_exhibitions,
-        "request": request,
-        "categories": categories,
-        "category_slug": category_slug,
-        "search": search,
+        'exhibitions': paginated_exhibitions,
+        'request': request,
+        'categories': categories,
+        'category_slug': category_slug,
+        'search': search,
         **ExhibitionService.get_pagination_context(limit, offset, total),
     }
 
-    return templates.TemplateResponse("exhibitions/list.html", context)
-
+    return templates.TemplateResponse('exhibitions/list.html', context)
 
 
 @router.get('/filter', response_class=HTMLResponse, include_in_schema=False)
@@ -100,7 +98,7 @@ async def get_by_date_api(
 ):
     exhibitions = await ExhibitionService.get_exhibition_by_dates(from_date, until_date)
     total = len(exhibitions)
-    paginated_exhibitions = exhibitions[offset:offset + limit]
+    paginated_exhibitions = exhibitions[offset : offset + limit]
 
     context = {
         'request': request,

@@ -3,7 +3,6 @@ from datetime import datetime
 import strawberry
 
 
-
 @strawberry.type
 class ExhibitionGeo:
     location: str
@@ -13,10 +12,14 @@ class ExhibitionGeo:
     city: str
 
     @classmethod
-    def from_dict(cls, data: dict) -> "ExhibitionGeo":
-        return cls(location=data["location"], latitude=data["latitude"],
-                              longitude=data["longitude"], country=data["country"],
-                              city=data["city"])
+    def from_dict(cls, data: dict) -> 'ExhibitionGeo':
+        return cls(
+            location=data['location'],
+            latitude=data['latitude'],
+            longitude=data['longitude'],
+            country=data['country'],
+            city=data['city'],
+        )
 
 
 @strawberry.type
@@ -25,8 +28,8 @@ class ExhibitionCategory:
     slug: str
 
     @classmethod
-    def from_dict(cls, data: dict) -> "ExhibitionCategory":
-        return cls(title=data["title"], slug=data["slug"])
+    def from_dict(cls, data: dict) -> 'ExhibitionCategory':
+        return cls(title=data['title'], slug=data['slug'])
 
 
 @strawberry.type
@@ -34,8 +37,9 @@ class ExhibitionDetail:
     description: str
 
     @classmethod
-    def from_dict(cls, data: dict) -> "ExhibitionDetail":
+    def from_dict(cls, data: dict) -> 'ExhibitionDetail':
         return cls(description=data['description'])
+
 
 @strawberry.type
 class Exhibition:
@@ -51,18 +55,18 @@ class Exhibition:
     details: ExhibitionDetail
 
     @classmethod
-    def from_dict(cls, data: dict) -> "Exhibition":
+    def from_dict(cls, data: dict) -> 'Exhibition':
         return cls(
-            id=str(data["id"]),
-            title=data["title"],
-            slug=data["slug"],
-            short_description=data["short_description"],
-            created_at=data["created_at"],
-            updated_at=data["updated_at"],
-            is_active=data["is_active"],
-            category=ExhibitionCategory.from_dict(data["category"]),
-            geo=ExhibitionGeo.from_dict(data["geo"]),
-            details=ExhibitionDetail.from_dict(data["details"]),
+            id=str(data['id']),
+            title=data['title'],
+            slug=data['slug'],
+            short_description=data['short_description'],
+            created_at=data['created_at'],
+            updated_at=data['updated_at'],
+            is_active=data['is_active'],
+            category=ExhibitionCategory.from_dict(data['category']),
+            geo=ExhibitionGeo.from_dict(data['geo']),
+            details=ExhibitionDetail.from_dict(data['details']),
         )
 
 
@@ -74,14 +78,17 @@ class ExhibitionGeoInput:
     country: str
     city: str
 
+
 @strawberry.input
 class ExhibitionCategoryInput:
     title: str
     slug: str
 
+
 @strawberry.input
 class ExhibitionDetailsInput:
     description: str
+
 
 @strawberry.input
 class ExhibitionCreateInput:
@@ -92,6 +99,7 @@ class ExhibitionCreateInput:
     geo: ExhibitionGeoInput
     details: ExhibitionDetailsInput
 
+
 @strawberry.input
 class ExhibitionUpdateInput:
     title: str
@@ -99,5 +107,3 @@ class ExhibitionUpdateInput:
     category: ExhibitionCategoryInput
     geo: ExhibitionGeoInput
     details: ExhibitionDetailsInput
-
-

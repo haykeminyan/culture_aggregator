@@ -1,11 +1,7 @@
 import logging
-from datetime import datetime, timezone, timedelta
 
 from fastapi import APIRouter, Query
-from starlette.exceptions import HTTPException
 
-from api.apps.exhibitions.models import Exhibition
-from api.apps.exhibitions.schemas import ExhibitionCreate, ExhibitionUpdate
 from api.apps.exhibitions.services import ExhibitionService
 
 logger = logging.getLogger(__name__)
@@ -19,8 +15,6 @@ async def get_all_json(
     offset: int = Query(0),
 ):
     return await ExhibitionService(limit, offset).get_all()
-
-
 
 
 @router.delete('/exhibitions/{slug}')

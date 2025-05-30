@@ -1,103 +1,95 @@
 {% block stylesheets %}
-<head>
-    <!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
-/>
-</head>
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-<body class="p-8">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/details.css') }}">
-{% endblock %}
-{% block scripts %}
-  <script src="/static/exhibitions/js/swiper.js"></script>
-  <script src="/static/exhibitions/js/countdown.js"></script>
-  <script src="/static/exhibitions/js/map.js"></script>
-{% endblock %}
-<div class="overlay-text">
-  <h1 class="exhibition-title" id="title">{{ title }}</h1>
-</div>
-
-<div class="exhibition-gallery swiper w-full max-w-xl">
-  <div class="swiper-wrapper">
-      {% if images%}
-    {% for image in images %}
-      <div class="swiper-slide">
-        <img src="/static/{{ image }}" class="w-full h-64 object-cover rounded" />
-      </div>
-    {% endfor %}
-      {%else %}
-           <div class="swiper-slide">
-        <img src="/static/exhibitions/img/default_image.png" class="w-full h-64 object-cover rounded" />
-      </div>
-      {%endif%}
-  </div>
-
-  <!-- Навигация -->
-  <div class="swiper-button-prev"></div>
-  <div class="swiper-button-next"></div>
-  <div class="swiper-pagination"></div>
-</div>
-
-  <!-- 🗺️ Geolocation + Info -->
-  <section class="details-section grid grid-cols-1 md:grid-cols-3 gap-8">
-
-    <!-- Main Content -->
-    <div class="col-span-2">
-      <!-- 🏷️ Category -->
-
-      <!-- 📆 Dates & Countdown -->
-    <div class="dates">
-      <p>
-        🕒 From <strong>{{ start_date}}</strong> to <strong>{{ end_date }}</strong>
-      </p>
-      <div id="countdown-timer" data-end="{{ end_date }}"></div>
+    <head>
+        <!-- Leaflet CSS -->
+        <link rel="stylesheet"
+              href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <!-- Leaflet JS -->
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    </head>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <body class="p-8">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <link rel="stylesheet"
+              href="{{ url_for('static', path='exhibitions/css/details.css') }}">
+    {% endblock %}
+    {% block scripts %}
+        <script src="/static/exhibitions/js/swiper.js"></script>
+        <script src="/static/exhibitions/js/countdown.js"></script>
+        <script src="/static/exhibitions/js/map.js"></script>
+    {% endblock %}
+    <div class="overlay-text">
+        <h1 class="exhibition-title" id="title">{{ title }}</h1>
     </div>
-
-      <!-- 📖 Description -->
-      <article>
-        <p>{{ details }}</p>
-      </article>
-      <!-- 📍 Location -->
-    <div id="map" data-lat="{{ geo.latitude }}" data-lng="{{ geo.longitude }}" style="height: 400px;"></div>
-
-      </div>
-
-
-
-      <!-- 🧩 Tags -->
-      <div class="tags">
-        {% for tag in tags %}
-          <span class="tag">{{ tag.tag }}</span>
-        {% endfor %}
-      </div>
+    <div class="exhibition-gallery swiper w-full max-w-xl">
+        <div class="swiper-wrapper">
+            {% if images %}
+                {% for image in images %}
+                    <div class="swiper-slide">
+                        <img src="/static/{{ image }}" class="w-full h-64 object-cover rounded" />
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="swiper-slide">
+                    <img src="/static/exhibitions/img/default_image.png"
+                         class="w-full h-64 object-cover rounded" />
+                </div>
+            {% endif %}
+        </div>
+        <!-- Навигация -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-pagination"></div>
     </div>
-
+    <!-- 🗺️ Geolocation + Info -->
+    <section class="details-section grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="col-span-2">
+            <!-- 🏷️ Category -->
+            <!-- 📆 Dates & Countdown -->
+            <div class="dates">
+                <p>
+                    🕒 From <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong>
+                </p>
+                <div id="countdown-timer" data-end="{{ end_date }}"></div>
+            </div>
+            <!-- 📖 Description -->
+            <article>
+                <p>{{ details }}</p>
+            </article>
+            <!-- 📍 Location -->
+            <div id="map"
+                 data-lat="{{ geo.latitude }}"
+                 data-lng="{{ geo.longitude }}"
+                 style="height: 400px"></div>
+        </div>
+        <!-- 🧩 Tags -->
+        <div class="tags">
+            {% for tag in tags %}<span class="tag">{{ tag.tag }}</span>{% endfor %}
+        </div>
+    </div>
     <!-- Sidebar -->
     <aside class="col-span-1 sticky top-4">
-      <div class="organizer-card">
-        <h3>Organizer: {{ organizer_name }}</h3>
-        <p>🎟️ Price: {{ price }} {{currency}}</p>
-
-        <!-- 🔗 Social Links -->
-        <ul class="social-links">
-          <li><a href="{{ contact.instagram }}">Instagram</a></li>
-          <li><a href="{{ contact.linkedin }}">LinkedIn</a></li>
-          <li><a href="{{ contact.website }}">Website</a></li>
-          <!-- etc -->
-        </ul>
-      </div>
+        <div class="organizer-card">
+            <h3>Organizer: {{ organizer_name }}</h3>
+            <p>🎟️ Price: {{ price }} {{ currency }}</p>
+            <!-- 🔗 Social Links -->
+            <ul class="social-links">
+                <li>
+                    <a href="{{ contact.instagram }}">Instagram</a>
+                </li>
+                <li>
+                    <a href="{{ contact.linkedin }}">LinkedIn</a>
+                </li>
+                <li>
+                    <a href="{{ contact.website }}">Website</a>
+                </li>
+                <!-- etc -->
+            </ul>
+        </div>
     </aside>
-
-  </section>
+</section>
 </div>

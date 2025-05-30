@@ -27,7 +27,6 @@ body {
   z-index: 10000;
   position: fixed;
   width: 1150px;
-
 }
 
 .container {
@@ -341,12 +340,10 @@ body {
 }
 
 .p-4 {
-margin-top: 130px;
+  margin-top: 130px;
 }
 
-
 @media (max-width: 1230px) {
-
   .armenian-flag-text {
     margin-top: 0;
   }

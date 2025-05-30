@@ -1,126 +1,103 @@
 {% extends "exhibitions/base.html" %}
 {% block content %}
-
-
-
-<div x-data="{ category: '', search: '' }" class="p-4">
-    <form method="GET"
-          action="{{ request.url.path }}"
-          class="flex flex-col gap-4"
-    >
-<input type="text"
-       name="search"
-       value="{{ search }}"
-       placeholder="Search exhibitions..."
-       class="w-full border rounded px-4 py-2 shadow-sm" />
-
-
-<div class="filter-section-categories">
-    <span class="filter-label">Search with categories</span>
-    <div class="category-filter flex gap-2 flex-wrap">
-{% for category in categories %}
-    <a href="/categories/{{ category.slug }}/?{% if search %}search={{ search }}{% endif %}"
-       class="category block px-2 py-1 border rounded {% if category.slug == category_slug %}active{% endif %}">
-        {{ category.title }}
-    </a>
-{% endfor %}
-
-        {% if category_slug %}
-            <a href="/exhibitions/?{% if search %}search={{ search }}{% endif %}"
-               class="remove-btn ml-2 text-red-600 text-xl">×</a>
-        {% endif %}
+    <div x-data="{ category: '', search: '' }" class="p-4">
+        <form method="GET"
+              action="{{ request.url.path }}"
+              class="flex flex-col gap-4">
+            <input type="text"
+                   name="search"
+                   value="{{ search }}"
+                   placeholder="Search exhibitions..."
+                   class="w-full border rounded px-4 py-2 shadow-sm" />
+            <div class="filter-section-categories">
+                <span class="filter-label">Search with categories</span>
+                <div class="category-filter flex gap-2 flex-wrap">
+                    {% for category in categories %}
+                        <a href="/categories/{{ category.slug }}/?{% if search %}search={{ search }}{% endif %}"
+                           class="category block px-2 py-1 border rounded {% if category.slug == category_slug %}active{% endif %}">
+                            {{ category.title }}
+                        </a>
+                    {% endfor %}
+                    {% if category_slug %}
+                        <a href="/exhibitions/?{% if search %}search={{ search }}{% endif %}"
+                           class="remove-btn ml-2 text-red-600 text-xl">×</a>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
     </div>
-</div>
-
-
+    <form action="/filter/" method="get" class="filter-form">
+        <label for="from_date">From:</label>
+        <input type="date" id="from_date" name="from_date" required>
+        <label for="until_date">Until:</label>
+        <input type="date" id="until_date" name="until_date" required>
+        <button type="submit">Filter</button>
+        <a href="/" class="remove-btn">×</a>
     </form>
-</div>
-<form action="/filter/" method="get" class="filter-form">
-  <label for="from_date">From:</label>
-  <input type="date" id="from_date" name="from_date" required>
-
-  <label for="until_date">Until:</label>
-  <input type="date" id="until_date" name="until_date" required>
-
-  <button type="submit">Filter</button>
-    <a href="/" class="remove-btn">×</a>
-</form>
-
-
-<!-- Server-side rendered exhibitions list -->
-<!-- CHARITY LIST -->
-            <div class="exhibition-list">
-                {% if exhibitions %}
-                    {% for exhibition in exhibitions %}
-                        <div class="exhibition-card">
-                            <div class="exhibition-content">
-
-<div class="exhibition-gallery swiper w-full max-w-xl">
-  <div class="swiper-wrapper">
-      {% if exhibition.images%}
-    {% for image in exhibition.images %}
-      <div class="swiper-slide">
-        <img src="/static/{{ image }}" class="w-full h-100 object-cover rounded image" />
-      </div>
-    {% endfor %}
-      {%else %}
-           <div class="swiper-slide">
-        <img src="/static/exhibitions/img/default_image.png" class="w-full h-64 object-cover rounded" />
-      </div>
-      {%endif%}
-  </div>
-
-  <!-- Навигация -->
-  <div class="swiper-button-prev"></div>
-  <div class="swiper-button-next"></div>
-  <div class="swiper-pagination"></div>
-</div>
-
-
-
-<a href='/exhibition/{{exhibition.slug}}'>
-                                <h3 class="exhibition-title">
-                                    {{ exhibition.title }}
-                                </h3>
-    <span class="tag">{{ exhibition.geo.location }}</span>
-                                <span class="tag">{{ exhibition.geo.city }}</span>
-<span class="tag">{{ exhibition.geo.country }}</span>
-
-                                <p class="exhibition-short-description">{{ exhibition.short_description }}</p>
-
-                                <br />
-                                <div class="charity-contact">
-                                    {% if exhibition.contact.website %}
-                                        <p class="flex items-center">
-                                            🌐 <a href="{{ exhibition.contact.website }}"
+    <!-- Server-side rendered exhibitions list -->
+    <!-- CHARITY LIST -->
+    <div class="exhibition-list">
+        {% if exhibitions %}
+            {% for exhibition in exhibitions %}
+                <div class="exhibition-card">
+                    <div class="exhibition-content">
+                        <div class="exhibition-gallery swiper w-full max-w-xl">
+                            <div class="swiper-wrapper">
+                                {% if exhibition.images %}
+                                    {% for image in exhibition.images %}
+                                        <div class="swiper-slide">
+                                            <img src="/static/{{ image }}"
+                                                 class="w-full h-100 object-cover rounded image" />
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="swiper-slide">
+                                        <img src="/static/exhibitions/img/default_image.png"
+                                             class="w-full h-64 object-cover rounded" />
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <!-- Навигация -->
+                            <div class="swiper-button-prev"></div>
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-pagination"></div>
+                        </div>
+                        <a href='/exhibition/{{ exhibition.slug }}'>
+                            <h3 class="exhibition-title">{{ exhibition.title }}</h3>
+                            <span class="tag">{{ exhibition.geo.location }}</span>
+                            <span class="tag">{{ exhibition.geo.city }}</span>
+                            <span class="tag">{{ exhibition.geo.country }}</span>
+                            <p class="exhibition-short-description">{{ exhibition.short_description }}</p>
+                            <br />
+                            <div class="charity-contact">
+                                {% if exhibition.contact.website %}
+                                    <p class="flex items-center">
+                                        🌐 <a href="{{ exhibition.contact.website }}"
     target="_blank"
     class="text-blue-600 hover:underline ml-1">Website</a>
+                                    </p>
+                                {% endif %}
+                                <!-- 📆 Dates & Countdown -->
+                                {% if exhibition.start_date %}
+                                    <div class="dates">
+                                        <p>
+                                            🕒 From <strong>{{ exhibition.start_date.split("at").0 }}</strong> to <strong>{{ exhibition.end_date.split("at").0 }}</strong>
                                         </p>
-                                    {% endif %}
-       <!-- 📆 Dates & Countdown -->
-                                    {% if exhibition.start_date  %}
-    <div class="dates">
-      <p>
-        🕒 From <strong>{{ exhibition.start_date.split('at').0 }}</strong> to <strong>{{ exhibition.end_date.split('at').0 }}</strong>
-      </p>
-      <div id="countdown-timer" data-end="{{ end_date }}"></div>
-    </div>
-                                    {% else %}
-                                    <p>The <strong style="white-space: nowrap;">start</strong> and <strong style="white-space: nowrap;">end</strong> dates are not known.</p>
-
-                                    {%endif%}
-                                </div>
-                                                 </a>
+                                        <div id="countdown-timer" data-end="{{ end_date }}"></div>
+                                    </div>
+                                {% else %}
+                                    <p>
+                                        The <strong style="white-space: nowrap;">start</strong> and <strong style="white-space: nowrap;">end</strong> dates are not known.
+                                    </p>
+                                {% endif %}
                             </div>
-                        </div>
-
-                    {% endfor %}
-                {% else %}
-                    <p>No charity organizations found.</p>
-                {% endif %}
-            </div>
-
-
-{% include "exhibitions/pagination.html" %}
-
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No charity organizations found.</p>
+        {% endif %}
+    </div>
+    {% include "exhibitions/pagination.html" %}
 {% endblock %}

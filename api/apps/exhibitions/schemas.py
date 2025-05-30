@@ -1,10 +1,6 @@
-from typing import Annotated
-
-from piccolo.columns import JSON
-from pydantic import BaseModel, Field, PrivateAttr, HttpUrl, constr, StringConstraints
 from datetime import datetime, timezone
 
-from sqlalchemy.dialects.postgresql import JSONB
+from pydantic import BaseModel, HttpUrl, PrivateAttr
 
 
 class ExhibitionCreateGeo(BaseModel):
@@ -23,9 +19,11 @@ class ExhibitionCreateCategory(BaseModel):
 class ExhibitionCreateDetails(BaseModel):
     description: str
 
+
 class ExhibitionContactsIn(BaseModel):
     youtube: HttpUrl
     linkedin: HttpUrl
+
 
 class ExhibitionCreate(BaseModel):
     title: str
@@ -35,6 +33,7 @@ class ExhibitionCreate(BaseModel):
     category: ExhibitionCreateCategory
     geo: ExhibitionCreateGeo
     details: ExhibitionCreateDetails
+
 
 class ExhibitionUpdate(BaseModel):
     title: str

@@ -1,19 +1,22 @@
 from __future__ import annotations
 
+import logging
+
 from piccolo.columns import (
+    Array,
     Boolean,
     DoublePrecision,
     ForeignKey,
     Text,
     Timestamptz,
-    Varchar, JSON, Array,
+    Varchar,
 )
 from piccolo.table import Table
 
 from api.apps.exhibitions.utils import now, slugify
-import logging
 
 logger = logging.getLogger(__name__)
+
 
 class ExhibitionMeta(Table):
     created_at: Timestamptz = Timestamptz(timezone=True, default=now)
@@ -46,15 +49,14 @@ class Exhibition(ExhibitionMeta):
     price: ForeignKey = ForeignKey(references='ExhibitionPrice')
     organizer: ForeignKey = ForeignKey(references='ExhibitionOrganizer')
 
-
     # TODO need to add for all fields this validations as schemas only for /docs... not for FUCKING PICCOLO
     def validate(self):
         if not self.title:
             logger.error('Title cannot be empty')
-            raise ValueError("Title can not be empty")
+            raise ValueError('Title can not be empty')
         elif ' ' in self.slug:
             logger.error('Slug must be non-empty and without spaces.')
-            raise ValueError("Slug must be non-empty and without spaces.")
+            raise ValueError('Slug must be non-empty and without spaces.')
 
     def save(self, *args, **kwargs):
         self.validate()
@@ -79,6 +81,7 @@ class ExhibitionPrice(Table):
         app_name = 'exhibitions'
         table_name = 'exhibition_price'
 
+
 class ExhibitionOrganizer(Table):
     name: Varchar = Varchar(length=200, null=True)
 
@@ -97,6 +100,7 @@ class ExhibitionContact(Table):
     class Meta:
         app_name = 'exhibitions'
         table_name = 'exhibition_contact'
+
 
 class ExhibitionMedia(Table):
     images = Array(base_column=Varchar(length=300), default_factory=list)
@@ -132,7 +136,7 @@ class ExhibitionCategory(Table):
 
     @property
     def label(self) -> str:
-        return f"{self.title} ({self.slug})"
+        return f'{self.title} ({self.slug})'
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -141,7 +145,7 @@ class ExhibitionCategory(Table):
 
     class Meta:
         app_name = 'exhibitions'
-        display_column = "title"
+        display_column = 'title'
         table_name = 'exhibition_category'
 
 
