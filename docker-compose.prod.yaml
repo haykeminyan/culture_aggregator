@@ -1,0 +1,70 @@
+version: '3.9'
+
+services:
+  culture_aggregator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENV: production
+    ports:
+      - "8002:8000"
+    container_name: culture_aggregator
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql+asyncpg://admin:postgres@postgres:5432/culture_aggregator
+      - PICCOLO_CONF=piccolo_conf
+      - PYTHONPATH=/app
+    depends_on:
+      - postgres
+    networks:
+      - culture_aggregator_network
+    command: uvicorn main_server:app --host 0.0.0.0 --port 8000
+
+  postgres:
+    image: postgres:17.5
+    container_name: postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - culture_aggregator_network
+
+  nginx:
+    image: nginx:quic
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"  # HTTP/3 over QUIC
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/certs:/etc/letsencrypt
+      - ./nginx/html:/usr/share/nginx/html
+    depends_on:
+      - culture_aggregator
+    networks:
+      - culture_aggregator_network
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./nginx/certs:/etc/letsencrypt
+      - ./nginx/html:/usr/share/nginx/html
+    entrypoint: >
+      sh -c "certbot certonly --webroot --webroot-path=/usr/share/nginx/html 
+      --email your-email@example.com --agree-tos --no-eff-email 
+      -d yourdomain.com && echo 'Certificates obtained.'"
+    networks:
+      - culture_aggregator_network
+
+networks:
+  culture_aggregator_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
