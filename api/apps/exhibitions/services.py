@@ -11,7 +11,7 @@ from api.apps.exhibitions.models import (
     Exhibition,
     ExhibitionCategory,
     ExhibitionDetails,
-    ExhibitionGeo, ExhibitionMeta, ExhibitionMedia,
+    ExhibitionGeo, ExhibitionMeta, ExhibitionMedia, ExhibitionPeriod,
 )
 from api.apps.exhibitions.schemas import ExhibitionCreate, ExhibitionUpdate
 from api.apps.exhibitions.utils import slugify
@@ -50,18 +50,22 @@ class ExhibitionService:
         )
         if filter_:
             query = query.where(filter_)
-
         exhibitions = await query.offset(self.offset).limit(self.limit)
 
         # Преобразование в список словарей
         result = [
             {
                 **e.to_dict(),
-                "images": json.loads(e.media["images"]) if isinstance(e.media and e.media["images"],
-                                                                      str) else e.media.get("images", [])
+                "images": e.media["images"] if isinstance(e.media and e.media["images"],
+                                                                      str) else e.media["images"]
             }
             for e in exhibitions
         ]
+
+        for elem in result:
+            exhibition_time = await ExhibitionPeriod.select().where(ExhibitionPeriod.exhibition == elem['id'])
+            elem['period'] = exhibition_time
+        logger.error(result)
 
         return {
             "total": total,
@@ -175,11 +179,12 @@ class ExhibitionService:
             raise HTTPException(status_code=404, detail='Exhibition not found')
         images_task = ExhibitionService.fill_exhibition_with_images(exhibition)
         details_task = ExhibitionService.fill_exhibition_with_details(exhibition)
-
-        results = await asyncio.gather(images_task, details_task)
+        geo_task = ExhibitionService.fill_exhibition_with_geo(exhibition)
+        results = await asyncio.gather(images_task, details_task, geo_task)
 
         for updated in results:
             exhibition.update(updated)
+        logger.error(exhibition)
         return exhibition
 
     # the main problem is that exhibition with relations 1:N contains id
@@ -187,13 +192,23 @@ class ExhibitionService:
     @staticmethod
     async def fill_exhibition_with_images(exhibition: dict) -> dict:
         images = await ExhibitionMedia.select().where(ExhibitionMedia.id==exhibition['media']).first()
-        exhibition['images'] = json.loads(images['images'])
+        exhibition['images'] = images['images']
         return exhibition
 
     @staticmethod
     async def fill_exhibition_with_details(exhibition: dict) -> dict:
         details =  await ExhibitionDetails.select().where(ExhibitionDetails.id == exhibition['details']).first()
         exhibition['details'] = details['description']
+        return exhibition
+
+    @staticmethod
+    async def fill_exhibition_with_geo(exhibition: dict) -> dict:
+        geo =  await ExhibitionGeo.select().where(ExhibitionGeo.id == exhibition['geo']).first()
+        exhibition['location'] = geo['location']
+        exhibition['latitude'] = geo['latitude']
+        exhibition['longitude'] = geo['longitude']
+        exhibition['country'] = geo['country']
+        exhibition['city'] = geo['city']
         return exhibition
 
     @staticmethod
@@ -228,6 +243,22 @@ class ExhibitionService:
         categories = list(set(await ExhibitionCategory.objects()))
         categories.sort(key=lambda c: c.title, reverse=False)
         return categories
+
+    @staticmethod
+    async def format_dates(context):
+        dates_all = await ExhibitionPeriod.select().where(ExhibitionPeriod.exhibition == context['id'])
+        date_pairs = []
+
+        if dates_all:
+            sorted_dates = sorted(dates_all, key=lambda d: d['end_date'], reverse=True)
+
+            for elem in sorted_dates:
+                start = datetime.fromisoformat(str(elem['start_date'])).strftime("%d %B %Y at %H:%M")
+                end = datetime.fromisoformat(str(elem['end_date'])).strftime("%d %B %Y at %H:%M")
+                date_pairs.append((start, end))
+
+        context['date_pairs'] = date_pairs
+        return context
 
     @staticmethod
     def get_pagination_context(limit: int, offset: int, total: int):

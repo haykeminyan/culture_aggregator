@@ -58,18 +58,31 @@ async def create_exhibition(
 
     # Сохраняем изображения и формируем список путей
     saved_paths = []
-    media = None
+
+    # 1. Обработка загруженных изображений
     if images:
         for image in images:
-            filename = os.path.join(UPLOAD_DIR, image.filename)
-            with open(filename, "wb") as buffer:
-                buffer.write(await image.read())
-            relative_path = os.path.relpath(filename, "ui/static")
-            saved_paths.append(relative_path)
+            try:
+                filename = os.path.join(UPLOAD_DIR, image.filename)
+                with open(filename, "wb") as buffer:
+                    buffer.write(await image.read())
+                relative_path = os.path.relpath(filename, "ui/static")
+                saved_paths.append(relative_path)
+            except AttributeError:
+                pass
 
-        # ✅ Создаём медиа
+    # 2. Если нет изображений — используем дефолтное
+    if not saved_paths:
+        saved_paths = ["exhibitions/exhibition_pictures/default_image.png"]
+
+    # 3. Проверяем, существует ли такая же запись
+    media = await ExhibitionMedia.objects().where(
+        ExhibitionMedia.images == saved_paths
+    ).first()
+
+    # 4. Если нет — создаём новую
+    if not media:
         media = await ExhibitionMedia.objects().create(images=saved_paths)
-
 
     # ✅ Теперь создаём выставку и привязываем media
     await Exhibition.objects().create(
@@ -80,7 +93,7 @@ async def create_exhibition(
         details=details["id"],
         geo=geo["id"],
         contacts=contacts["id"],
-        media=media["id"] if media else None,
+        media=media["id"],
     )
 
     return HTMLResponse(f"<div class='text-green-600'>Exhibition {title} created successfully!</div>")

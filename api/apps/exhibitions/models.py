@@ -6,7 +6,7 @@ from piccolo.columns import (
     ForeignKey,
     Text,
     Timestamptz,
-    Varchar, JSON,
+    Varchar, JSON, Array,
 )
 from piccolo.table import Table
 
@@ -34,11 +34,6 @@ class Exhibition(ExhibitionMeta):
     title: Varchar = Varchar(length=200)
     slug: Varchar = Varchar(length=200, unique=True)
     short_description: Varchar = Varchar(length=200)
-    start_date: Timestamptz = Timestamptz(null=True)
-    end_date: Timestamptz = Timestamptz(null=True)
-    price: Varchar = Varchar(length=100, null=True)
-    currency: Varchar = Varchar(length=100, null=True, default='AMD')
-    organizer_name: Varchar = Varchar(length=200, null=True)
 
     category: ForeignKey = ForeignKey(references='ExhibitionCategory')
     geo: ForeignKey = ForeignKey(references='ExhibitionGeo')
@@ -60,12 +55,38 @@ class Exhibition(ExhibitionMeta):
         self.validate()
         if not self.slug:
             self.slug = slugify(self.title)
+        return super().save(*args, **kwargs)
+
+    class Meta:
+        app_name = 'exhibitions'
+        table_name = 'exhibition'
+
+class ExhibitionPeriod(Table):
+    exhibition: ForeignKey = ForeignKey(references='Exhibition')
+    start_date: Timestamptz = Timestamptz(null=False)
+    end_date: Timestamptz = Timestamptz(null=False)
+
+class ExhibitionPrice(Table):
+    exhibition: ForeignKey = ForeignKey(references='Exhibition')
+    price: Varchar = Varchar(length=100, null=True)
+    currency: Varchar = Varchar(length=100, null=True, default='AMD')
+
+    def save(self, *args, **kwargs):
         self.currency = self.currency.upper()
         return super().save(*args, **kwargs)
 
     class Meta:
         app_name = 'exhibitions'
-        table_name = 'exhibitions'
+        table_name = 'exhibition_prices'
+
+class ExhibitionOrganizer(Table):
+    exhibition: ForeignKey = ForeignKey(references='Exhibition')
+    name: Varchar = Varchar(length=200, null=True)
+
+    class Meta:
+        app_name = 'exhibitions'
+        table_name = 'exhibition_organizers'
+
 
 class ExhibitionContacts(Table):
     website: Varchar = Varchar(length=200)
@@ -79,7 +100,7 @@ class ExhibitionContacts(Table):
         table_name = 'exhibitions_contacts'
 
 class ExhibitionMedia(Table):
-    images = JSON(null=True)
+    images = Array(base_column=Varchar(length=300), default_factory=list)
 
 
 # Geolocation

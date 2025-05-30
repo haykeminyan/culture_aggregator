@@ -31,7 +31,6 @@ async def get_all_html(
         **ExhibitionService.get_pagination_context(limit, offset, data["total"])
     }
 
-
     return templates.TemplateResponse('exhibitions/list.html', context)
 
 
@@ -52,9 +51,8 @@ async def delete_html(request: Request, slug: str):
 @router.get('/exhibition/{slug}', response_class=HTMLResponse, include_in_schema=False)
 async def get_by_slug_html(request: Request, slug: str):
     context = await ExhibitionService.get_by_slug(slug)
+    await ExhibitionService.format_dates(context)
     context['request'] = request
-    context['start_date_readable'] = datetime.fromisoformat(str(context['start_date'])).strftime("%d %B %Y at %H:%M")
-    context['end_date_readable'] = datetime.fromisoformat(str(context['end_date'])).strftime("%d %B %Y at %H:%M")
     return templates.TemplateResponse('exhibitions/detail.html', context)
 
 
@@ -71,6 +69,7 @@ async def get_by_category_html(
     search: str = Query("", alias="search"),
 ):
     exhibitions = await ExhibitionService.get_by_category(category_slug)
+    categories = await ExhibitionService.get_categories()
 
     if search:
         exhibitions = [e for e in exhibitions if search.lower() in e["title"].lower()]
@@ -81,6 +80,7 @@ async def get_by_category_html(
     context = {
         "exhibitions": paginated_exhibitions,
         "request": request,
+        "categories": categories,
         "category_slug": category_slug,
         "search": search,
         **ExhibitionService.get_pagination_context(limit, offset, total),

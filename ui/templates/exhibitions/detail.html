@@ -1,5 +1,11 @@
 {% block stylesheets %}
 <head>
+    <!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
@@ -16,9 +22,10 @@
 {% block scripts %}
   <script src="/static/exhibitions/js/swiper.js"></script>
   <script src="/static/exhibitions/js/countdown.js"></script>
+  <script src="/static/exhibitions/js/map.js"></script>
 {% endblock %}
 <div class="overlay-text">
-  <h1 class="exhibition-title">{{ title }}</h1>
+  <h1 class="exhibition-title" id="title">{{ title }}</h1>
 </div>
 
 <div class="exhibition-gallery swiper w-full max-w-xl">
@@ -50,22 +57,22 @@
       <!-- 🏷️ Category -->
 
       <!-- 📆 Dates & Countdown -->
+        {% for start_date_readable, end_date_readable in date_pairs %}
     <div class="dates">
       <p>
-        🕒 From <strong>{{ start_date_readable }}</strong> to <strong>{{ end_date_readable }}</strong>
+        🕒 From <strong>{{ start_date_readable}}</strong> to <strong>{{ end_date_readable }}</strong>
       </p>
-      <div id="countdown-timer" data-end="{{ end_date }}"></div>
+      <div id="countdown-timer" data-end="{{ end_date_readable }}"></div>
     </div>
+        {% endfor %}
 
       <!-- 📖 Description -->
       <article>
         <p>{{ details }}</p>
       </article>
-
-
       <!-- 📍 Location -->
-      <div id="map" data-lat="{{ geo.latitude }}" data-lng="{{ geo.longitude }}">
-        <!-- JS-powered interactive map (Leaflet / Mapbox) -->
+    <div id="map" data-lat="{{ latitude }}" data-lng="{{ longitude }}" style="height: 400px;"></div>
+
       </div>
 
 

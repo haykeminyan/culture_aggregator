@@ -157,3 +157,15 @@ max-height: 400px;
 .exhibition-title {
 text-align: center;
 }
+
+#map{
+  width: 60%;
+  margin: auto;
+}
+
+.w-full{
+  width: 65%;
+  height: fit-content;
+  display: flex;
+  margin: auto;
+}

@@ -15,23 +15,22 @@
        class="w-full border rounded px-4 py-2 shadow-sm" />
 
 
-                <div class="filter-section-categories">
-                    <span class="filter-label">{{"Search with categories"}}</span>
-                    <div class="category-filter">
-                                {% for category in categories %}
-<a href="/categories/{{ category.slug }}/?{% if search %}search={{ search }}{% endif %}" class="category block px-2 py-1 border rounded">
-  {{ category.title }}
-</a>
+<div class="filter-section-categories">
+    <span class="filter-label">Search with categories</span>
+    <div class="category-filter flex gap-2 flex-wrap">
+{% for category in categories %}
+    <a href="/categories/{{ category.slug }}/?{% if search %}search={{ search }}{% endif %}"
+       class="category block px-2 py-1 border rounded {% if category.slug == category_slug %}active{% endif %}">
+        {{ category.title }}
+    </a>
+{% endfor %}
 
-
-
-
-                        {% endfor %}
-                        <a href="/exhibitions/?{% if search %}search={{ search }}{% endif %}" class="remove-btn">×</a>
-
-                    </div>
-                </div>
-
+        {% if category_slug %}
+            <a href="/exhibitions/?{% if search %}search={{ search }}{% endif %}"
+               class="remove-btn ml-2 text-red-600 text-xl">×</a>
+        {% endif %}
+    </div>
+</div>
 
 
     </form>
@@ -61,7 +60,7 @@
       {% if exhibition.images%}
     {% for image in exhibition.images %}
       <div class="swiper-slide">
-        <img src="/static/{{ image }}" class="w-full h-64 object-cover rounded" />
+        <img src="/static/{{ image }}" class="w-full h-100 object-cover rounded image" />
       </div>
     {% endfor %}
       {%else %}
@@ -97,23 +96,13 @@
     class="text-blue-600 hover:underline ml-1">Website</a>
                                         </p>
                                     {% endif %}
-                                    {% if exhibition.contacts.youtube %}
-                                        <p class="flex items-center">
-                                            🎬 <a href="{{ exhibition.contacts.youtube }}"
-    target="_blank"
-    class="text-blue-600 hover:underline ml-1">YouTube</a>
-                                        </p>
-                                    {% endif %}
-                                    {% if exhibition.city_phone %}
-                                        <p class="flex items-center">
-                                            📞 <span class="ml-1">{{ exhibition.city_phone }}</span>
-                                        </p>
-                                    {% endif %}
-                                    {% if exhibition.mobile_phone %}
-                                        <p class="flex items-center">
-                                            📱 <span class="ml-1">{{ exhibition.mobile_phone }}</span>
-                                        </p>
-                                    {% endif %}
+       <!-- 📆 Dates & Countdown -->
+    <div class="dates">
+      <p>
+        🕒 From <strong>{{ exhibition.start_date_readable }}</strong> to <strong>{{ exhibition.end_date_readable }}</strong>
+      </p>
+      <div id="countdown-timer" data-end="{{ end_date }}"></div>
+    </div>
                                 </div>
                                                  </a>
                             </div>
@@ -125,11 +114,6 @@
                 {% endif %}
             </div>
 
-<ul class="mb-6">
-  {% for exhibition in exhibitions %}
-   {{ exhibition.name }}
-  {% endfor %}
-</ul>
 
 {% include "exhibitions/pagination.html" %}
 
