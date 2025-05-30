@@ -61,11 +61,20 @@ class ExhibitionService:
             }
             for e in exhibitions
         ]
-
+        date_pairs = []
         for elem in result:
             exhibition_time = await ExhibitionPeriod.select().where(ExhibitionPeriod.exhibition == elem['id'])
             elem['period'] = exhibition_time
-        logger.error(result)
+
+            # here just the latest dates for main page fetching
+            if len(elem['period']):
+                elem['start_date'] = elem['period'][0]['start_date']
+                elem['start_date_readable'] = datetime.fromisoformat(str(elem['start_date'])).strftime("%d %B %Y at %H:%M")
+                elem['end_date'] = elem['period'][0]['end_date']
+                elem['end_date_readable'] = datetime.fromisoformat(str(elem['end_date'])).strftime(
+                    "%d %B %Y at %H:%M")
+                date_pairs.append((elem['start_date_readable'], elem['end_date_readable']))
+
 
         return {
             "total": total,
@@ -184,7 +193,6 @@ class ExhibitionService:
 
         for updated in results:
             exhibition.update(updated)
-        logger.error(exhibition)
         return exhibition
 
     # the main problem is that exhibition with relations 1:N contains id

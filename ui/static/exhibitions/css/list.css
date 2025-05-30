@@ -523,3 +523,7 @@ input.w-full {
   width: 50%;
 margin: auto;
 }
+
+.pagination{
+  margin-top: 30px;
+}
