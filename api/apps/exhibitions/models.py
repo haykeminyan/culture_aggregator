@@ -18,6 +18,9 @@ logger = logging.getLogger(__name__)
 class ExhibitionMeta(Table):
     created_at: Timestamptz = Timestamptz(timezone=True, default=now)
     updated_at: Timestamptz = Timestamptz(timezone=True, default=now)
+
+    start_date: Timestamptz = Timestamptz(null=False)
+    end_date: Timestamptz = Timestamptz(null=False)
     is_active: Boolean = Boolean(default=True)
 
     def save(self, *args, **kwargs):
@@ -26,7 +29,7 @@ class ExhibitionMeta(Table):
 
     class Meta:
         app_name = 'exhibitions'
-        table_name = 'exhibitions_meta'
+        table_name = 'exhibition_meta'
 
 
 # Main features of exhibition
@@ -37,9 +40,11 @@ class Exhibition(ExhibitionMeta):
 
     category: ForeignKey = ForeignKey(references='ExhibitionCategory')
     geo: ForeignKey = ForeignKey(references='ExhibitionGeo')
-    details: ForeignKey = ForeignKey(references='ExhibitionDetails')
-    contacts: ForeignKey = ForeignKey(references='ExhibitionContacts')
+    detail: ForeignKey = ForeignKey(references='ExhibitionDetail')
+    contact: ForeignKey = ForeignKey(references='ExhibitionContact')
     media: ForeignKey = ForeignKey(references='ExhibitionMedia')
+    price: ForeignKey = ForeignKey(references='ExhibitionPrice')
+    organizer: ForeignKey = ForeignKey(references='ExhibitionOrganizer')
 
 
     # TODO need to add for all fields this validations as schemas only for /docs... not for FUCKING PICCOLO
@@ -61,13 +66,8 @@ class Exhibition(ExhibitionMeta):
         app_name = 'exhibitions'
         table_name = 'exhibition'
 
-class ExhibitionPeriod(Table):
-    exhibition: ForeignKey = ForeignKey(references='Exhibition')
-    start_date: Timestamptz = Timestamptz(null=False)
-    end_date: Timestamptz = Timestamptz(null=False)
 
 class ExhibitionPrice(Table):
-    exhibition: ForeignKey = ForeignKey(references='Exhibition')
     price: Varchar = Varchar(length=100, null=True)
     currency: Varchar = Varchar(length=100, null=True, default='AMD')
 
@@ -77,18 +77,17 @@ class ExhibitionPrice(Table):
 
     class Meta:
         app_name = 'exhibitions'
-        table_name = 'exhibition_prices'
+        table_name = 'exhibition_price'
 
 class ExhibitionOrganizer(Table):
-    exhibition: ForeignKey = ForeignKey(references='Exhibition')
     name: Varchar = Varchar(length=200, null=True)
 
     class Meta:
         app_name = 'exhibitions'
-        table_name = 'exhibition_organizers'
+        table_name = 'exhibition_organizer'
 
 
-class ExhibitionContacts(Table):
+class ExhibitionContact(Table):
     website: Varchar = Varchar(length=200)
     youtube: Varchar = Varchar(length=200)
     linkedin: Varchar = Varchar(length=200)
@@ -97,7 +96,7 @@ class ExhibitionContacts(Table):
 
     class Meta:
         app_name = 'exhibitions'
-        table_name = 'exhibitions_contacts'
+        table_name = 'exhibition_contact'
 
 class ExhibitionMedia(Table):
     images = Array(base_column=Varchar(length=300), default_factory=list)
@@ -113,18 +112,18 @@ class ExhibitionGeo(Table):
 
     class Meta:
         app_name = 'exhibitions'
-        table_name = 'exhibitions_geo'
+        table_name = 'exhibition_geo'
 
     def __str__(self):
         return self.location
 
 
-class ExhibitionDetails(Table):
+class ExhibitionDetail(Table):
     description: Text = Text()
 
     class Meta:
         app_name = 'exhibitions'
-        table_name = 'exhibitions_details'
+        table_name = 'exhibition_detail'
 
 
 class ExhibitionCategory(Table):
@@ -143,7 +142,7 @@ class ExhibitionCategory(Table):
     class Meta:
         app_name = 'exhibitions'
         display_column = "title"
-        table_name = 'exhibitions_category'
+        table_name = 'exhibition_category'
 
 
 class ExhibitionTag(Table):

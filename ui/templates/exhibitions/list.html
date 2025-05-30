@@ -90,18 +90,18 @@
 
                                 <br />
                                 <div class="charity-contact">
-                                    {% if exhibition.contacts.website %}
+                                    {% if exhibition.contact.website %}
                                         <p class="flex items-center">
-                                            🌐 <a href="{{ exhibition.contacts.website }}"
+                                            🌐 <a href="{{ exhibition.contact.website }}"
     target="_blank"
     class="text-blue-600 hover:underline ml-1">Website</a>
                                         </p>
                                     {% endif %}
        <!-- 📆 Dates & Countdown -->
-                                    {% if exhibition.start_date_readable  %}
+                                    {% if exhibition.start_date  %}
     <div class="dates">
       <p>
-        🕒 From <strong>{{ exhibition.start_date_readable }}</strong> to <strong>{{ exhibition.end_date_readable }}</strong>
+        🕒 From <strong>{{ exhibition.start_date.split('at').0 }}</strong> to <strong>{{ exhibition.end_date.split('at').0 }}</strong>
       </p>
       <div id="countdown-timer" data-end="{{ end_date }}"></div>
     </div>

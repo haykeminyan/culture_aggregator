@@ -30,11 +30,11 @@ class ExhibitionCategory:
 
 
 @strawberry.type
-class ExhibitionDetails:
+class ExhibitionDetail:
     description: str
 
     @classmethod
-    def from_dict(cls, data: dict) -> "ExhibitionDetails":
+    def from_dict(cls, data: dict) -> "ExhibitionDetail":
         return cls(description=data['description'])
 
 @strawberry.type
@@ -48,7 +48,7 @@ class Exhibition:
     id: str
     category: ExhibitionCategory
     geo: ExhibitionGeo
-    details: ExhibitionDetails
+    details: ExhibitionDetail
 
     @classmethod
     def from_dict(cls, data: dict) -> "Exhibition":
@@ -62,7 +62,7 @@ class Exhibition:
             is_active=data["is_active"],
             category=ExhibitionCategory.from_dict(data["category"]),
             geo=ExhibitionGeo.from_dict(data["geo"]),
-            details=ExhibitionDetails.from_dict(data["details"]),
+            details=ExhibitionDetail.from_dict(data["details"]),
         )
 
 

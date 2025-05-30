@@ -1,7 +1,7 @@
 import strawberry
 
 from api.apps.exhibitions.graphql.services import ExhibitionServiceGraphQL
-from api.apps.exhibitions.graphql.types import Exhibition, ExhibitionCategory, ExhibitionGeo, ExhibitionDetails
+from api.apps.exhibitions.graphql.types import Exhibition, ExhibitionCategory, ExhibitionGeo, ExhibitionDetail
 from api.apps.exhibitions.services import ExhibitionService
 import logging
 

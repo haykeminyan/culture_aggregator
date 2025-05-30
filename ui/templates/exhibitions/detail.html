@@ -57,21 +57,19 @@
       <!-- 🏷️ Category -->
 
       <!-- 📆 Dates & Countdown -->
-        {% for start_date_readable, end_date_readable in date_pairs %}
     <div class="dates">
       <p>
-        🕒 From <strong>{{ start_date_readable}}</strong> to <strong>{{ end_date_readable }}</strong>
+        🕒 From <strong>{{ start_date}}</strong> to <strong>{{ end_date }}</strong>
       </p>
-      <div id="countdown-timer" data-end="{{ end_date_readable }}"></div>
+      <div id="countdown-timer" data-end="{{ end_date }}"></div>
     </div>
-        {% endfor %}
 
       <!-- 📖 Description -->
       <article>
         <p>{{ details }}</p>
       </article>
       <!-- 📍 Location -->
-    <div id="map" data-lat="{{ latitude }}" data-lng="{{ longitude }}" style="height: 400px;"></div>
+    <div id="map" data-lat="{{ geo.latitude }}" data-lng="{{ geo.longitude }}" style="height: 400px;"></div>
 
       </div>
 
@@ -93,9 +91,9 @@
 
         <!-- 🔗 Social Links -->
         <ul class="social-links">
-          <li><a href="{{ contacts.instagram }}">Instagram</a></li>
-          <li><a href="{{ contacts.linkedin }}">LinkedIn</a></li>
-          <li><a href="{{ contacts.website }}">Website</a></li>
+          <li><a href="{{ contact.instagram }}">Instagram</a></li>
+          <li><a href="{{ contact.linkedin }}">LinkedIn</a></li>
+          <li><a href="{{ contact.website }}">Website</a></li>
           <!-- etc -->
         </ul>
       </div>

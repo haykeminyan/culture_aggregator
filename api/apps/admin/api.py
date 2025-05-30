@@ -7,8 +7,8 @@ from fastapi.responses import HTMLResponse
 from starlette.responses import JSONResponse
 
 from api.apps.admin.services import AdminService
-from api.apps.exhibitions.models import Exhibition, ExhibitionDetails, ExhibitionGeo, ExhibitionMedia, \
-    ExhibitionContacts, ExhibitionCategory
+from api.apps.exhibitions.models import Exhibition, ExhibitionDetail, ExhibitionGeo, ExhibitionMedia, \
+    ExhibitionContact, ExhibitionCategory
 
 import os
 
@@ -29,7 +29,7 @@ async def create_exhibition(
     short_description: str = Form(default='Very short description'),
     category_title: str = Form(default='category title'),
     category_slug: str = Form(default='category slug'),
-    details: str = Form(default='full information about exhibition'),
+    detail: str = Form(default='full information about exhibition'),
     location: str = Form(default='Location'),
     latitude: float = Form(default=40.1814),
     longitude: float = Form(default=44.5144),
@@ -52,9 +52,9 @@ async def create_exhibition(
 
     category = await AdminService().check_unique_category_title_slug(category_title, category_slug)
 
-    details = await ExhibitionDetails.objects().create(description=details)
+    detail = await ExhibitionDetail.objects().create(description=detail)
     geo = await ExhibitionGeo.objects().create(location=location, city=city, country=country, latitude=latitude, longitude=longitude)
-    contacts = await ExhibitionContacts.objects().create(website=website, youtube=youtube, instagram=instagram, linkedin=linkedin, tiktok=tiktok)
+    contact = await ExhibitionContact.objects().create(website=website, youtube=youtube, instagram=instagram, linkedin=linkedin, tiktok=tiktok)
 
     # Сохраняем изображения и формируем список путей
     saved_paths = []
@@ -90,9 +90,9 @@ async def create_exhibition(
         slug=slug,
         short_description=short_description,
         category=category['id'],
-        details=details["id"],
+        detail=detail["id"],
         geo=geo["id"],
-        contacts=contacts["id"],
+        contact=contact["id"],
         media=media["id"],
     )
 
@@ -149,7 +149,7 @@ async def update_exhibition(
     await geo.save()
 
     # update geo fields
-    contacts = await ExhibitionContacts.objects().get(ExhibitionContacts.id == exhibition.contacts)
+    contacts = await ExhibitionContact.objects().get(ExhibitionContact.id == exhibition.contacts)
     contacts.website = website
     contacts.youtube = youtube
     contacts.instagram = instagram
@@ -176,7 +176,7 @@ async def update_exhibition(
             exhibition.media = new_media["id"]
 
     # update details fields
-    details_obj = await ExhibitionDetails.objects().get(ExhibitionDetails.id == exhibition.details)
+    details_obj = await ExhibitionDetail.objects().get(ExhibitionDetail.id == exhibition.details)
     details_obj.description = details
     await details_obj.save()
 

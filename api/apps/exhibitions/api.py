@@ -21,13 +21,6 @@ async def get_all_json(
     return await ExhibitionService(limit, offset).get_all()
 
 
-@router.post('/exhibition')
-async def create_api(data: ExhibitionCreate):
-    return await ExhibitionService.create(data)
-
-@router.put('/exhibition/{slug}')
-async def update_api(slug: str, data: ExhibitionUpdate):
-    return await ExhibitionService.update(slug, data)
 
 
 @router.delete('/exhibitions/{slug}')

@@ -10,8 +10,8 @@ from starlette.exceptions import HTTPException
 from api.apps.exhibitions.models import (
     Exhibition,
     ExhibitionCategory,
-    ExhibitionDetails,
-    ExhibitionGeo, ExhibitionMeta, ExhibitionMedia, ExhibitionPeriod,
+    ExhibitionDetail,
+    ExhibitionGeo, ExhibitionMeta, ExhibitionMedia,
 )
 from api.apps.exhibitions.schemas import ExhibitionCreate, ExhibitionUpdate
 from api.apps.exhibitions.utils import slugify
@@ -43,16 +43,15 @@ class ExhibitionService:
             .prefetch(
                 Exhibition.geo,
                 Exhibition.category,
-                Exhibition.details,
-                Exhibition.contacts,
-                Exhibition.media
+                Exhibition.detail,
+                Exhibition.contact,
+                Exhibition.media,
             )
         )
         if filter_:
             query = query.where(filter_)
         exhibitions = await query.offset(self.offset).limit(self.limit)
 
-        # Преобразование в список словарей
         result = [
             {
                 **e.to_dict(),
@@ -61,20 +60,8 @@ class ExhibitionService:
             }
             for e in exhibitions
         ]
-        date_pairs = []
-        for elem in result:
-            exhibition_time = await ExhibitionPeriod.select().where(ExhibitionPeriod.exhibition == elem['id'])
-            elem['period'] = exhibition_time
 
-            # here just the latest dates for main page fetching
-            if len(elem['period']):
-                elem['start_date'] = elem['period'][0]['start_date']
-                elem['start_date_readable'] = datetime.fromisoformat(str(elem['start_date'])).strftime("%d %B %Y at %H:%M")
-                elem['end_date'] = elem['period'][0]['end_date']
-                elem['end_date_readable'] = datetime.fromisoformat(str(elem['end_date'])).strftime(
-                    "%d %B %Y at %H:%M")
-                date_pairs.append((elem['start_date_readable'], elem['end_date_readable']))
-
+        await ExhibitionService.insert_format_dates(context=result)
 
         return {
             "total": total,
@@ -83,96 +70,6 @@ class ExhibitionService:
             "exhibitions": result,
         }
 
-    @staticmethod
-    async def create(data: ExhibitionCreate):
-        if await Exhibition.select().where(Exhibition.slug == data.slug).first():
-            raise HTTPException(status_code=400, detail='Exhibition already exists')
-
-        geo = await ExhibitionGeo.objects().create(
-            location=data.geo.location,
-            latitude=data.geo.latitude,
-            longitude=data.geo.longitude,
-            country=data.geo.country,
-            city=data.geo.city,
-        )
-
-        category_slug = data.category.slug or slugify(data.category.title)
-        category = (
-            await ExhibitionCategory.select()
-            .where(
-                ExhibitionCategory.slug == category_slug,
-            )
-            .first()
-        )
-        if not category:
-            category = await ExhibitionCategory.objects().create(
-                title=data.category.title,
-                slug=category_slug,
-            )
-
-        details = await ExhibitionDetails.objects().create(
-            description=data.details.description,
-        )
-
-        exhibition = await Exhibition.objects().create(
-            title=data.title,
-            slug=data.slug,
-            short_description=data.short_description,
-            category=category['id'],
-            details=details['id'],
-            geo=geo['id'],
-        )
-        return {'message': 'Exhibition created', 'exhibition': exhibition.to_dict()}
-
-    @staticmethod
-    async def update(slug: str, data: ExhibitionUpdate):
-        existing = await Exhibition.select().where(Exhibition.slug == slug).first()
-        if not existing:
-            raise HTTPException(status_code=404, detail="Exhibition not found")
-
-        category_slug = data.category.slug or slugify(data.category.title)
-        category = await ExhibitionCategory.select().where(
-            ExhibitionCategory.slug == category_slug
-        ).first()
-
-        if not category:
-            category = await ExhibitionCategory.objects().create(
-                title=data.category.title,
-                slug=category_slug,
-            )
-
-        geo = await ExhibitionGeo.objects().create(
-            location=data.geo.location,
-            latitude=data.geo.latitude,
-            longitude=data.geo.longitude,
-            country=data.geo.country,
-            city=data.geo.city,
-        )
-
-        # Создание details
-        details = await ExhibitionDetails.objects().create(
-            description=data.details.description,
-        )
-
-        update_data = {
-            Exhibition.title: data.title,
-            Exhibition.updated_at: datetime.now(),
-            Exhibition.short_description: data.short_description,
-            Exhibition.category: category["id"],
-            Exhibition.geo: geo["id"],
-            Exhibition.details: details["id"],
-        }
-
-        await Exhibition.update(update_data).where(Exhibition.slug == slug)
-
-        # Загружаем новый slug (если был обновлён)
-        updated_slug = data.slug if getattr(data, "slug", None) else slug
-        updated_exhibition = await Exhibition.select().where(Exhibition.slug == updated_slug).first()
-
-        return {
-            "message": "Exhibition updated",
-            "exhibition": updated_exhibition
-        }
 
     @staticmethod
     async def delete(slug: str):
@@ -183,68 +80,34 @@ class ExhibitionService:
 
     @staticmethod
     async def get_by_slug(slug: str):
-        exhibition = await Exhibition.select().where(Exhibition.slug == slug).first()
-        if not exhibition:
-            raise HTTPException(status_code=404, detail='Exhibition not found')
-        images_task = ExhibitionService.fill_exhibition_with_images(exhibition)
-        details_task = ExhibitionService.fill_exhibition_with_details(exhibition)
-        geo_task = ExhibitionService.fill_exhibition_with_geo(exhibition)
-        results = await asyncio.gather(images_task, details_task, geo_task)
-
-        for updated in results:
-            exhibition.update(updated)
-        return exhibition
-
-    # the main problem is that exhibition with relations 1:N contains id
-    # and I need to add values
-    @staticmethod
-    async def fill_exhibition_with_images(exhibition: dict) -> dict:
-        images = await ExhibitionMedia.select().where(ExhibitionMedia.id==exhibition['media']).first()
-        exhibition['images'] = images['images']
-        return exhibition
-
-    @staticmethod
-    async def fill_exhibition_with_details(exhibition: dict) -> dict:
-        details =  await ExhibitionDetails.select().where(ExhibitionDetails.id == exhibition['details']).first()
-        exhibition['details'] = details['description']
-        return exhibition
-
-    @staticmethod
-    async def fill_exhibition_with_geo(exhibition: dict) -> dict:
-        geo =  await ExhibitionGeo.select().where(ExhibitionGeo.id == exhibition['geo']).first()
-        exhibition['location'] = geo['location']
-        exhibition['latitude'] = geo['latitude']
-        exhibition['longitude'] = geo['longitude']
-        exhibition['country'] = geo['country']
-        exhibition['city'] = geo['city']
-        return exhibition
-
-    @staticmethod
-    async def get_by_category(category_slug: str):
-        category = (
-            await ExhibitionCategory.select()
-            .where(
-                ExhibitionCategory.slug == category_slug,
+        exhibition = await (
+            Exhibition.objects()
+            .where(Exhibition.slug == slug)
+            .prefetch(
+                Exhibition.contact,
+                Exhibition.media,
+                Exhibition.geo
             )
             .first()
         )
-        if not category:
-            raise HTTPException(status_code=404, detail='Category not found')
-        exhibitions = (
-            await Exhibition.select()
-            .where(
-                Exhibition.category == category['id'],
-            )
-            .order_by(Exhibition.created_at, ascending=False)
-        )
-
-        if not exhibitions:
+        if not exhibition:
             raise HTTPException(status_code=404, detail='Exhibition not found')
-        filled_exhibitions = []
-        for elem in exhibitions:
-            filled = await ExhibitionService.fill_exhibition_with_images(elem)
-            filled_exhibitions.append(filled)
-        return filled_exhibitions
+
+        await ExhibitionService.format_dates(context=exhibition)
+
+        return await ExhibitionService.insert_pictures(exhibition)
+
+
+    @staticmethod
+    async def get_by_category(category_slug: str):
+        category = await ExhibitionCategory.objects().where(ExhibitionCategory.slug==category_slug).first()
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found")
+
+        exhibitions = await Exhibition.objects().where(Exhibition.category==category['id']).prefetch(Exhibition.media, Exhibition.geo)
+        await ExhibitionService.insert_format_dates(context=exhibitions)
+
+        return [await ExhibitionService.insert_pictures(e) for e in exhibitions]
 
     @staticmethod
     async def get_categories():
@@ -254,19 +117,23 @@ class ExhibitionService:
 
     @staticmethod
     async def format_dates(context):
-        dates_all = await ExhibitionPeriod.select().where(ExhibitionPeriod.exhibition == context['id'])
-        date_pairs = []
-
-        if dates_all:
-            sorted_dates = sorted(dates_all, key=lambda d: d['end_date'], reverse=True)
-
-            for elem in sorted_dates:
-                start = datetime.fromisoformat(str(elem['start_date'])).strftime("%d %B %Y at %H:%M")
-                end = datetime.fromisoformat(str(elem['end_date'])).strftime("%d %B %Y at %H:%M")
-                date_pairs.append((start, end))
-
-        context['date_pairs'] = date_pairs
+        context['start_date'] = datetime.fromisoformat(str(context['start_date'])).strftime("%d %B %Y at %H:%M")
+        context['end_date'] = datetime.fromisoformat(str(context['end_date'])).strftime(
+            "%d %B %Y at %H:%M")
         return context
+
+    @staticmethod
+    async def insert_format_dates(context: list):
+        for elem in context:
+            await ExhibitionService.format_dates(context=elem)
+
+    @staticmethod
+    async def insert_pictures(exhibition):
+        return {
+            **exhibition.to_dict(),
+            "images": exhibition.media["images"] if isinstance(exhibition.media and exhibition.media["images"],
+                                                               str) else exhibition.media["images"]
+        }
 
     @staticmethod
     def get_pagination_context(limit: int, offset: int, total: int):
@@ -289,10 +156,11 @@ class ExhibitionService:
         if from_date > until_date:
             from_date, until_date = until_date, from_date
 
-        all_exhibitions = await Exhibition.objects().where(Exhibition.created_at >= from_date).where(
-            Exhibition.created_at <= until_date)
-        filled_exhibitions = []
-        for elem in all_exhibitions:
-            filled = await ExhibitionService.fill_exhibition_with_images(elem)
-            filled_exhibitions.append(filled)
-        return filled_exhibitions
+        exhibitions = await Exhibition.objects().where(
+            (Exhibition.start_date <= until_date) & (Exhibition.end_date >= from_date)
+        ).prefetch(Exhibition.media, Exhibition.geo)
+
+        await ExhibitionService.insert_format_dates(context=exhibitions)
+
+
+        return [await ExhibitionService.insert_pictures(e) for e in exhibitions]

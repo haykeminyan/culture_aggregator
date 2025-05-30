@@ -41,7 +41,7 @@ class ExhibitionTag(Table, tablename="exhibition_tag", schema=None):
     )
 
 
-ID = "2025-05-29T17:28:41:779834"
+ID = "2025-05-30T13:33:00:121677"
 VERSION = "1.25.0"
 DESCRIPTION = ""
 
@@ -52,6 +52,31 @@ async def forwards():
     )
 
     manager.add_table(
+        class_name="ExhibitionContact",
+        tablename="exhibition_contact",
+        schema=None,
+        columns=None,
+    )
+
+    manager.add_table(
+        class_name="ExhibitionCategory",
+        tablename="exhibition_category",
+        schema=None,
+        columns=None,
+    )
+
+    manager.add_table(
+        class_name="ExhibitionMeta",
+        tablename="exhibition_meta",
+        schema=None,
+        columns=None,
+    )
+
+    manager.add_table(
+        class_name="Exhibition", tablename="exhibition", schema=None, columns=None
+    )
+
+    manager.add_table(
         class_name="ExhibitionGeo",
         tablename="exhibition_geo",
         schema=None,
@@ -59,36 +84,8 @@ async def forwards():
     )
 
     manager.add_table(
-        class_name="ExhibitionTagLink",
-        tablename="exhibition_tag_link",
-        schema=None,
-        columns=None,
-    )
-
-    manager.add_table(
-        class_name="ExhibitionTag",
-        tablename="exhibition_tag",
-        schema=None,
-        columns=None,
-    )
-
-    manager.add_table(
-        class_name="ExhibitionContacts",
-        tablename="exhibition_contacts",
-        schema=None,
-        columns=None,
-    )
-
-    manager.add_table(
-        class_name="ExhibitionPrice",
-        tablename="exhibition_price",
-        schema=None,
-        columns=None,
-    )
-
-    manager.add_table(
-        class_name="ExhibitionDetails",
-        tablename="exhibition_details",
+        class_name="ExhibitionDetail",
+        tablename="exhibition_detail",
         schema=None,
         columns=None,
     )
@@ -101,13 +98,6 @@ async def forwards():
     )
 
     manager.add_table(
-        class_name="ExhibitionPeriod",
-        tablename="exhibition_period",
-        schema=None,
-        columns=None,
-    )
-
-    manager.add_table(
         class_name="ExhibitionMedia",
         tablename="exhibition_media",
         schema=None,
@@ -115,226 +105,29 @@ async def forwards():
     )
 
     manager.add_table(
-        class_name="Exhibition", tablename="exhibition", schema=None, columns=None
-    )
-
-    manager.add_table(
-        class_name="ExhibitionMeta",
-        tablename="exhibition_meta",
+        class_name="ExhibitionTag",
+        tablename="exhibition_tag",
         schema=None,
         columns=None,
     )
 
     manager.add_table(
-        class_name="ExhibitionCategory",
-        tablename="exhibition_category",
+        class_name="ExhibitionPrice",
+        tablename="exhibition_price",
+        schema=None,
+        columns=None,
+    )
+
+    manager.add_table(
+        class_name="ExhibitionTagLink",
+        tablename="exhibition_tag_link",
         schema=None,
         columns=None,
     )
 
     manager.add_column(
-        table_class_name="ExhibitionGeo",
-        tablename="exhibition_geo",
-        column_name="location",
-        db_column_name="location",
-        column_class_name="Varchar",
-        column_class=Varchar,
-        params={
-            "length": 200,
-            "default": "",
-            "null": False,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionGeo",
-        tablename="exhibition_geo",
-        column_name="latitude",
-        db_column_name="latitude",
-        column_class_name="DoublePrecision",
-        column_class=DoublePrecision,
-        params={
-            "default": 0.0,
-            "null": False,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionGeo",
-        tablename="exhibition_geo",
-        column_name="longitude",
-        db_column_name="longitude",
-        column_class_name="DoublePrecision",
-        column_class=DoublePrecision,
-        params={
-            "default": 0.0,
-            "null": False,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionGeo",
-        tablename="exhibition_geo",
-        column_name="country",
-        db_column_name="country",
-        column_class_name="Varchar",
-        column_class=Varchar,
-        params={
-            "length": 200,
-            "default": "",
-            "null": False,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionGeo",
-        tablename="exhibition_geo",
-        column_name="city",
-        db_column_name="city",
-        column_class_name="Varchar",
-        column_class=Varchar,
-        params={
-            "length": 200,
-            "default": "",
-            "null": False,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionTagLink",
-        tablename="exhibition_tag_link",
-        column_name="exhibition",
-        db_column_name="exhibition",
-        column_class_name="ForeignKey",
-        column_class=ForeignKey,
-        params={
-            "references": Exhibition,
-            "on_delete": OnDelete.cascade,
-            "on_update": OnUpdate.cascade,
-            "target_column": None,
-            "null": True,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionTagLink",
-        tablename="exhibition_tag_link",
-        column_name="tag",
-        db_column_name="tag",
-        column_class_name="ForeignKey",
-        column_class=ForeignKey,
-        params={
-            "references": ExhibitionTag,
-            "on_delete": OnDelete.cascade,
-            "on_update": OnUpdate.cascade,
-            "target_column": None,
-            "null": True,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionTag",
-        tablename="exhibition_tag",
-        column_name="tag",
-        db_column_name="tag",
-        column_class_name="Varchar",
-        column_class=Varchar,
-        params={
-            "length": 200,
-            "default": "",
-            "null": False,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionTag",
-        tablename="exhibition_tag",
-        column_name="slug",
-        db_column_name="slug",
-        column_class_name="Varchar",
-        column_class=Varchar,
-        params={
-            "length": 200,
-            "default": "",
-            "null": False,
-            "primary_key": False,
-            "unique": True,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionContacts",
-        tablename="exhibition_contacts",
+        table_class_name="ExhibitionContact",
+        tablename="exhibition_contact",
         column_name="website",
         db_column_name="website",
         column_class_name="Varchar",
@@ -355,8 +148,8 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionContacts",
-        tablename="exhibition_contacts",
+        table_class_name="ExhibitionContact",
+        tablename="exhibition_contact",
         column_name="youtube",
         db_column_name="youtube",
         column_class_name="Varchar",
@@ -377,8 +170,8 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionContacts",
-        tablename="exhibition_contacts",
+        table_class_name="ExhibitionContact",
+        tablename="exhibition_contact",
         column_name="linkedin",
         db_column_name="linkedin",
         column_class_name="Varchar",
@@ -399,8 +192,8 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionContacts",
-        tablename="exhibition_contacts",
+        table_class_name="ExhibitionContact",
+        tablename="exhibition_contact",
         column_name="tiktok",
         db_column_name="tiktok",
         column_class_name="Varchar",
@@ -421,8 +214,8 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionContacts",
-        tablename="exhibition_contacts",
+        table_class_name="ExhibitionContact",
+        tablename="exhibition_contact",
         column_name="instagram",
         db_column_name="instagram",
         column_class_name="Varchar",
@@ -443,42 +236,18 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionPrice",
-        tablename="exhibition_price",
-        column_name="exhibition",
-        db_column_name="exhibition",
-        column_class_name="ForeignKey",
-        column_class=ForeignKey,
-        params={
-            "references": "Exhibition",
-            "on_delete": OnDelete.cascade,
-            "on_update": OnUpdate.cascade,
-            "target_column": None,
-            "null": True,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionPrice",
-        tablename="exhibition_price",
-        column_name="price",
-        db_column_name="price",
+        table_class_name="ExhibitionCategory",
+        tablename="exhibition_category",
+        column_name="title",
+        db_column_name="title",
         column_class_name="Varchar",
         column_class=Varchar,
         params={
-            "length": 100,
+            "length": 200,
             "default": "",
-            "null": True,
+            "null": False,
             "primary_key": False,
-            "unique": False,
+            "unique": True,
             "index": False,
             "index_method": IndexMethod.btree,
             "choices": None,
@@ -489,18 +258,18 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionPrice",
-        tablename="exhibition_price",
-        column_name="currency",
-        db_column_name="currency",
+        table_class_name="ExhibitionCategory",
+        tablename="exhibition_category",
+        column_name="slug",
+        db_column_name="slug",
         column_class_name="Varchar",
         column_class=Varchar,
         params={
-            "length": 100,
-            "default": "AMD",
-            "null": True,
+            "length": 200,
+            "default": "",
+            "null": False,
             "primary_key": False,
-            "unique": False,
+            "unique": True,
             "index": False,
             "index_method": IndexMethod.btree,
             "choices": None,
@@ -511,14 +280,15 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionDetails",
-        tablename="exhibition_details",
-        column_name="description",
-        db_column_name="description",
-        column_class_name="Text",
-        column_class=Text,
+        table_class_name="ExhibitionMeta",
+        tablename="exhibition_meta",
+        column_name="created_at",
+        db_column_name="created_at",
+        column_class_name="Timestamptz",
+        column_class=Timestamptz,
         params={
-            "default": "",
+            "timezone": True,
+            "default": now,
             "null": False,
             "primary_key": False,
             "unique": False,
@@ -532,18 +302,16 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionOrganizer",
-        tablename="exhibition_organizer",
-        column_name="exhibition",
-        db_column_name="exhibition",
-        column_class_name="ForeignKey",
-        column_class=ForeignKey,
+        table_class_name="ExhibitionMeta",
+        tablename="exhibition_meta",
+        column_name="updated_at",
+        db_column_name="updated_at",
+        column_class_name="Timestamptz",
+        column_class=Timestamptz,
         params={
-            "references": "Exhibition",
-            "on_delete": OnDelete.cascade,
-            "on_update": OnUpdate.cascade,
-            "target_column": None,
-            "null": True,
+            "timezone": True,
+            "default": now,
+            "null": False,
             "primary_key": False,
             "unique": False,
             "index": False,
@@ -556,54 +324,8 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionOrganizer",
-        tablename="exhibition_organizer",
-        column_name="name",
-        db_column_name="name",
-        column_class_name="Varchar",
-        column_class=Varchar,
-        params={
-            "length": 200,
-            "default": "",
-            "null": True,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionPeriod",
-        tablename="exhibition_period",
-        column_name="exhibition",
-        db_column_name="exhibition",
-        column_class_name="ForeignKey",
-        column_class=ForeignKey,
-        params={
-            "references": "Exhibition",
-            "on_delete": OnDelete.cascade,
-            "on_update": OnUpdate.cascade,
-            "target_column": None,
-            "null": True,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionPeriod",
-        tablename="exhibition_period",
+        table_class_name="ExhibitionMeta",
+        tablename="exhibition_meta",
         column_name="start_date",
         db_column_name="start_date",
         column_class_name="Timestamptz",
@@ -623,8 +345,8 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionPeriod",
-        tablename="exhibition_period",
+        table_class_name="ExhibitionMeta",
+        tablename="exhibition_meta",
         column_name="end_date",
         db_column_name="end_date",
         column_class_name="Timestamptz",
@@ -644,27 +366,14 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionMedia",
-        tablename="exhibition_media",
-        column_name="images",
-        db_column_name="images",
-        column_class_name="Array",
-        column_class=Array,
+        table_class_name="ExhibitionMeta",
+        tablename="exhibition_meta",
+        column_name="is_active",
+        db_column_name="is_active",
+        column_class_name="Boolean",
+        column_class=Boolean,
         params={
-            "default_factory": list,
-            "base_column": Varchar(
-                length=300,
-                default="",
-                null=False,
-                primary_key=False,
-                unique=False,
-                index=False,
-                index_method=IndexMethod.btree,
-                choices=None,
-                db_column_name=None,
-                secret=False,
-            ),
-            "default": list,
+            "default": True,
             "null": False,
             "primary_key": False,
             "unique": False,
@@ -709,6 +418,48 @@ async def forwards():
         params={
             "timezone": True,
             "default": now,
+            "null": False,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="Exhibition",
+        tablename="exhibition",
+        column_name="start_date",
+        db_column_name="start_date",
+        column_class_name="Timestamptz",
+        column_class=Timestamptz,
+        params={
+            "default": TimestamptzNow(),
+            "null": False,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="Exhibition",
+        tablename="exhibition",
+        column_name="end_date",
+        db_column_name="end_date",
+        column_class_name="Timestamptz",
+        column_class=Timestamptz,
+        params={
+            "default": TimestamptzNow(),
             "null": False,
             "primary_key": False,
             "unique": False,
@@ -879,12 +630,12 @@ async def forwards():
     manager.add_column(
         table_class_name="Exhibition",
         tablename="exhibition",
-        column_name="details",
-        db_column_name="details",
+        column_name="detail",
+        db_column_name="detail",
         column_class_name="ForeignKey",
         column_class=ForeignKey,
         params={
-            "references": "ExhibitionDetails",
+            "references": "ExhibitionDetail",
             "on_delete": OnDelete.cascade,
             "on_update": OnUpdate.cascade,
             "target_column": None,
@@ -903,12 +654,12 @@ async def forwards():
     manager.add_column(
         table_class_name="Exhibition",
         tablename="exhibition",
-        column_name="contacts",
-        db_column_name="contacts",
+        column_name="contact",
+        db_column_name="contact",
         column_class_name="ForeignKey",
         column_class=ForeignKey,
         params={
-            "references": "ExhibitionContacts",
+            "references": "ExhibitionContact",
             "on_delete": OnDelete.cascade,
             "on_update": OnUpdate.cascade,
             "target_column": None,
@@ -949,16 +700,18 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionMeta",
-        tablename="exhibition_meta",
-        column_name="created_at",
-        db_column_name="created_at",
-        column_class_name="Timestamptz",
-        column_class=Timestamptz,
+        table_class_name="Exhibition",
+        tablename="exhibition",
+        column_name="price",
+        db_column_name="price",
+        column_class_name="ForeignKey",
+        column_class=ForeignKey,
         params={
-            "timezone": True,
-            "default": now,
-            "null": False,
+            "references": "ExhibitionPrice",
+            "on_delete": OnDelete.cascade,
+            "on_update": OnUpdate.cascade,
+            "target_column": None,
+            "null": True,
             "primary_key": False,
             "unique": False,
             "index": False,
@@ -971,16 +724,18 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionMeta",
-        tablename="exhibition_meta",
-        column_name="updated_at",
-        db_column_name="updated_at",
-        column_class_name="Timestamptz",
-        column_class=Timestamptz,
+        table_class_name="Exhibition",
+        tablename="exhibition",
+        column_name="organizer",
+        db_column_name="organizer",
+        column_class_name="ForeignKey",
+        column_class=ForeignKey,
         params={
-            "timezone": True,
-            "default": now,
-            "null": False,
+            "references": "ExhibitionOrganizer",
+            "on_delete": OnDelete.cascade,
+            "on_update": OnUpdate.cascade,
+            "target_column": None,
+            "null": True,
             "primary_key": False,
             "unique": False,
             "index": False,
@@ -993,31 +748,10 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionMeta",
-        tablename="exhibition_meta",
-        column_name="is_active",
-        db_column_name="is_active",
-        column_class_name="Boolean",
-        column_class=Boolean,
-        params={
-            "default": True,
-            "null": False,
-            "primary_key": False,
-            "unique": False,
-            "index": False,
-            "index_method": IndexMethod.btree,
-            "choices": None,
-            "db_column_name": None,
-            "secret": False,
-        },
-        schema=None,
-    )
-
-    manager.add_column(
-        table_class_name="ExhibitionCategory",
-        tablename="exhibition_category",
-        column_name="title",
-        db_column_name="title",
+        table_class_name="ExhibitionGeo",
+        tablename="exhibition_geo",
+        column_name="location",
+        db_column_name="location",
         column_class_name="Varchar",
         column_class=Varchar,
         params={
@@ -1025,7 +759,7 @@ async def forwards():
             "default": "",
             "null": False,
             "primary_key": False,
-            "unique": True,
+            "unique": False,
             "index": False,
             "index_method": IndexMethod.btree,
             "choices": None,
@@ -1036,8 +770,193 @@ async def forwards():
     )
 
     manager.add_column(
-        table_class_name="ExhibitionCategory",
-        tablename="exhibition_category",
+        table_class_name="ExhibitionGeo",
+        tablename="exhibition_geo",
+        column_name="latitude",
+        db_column_name="latitude",
+        column_class_name="DoublePrecision",
+        column_class=DoublePrecision,
+        params={
+            "default": 0.0,
+            "null": False,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionGeo",
+        tablename="exhibition_geo",
+        column_name="longitude",
+        db_column_name="longitude",
+        column_class_name="DoublePrecision",
+        column_class=DoublePrecision,
+        params={
+            "default": 0.0,
+            "null": False,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionGeo",
+        tablename="exhibition_geo",
+        column_name="country",
+        db_column_name="country",
+        column_class_name="Varchar",
+        column_class=Varchar,
+        params={
+            "length": 200,
+            "default": "",
+            "null": False,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionGeo",
+        tablename="exhibition_geo",
+        column_name="city",
+        db_column_name="city",
+        column_class_name="Varchar",
+        column_class=Varchar,
+        params={
+            "length": 200,
+            "default": "",
+            "null": False,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionDetail",
+        tablename="exhibition_detail",
+        column_name="description",
+        db_column_name="description",
+        column_class_name="Text",
+        column_class=Text,
+        params={
+            "default": "",
+            "null": False,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionOrganizer",
+        tablename="exhibition_organizer",
+        column_name="name",
+        db_column_name="name",
+        column_class_name="Varchar",
+        column_class=Varchar,
+        params={
+            "length": 200,
+            "default": "",
+            "null": True,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionMedia",
+        tablename="exhibition_media",
+        column_name="images",
+        db_column_name="images",
+        column_class_name="Array",
+        column_class=Array,
+        params={
+            "default_factory": list,
+            "base_column": Varchar(
+                length=300,
+                default="",
+                null=False,
+                primary_key=False,
+                unique=False,
+                index=False,
+                index_method=IndexMethod.btree,
+                choices=None,
+                db_column_name=None,
+                secret=False,
+            ),
+            "default": list,
+            "null": False,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionTag",
+        tablename="exhibition_tag",
+        column_name="tag",
+        db_column_name="tag",
+        column_class_name="Varchar",
+        column_class=Varchar,
+        params={
+            "length": 200,
+            "default": "",
+            "null": False,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionTag",
+        tablename="exhibition_tag",
         column_name="slug",
         db_column_name="slug",
         column_class_name="Varchar",
@@ -1048,6 +967,98 @@ async def forwards():
             "null": False,
             "primary_key": False,
             "unique": True,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionPrice",
+        tablename="exhibition_price",
+        column_name="price",
+        db_column_name="price",
+        column_class_name="Varchar",
+        column_class=Varchar,
+        params={
+            "length": 100,
+            "default": "",
+            "null": True,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionPrice",
+        tablename="exhibition_price",
+        column_name="currency",
+        db_column_name="currency",
+        column_class_name="Varchar",
+        column_class=Varchar,
+        params={
+            "length": 100,
+            "default": "AMD",
+            "null": True,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionTagLink",
+        tablename="exhibition_tag_link",
+        column_name="exhibition",
+        db_column_name="exhibition",
+        column_class_name="ForeignKey",
+        column_class=ForeignKey,
+        params={
+            "references": Exhibition,
+            "on_delete": OnDelete.cascade,
+            "on_update": OnUpdate.cascade,
+            "target_column": None,
+            "null": True,
+            "primary_key": False,
+            "unique": False,
+            "index": False,
+            "index_method": IndexMethod.btree,
+            "choices": None,
+            "db_column_name": None,
+            "secret": False,
+        },
+        schema=None,
+    )
+
+    manager.add_column(
+        table_class_name="ExhibitionTagLink",
+        tablename="exhibition_tag_link",
+        column_name="tag",
+        db_column_name="tag",
+        column_class_name="ForeignKey",
+        column_class=ForeignKey,
+        params={
+            "references": ExhibitionTag,
+            "on_delete": OnDelete.cascade,
+            "on_update": OnUpdate.cascade,
+            "target_column": None,
+            "null": True,
+            "primary_key": False,
+            "unique": False,
             "index": False,
             "index_method": IndexMethod.btree,
             "choices": None,

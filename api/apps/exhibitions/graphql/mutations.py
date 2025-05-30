@@ -3,7 +3,7 @@ from strawberry.types import Info
 
 from api.apps.exhibitions.graphql.services import ExhibitionServiceGraphQL
 from api.apps.exhibitions.graphql.types import Exhibition, ExhibitionCreateInput, ExhibitionCategory, ExhibitionGeo, \
-    ExhibitionDetails, ExhibitionUpdateInput
+     ExhibitionUpdateInput
 from api.apps.exhibitions.services import ExhibitionService
 import logging
 

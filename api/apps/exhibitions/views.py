@@ -51,8 +51,8 @@ async def delete_html(request: Request, slug: str):
 @router.get('/exhibition/{slug}', response_class=HTMLResponse, include_in_schema=False)
 async def get_by_slug_html(request: Request, slug: str):
     context = await ExhibitionService.get_by_slug(slug)
-    await ExhibitionService.format_dates(context)
     context['request'] = request
+    logger.error(context)
     return templates.TemplateResponse('exhibitions/detail.html', context)
 
 

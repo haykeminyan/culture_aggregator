@@ -5,7 +5,7 @@ from api.apps.exhibitions.graphql.types import ExhibitionCreateInput, Exhibition
 from api.apps.exhibitions.models import (
     Exhibition,
     ExhibitionCategory,
-    ExhibitionDetails,
+    ExhibitionDetail,
     ExhibitionGeo,
 )
 from api.apps.exhibitions.services import ExhibitionService
@@ -42,7 +42,7 @@ class ExhibitionServiceGraphQL:
         }
         exhibition['exhibition']['geo'] = exhibition_geo
 
-        exhibition_details_full = await ExhibitionDetails.select().where(ExhibitionDetails.id == exhibition["exhibition"]["details"]).first()
+        exhibition_details_full = await ExhibitionDetail.select().where(ExhibitionDetail.id == exhibition["exhibition"]["details"]).first()
         exhibition_details = {
             'description': exhibition_details_full['description'],
         }
