@@ -133,8 +133,8 @@ article {
   margin-top: 150px;
 }
 .exhibition-gallery {
-  max-width: 700px;
-  max-height: 400px;
+  max-width: 1150px;
+  max-height: 700px;
 }
 .exhibition-title-details {
   font-size: 3rem;
@@ -166,12 +166,12 @@ article {
 }
 
 #map {
-  width: 60%;
+  width: auto;
   margin: auto;
 }
 
 .w-full {
-  width: 65%;
+  width: 75%;
   height: fit-content;
   display: flex;
   margin: auto;
