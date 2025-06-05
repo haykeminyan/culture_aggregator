@@ -14,6 +14,7 @@ from strawberry.subscriptions import GRAPHQL_TRANSPORT_WS_PROTOCOL
 
 from api.apps.admin.api import router as admin_router_api
 from api.apps.exhibitions.api import router as exhibition_router_api
+from api.apps.admin.views import router as custom_admin_router_api
 from api.apps.exhibitions.graphql.schema import schema
 from api.apps.exhibitions.models import (
     Exhibition,
@@ -104,9 +105,10 @@ admin = create_admin(
     session_table=Sessions,
 )
 app.mount('/admin/', admin)
+app.include_router(exhibition_router_api)
 
 # ✅ Static & Routers
-app.include_router(exhibition_router_api)
+app.include_router(custom_admin_router_api)
 app.include_router(exhibition_router_view)
 app.include_router(exhibition_router_view, prefix='/categories')
 app.include_router(exhibition_router_view, prefix='/exhibitions')

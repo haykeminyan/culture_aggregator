@@ -79,8 +79,11 @@ class ExhibitionService:
             .where(Exhibition.slug == slug)
             .prefetch(
                 Exhibition.contact,
+                Exhibition.detail,
                 Exhibition.media,
                 Exhibition.geo,
+                Exhibition.organizer,
+                Exhibition.price
             )
             .first()
         )

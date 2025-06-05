@@ -14,7 +14,7 @@ from api.apps.exhibitions.models import (
     ExhibitionContact,
     ExhibitionDetail,
     ExhibitionGeo,
-    ExhibitionMedia,
+    ExhibitionMedia, ExhibitionPrice, ExhibitionOrganizer,
 )
 
 logger = logging.getLogger(__name__)
@@ -39,6 +39,9 @@ async def create_exhibition(
     longitude: float = Form(default=44.5144),
     country: str = Form(default='Armenia'),
     city: str = Form(default='Yerevan'),
+    price: str = Form(default='price'),
+    currency: str = Form(default='AMD'),
+    organizer_name: str = Form(default='AshotOrganizer'),
     website: str = Form(default='https://baregorc.com'),
     youtube: str = Form(default='https://www.youtube.com'),
     instagram: str = Form(default='https://www.instagram.com'),
@@ -73,6 +76,15 @@ async def create_exhibition(
         instagram=instagram,
         linkedin=linkedin,
         tiktok=tiktok,
+    )
+
+    price = await ExhibitionPrice.objects().create(
+        price=price,
+        currency=currency,
+    )
+
+    organizer = await ExhibitionOrganizer.objects().create(
+        name=organizer_name,
     )
 
     # Сохраняем изображения и формируем список путей
@@ -116,6 +128,8 @@ async def create_exhibition(
         detail=detail['id'],
         geo=geo['id'],
         contact=contact['id'],
+        price=price['id'],
+        organizer=organizer['id'],
         media=media['id'],
     )
 

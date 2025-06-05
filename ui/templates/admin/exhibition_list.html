@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<h1 class="text-xl font-bold mb-4">Exhibitions</h1>
+<a href="/exhibitions/create/" class="bg-blue-500 text-white p-2 rounded">+ New</a>
+
+<table class="mt-4 w-full">
+  <thead><tr>
+    <th>Title</th><th>Slug</th><th>Start</th><th>End</th><th>Actions</th>
+  </tr></thead>
+  <tbody>
+    {% for e in exhibitions %}
+    <tr class="border-b">
+      <td>{{ e.title }}</td>
+      <td>{{ e.slug }}</td>
+      <td>{{ e.start_date.date() }}</td>
+      <td>{{ e.end_date.date() }}</td>
+      <td>
+        <a href="/custom_admin/exhibitions/create/{{ e.id }}/edit/" class="text-blue-500">Edit</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

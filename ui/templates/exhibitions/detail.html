@@ -1,42 +1,25 @@
-{% block stylesheets %}
-    <head>
-        <!-- Leaflet CSS -->
-        <link rel="stylesheet"
-              href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-        <!-- Leaflet JS -->
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    </head>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <body class="p-8">
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-        <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-        <link rel="stylesheet"
-              href="{{ url_for('static', path='exhibitions/css/details.css') }}">
-    {% endblock %}
-    {% block scripts %}
-        <script src="/static/exhibitions/js/swiper.js"></script>
+{% extends "exhibitions/base.html" %}
+{% block content %}
         <script src="/static/exhibitions/js/countdown.js"></script>
-        <script src="/static/exhibitions/js/map.js"></script>
-    {% endblock %}
+
     <div class="overlay-text">
-        <h1 class="exhibition-title" id="title">{{ title }}</h1>
+        <h1 class="exhibition-title-details" id="title">{{ title }}</h1>
     </div>
     <div class="exhibition-gallery swiper w-full max-w-xl">
         <div class="swiper-wrapper">
             {% if images %}
                 {% for image in images %}
                     <div class="swiper-slide">
-                        <img src="/static/{{ image }}" class="w-full h-64 object-cover rounded" />
+<div class="w-full h-100 object-cover rounded image">
+  <img src="/static/{{ image }}" class="object-contain w-full h-full rounded" />
+</div>
+
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="swiper-slide">
-                    <img src="/static/exhibitions/img/default_image.png"
-                         class="w-full h-64 object-cover rounded" />
-                </div>
+<div class="aspect-[4/3] w-full">
+  <img src="/static/exhibitions/img/default_image.png"
+</div>
             {% endif %}
         </div>
         <!-- Навигация -->
@@ -45,7 +28,7 @@
         <div class="swiper-pagination"></div>
     </div>
     <!-- 🗺️ Geolocation + Info -->
-    <section class="details-section grid grid-cols-1 md:grid-cols-3 gap-8">
+    <section class="details-section md:grid-cols-3 gap-8">
         <!-- Main Content -->
         <div class="col-span-2">
             <!-- 🏷️ Category -->
@@ -58,7 +41,7 @@
             </div>
             <!-- 📖 Description -->
             <article>
-                <p>{{ details }}</p>
+                <p>{{ detail.description|safe }}</p>
             </article>
             <!-- 📍 Location -->
             <div id="map"
@@ -70,26 +53,34 @@
         <div class="tags">
             {% for tag in tags %}<span class="tag">{{ tag.tag }}</span>{% endfor %}
         </div>
-    </div>
     <!-- Sidebar -->
     <aside class="col-span-1 sticky top-4">
         <div class="organizer-card">
-            <h3>Organizer: {{ organizer_name }}</h3>
-            <p>🎟️ Price: {{ price }} {{ currency }}</p>
+            {% if  organizer.name %}
+            <h3>Organizer: {{ organizer.name }}</h3>
+            {% endif %}
+            {% if price.price %}
+            <p>🎟️ Price: {{ price.price }} {{ price.currency }}</p>
+            {% endif %}
             <!-- 🔗 Social Links -->
             <ul class="social-links">
+                {% if contact.instagram %}
                 <li>
                     <a href="{{ contact.instagram }}">Instagram</a>
                 </li>
+                {% endif %}
+                {% if contact.linkedin%}
                 <li>
                     <a href="{{ contact.linkedin }}">LinkedIn</a>
                 </li>
+                {%endif%}
+                {% if contact.website %}
                 <li>
                     <a href="{{ contact.website }}">Website</a>
                 </li>
-                <!-- etc -->
+                {% endif %}
             </ul>
         </div>
     </aside>
 </section>
-</div>
+{% endblock %}

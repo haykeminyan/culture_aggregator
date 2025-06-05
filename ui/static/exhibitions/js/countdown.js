@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const timerEl = document.getElementById("countdown-timer");
   if (!timerEl) return;
-
+  console.log(timerEl)
   const endDateStr = timerEl.dataset.end;
   if (!endDateStr) {
     timerEl.innerHTML = "No end date provided";
