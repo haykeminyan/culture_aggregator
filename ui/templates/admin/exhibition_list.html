@@ -1,27 +1,53 @@
 {% extends "admin/base.html" %}
 
 {% block content %}
-<h1 class="text-xl font-bold mb-4">Exhibitions</h1>
-<a href="/custom_admin/exhibitions/create/" class="bg-blue-500 text-white p-2 rounded">+ New</a>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Exhibitions</h1>
+    <a href="/custom_admin/exhibition/create/"
+       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow-sm transition">
+      + New
+    </a>
+  </div>
 
-<table class="mt-4 w-full">
-  <thead><tr>
-    <th>Title</th><th>Slug</th><th>Start</th><th>End</th><th>Is active</th><th>Short description</th><th>Actions</th>
-  </tr></thead>
-  <tbody>
-    {% for e in exhibitions %}
-    <tr class="border-b">
-      <td>{{ e.title }}</td>
-      <td>{{ e.slug }}</td>
-      <td>{{ e.start_date.date() }}</td>
-      <td>{{ e.end_date.date() }}</td>
-        <td>{{ e.is_active }}</td>
-        <td>{{ e.short_description }}</td>
-      <td>
-        <a href="/custom_admin/exhibitions/create/{{ e.id }}/edit/" class="text-blue-500">Edit</a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+  <!-- Table Wrapper -->
+  <div class="overflow-x-auto bg-white rounded-lg shadow">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Short Description</th>
+          <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        {% for e in exhibitions %}
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-6 py-4 text-sm text-gray-900">{{ e.title }}</td>
+          <td class="px-6 py-4 text-sm text-gray-500">{{ e.slug }}</td>
+          <td class="px-6 py-4 text-sm text-gray-500">{{ e.start_date.date() }}</td>
+          <td class="px-6 py-4 text-sm text-gray-500">{{ e.end_date.date() }}</td>
+          <td class="px-6 py-4 text-sm">
+            {% if e.is_active %}
+              <span class="inline-block px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">Yes</span>
+            {% else %}
+              <span class="inline-block px-2 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded-full">No</span>
+            {% endif %}
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500">{{ e.short_description }}</td>
+          <td class="px-6 py-4 text-center">
+            <a href="/custom_admin/exhibition/{{ e.slug }}"
+               class="text-indigo-600 hover:text-indigo-900 text-sm font-medium transition">Edit</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

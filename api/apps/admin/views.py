@@ -1,46 +1,135 @@
 # admin/routes.py
+from datetime import datetime
+from typing import Optional
 
-from fastapi import APIRouter, Request, Form
-from fastapi.templating import Jinja2Templates
+import pytz
+from fastapi import APIRouter, Request, Form, UploadFile, File
 from starlette.responses import RedirectResponse
-from starlette.status import HTTP_303_SEE_OTHER
+
+from api.apps.admin.services import AdminService
 from api.apps.exhibitions.models import ExhibitionCategory
 from api.apps.exhibitions.models import Exhibition
 from api.core.templates import templates
-import logging
+import logging, os
 
 logger = logging.getLogger(__name__)
 
 
+UPLOAD_DIR = 'ui/static/exhibitions/exhibition_pictures'
+
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 router = APIRouter(prefix="/custom_admin")
 
 @router.get("/exhibitions/")
 async def exhibition_list(request: Request):
     exhibitions = await Exhibition.select().order_by(Exhibition.created_at)
+
     return templates.TemplateResponse("admin/exhibition_list.html", {
         "request": request,
-        "exhibitions": exhibitions
+        "exhibitions": exhibitions,
+        "now": datetime.now(pytz.UTC)
     })
 
-@router.get("/exhibitions/create/")
-async def exhibition_form(request: Request):
-    categories = await ExhibitionCategory.select()
-    return templates.TemplateResponse("admin/exhibition_form.html", {
-        "request": request,
-        'categories': categories
-    })
-
-@router.post("/exhibitions/create/")
-async def exhibition_create(
-    request: Request,
-    title: str = Form(...),
-    description: str = Form(...),
-    category_id: int = Form(...),
-):
-    await Exhibition.objects().create(
-
-        title=title,
-        description=description,
-        category=category_id
+@router.get("/exhibition/create/")
+async def exhibition_form_create(request: Request):
+    exhibition = await Exhibition.objects().prefetch(
+        Exhibition.category
     )
-    return RedirectResponse("/admin/exhibitions/", status_code=303)
+    return templates.TemplateResponse("admin/exhibition_create.html", {
+        "request": request,
+        'exhibition': exhibition,
+    })
+
+@router.post("/exhibition/create/")
+async def exhibition_create(
+    title: str = Form(default='title'),
+    slug: str = Form(default='slug'),
+    images: Optional[list[UploadFile]] = File(default=None, include_in_schema=False),
+    short_description: str = Form(default='Very short description'),
+    category_title: str = Form(default='category title'),
+    category_slug: str = Form(default='category slug'),
+    detail: str = Form(default='full information about exhibition'),
+    location: str = Form(default='Location'),
+    latitude: float = Form(default=40.1814),
+    longitude: float = Form(default=44.5144),
+    country: str = Form(default='Armenia'),
+    city: str = Form(default='Yerevan'),
+    price: str = Form(default='price'),
+    currency: str = Form(default='AMD'),
+    organizer_name: str = Form(default='AshotOrganizer'),
+    website: str = Form(default='https://baregorc.com'),
+    youtube: str = Form(default='https://www.youtube.com'),
+    instagram: str = Form(default='https://www.instagram.com'),
+    linkedin: str = Form(default='https://www.linkedin.com'),
+    tiktok: str = Form(default='https://www.tiktok.com'),
+):
+    await AdminService.create_exhibition(title, slug, images, short_description, category_title, category_slug, detail,
+                                location, latitude, longitude, country, city, price, currency, organizer_name,
+                                website, youtube, instagram, linkedin, tiktok)
+    return RedirectResponse("/custom_admin/exhibitions/", status_code=303)
+
+
+@router.get("/exhibition/{exhibition_slug}/")
+async def exhibition_form(request: Request, exhibition_slug: str):
+    exhibition = await Exhibition.objects().where(Exhibition.slug == exhibition_slug).prefetch(
+        Exhibition.category,
+        Exhibition.geo,
+        Exhibition.detail,
+        Exhibition.contact,
+        Exhibition.media,
+        Exhibition.price,
+        Exhibition.organizer,
+    ).first()
+    return templates.TemplateResponse("admin/exhibition_update.html", {
+        "request": request,
+        'exhibition': exhibition,
+    })
+
+
+@router.post("/exhibition/{exhibition_slug}/")
+async def exhibition_update(
+    slug: str = Form(default='title'),
+    title: str = Form(default='title'),
+    images: Optional[list[UploadFile]] = File(default=None, include_in_schema=False),
+    remaining_images: Optional[str] = Form(default=None),
+    short_description: str = Form(default='Very short description'),
+    category_title: str = Form(default='category title'),
+    category_slug: str = Form(default='category slug'),
+    detail: str = Form(default='full information about exhibition'),
+    location: str = Form(default='Location'),
+    latitude: float = Form(default=40.1814),
+    longitude: float = Form(default=44.5144),
+    country: str = Form(default='Armenia'),
+    city: str = Form(default='Yerevan'),
+    price: str = Form(default='price'),
+    currency: str = Form(default='AMD'),
+    organizer_name: str = Form(default='AshotOrganizer'),
+    website: str = Form(default='https://baregorc.com'),
+    youtube: str = Form(default='https://www.youtube.com'),
+    instagram: str = Form(default='https://www.instagram.com'),
+    linkedin: str = Form(default='https://www.linkedin.com'),
+    tiktok: str = Form(default='https://www.tiktok.com'),
+):
+    await AdminService.update_exhibition(
+            slug,
+            title,
+            images,
+        remaining_images,
+            short_description,
+            category_title,
+            category_slug,
+            detail,
+            location,
+            latitude,
+            longitude,
+            country,
+            city,
+        price,
+        currency,
+        organizer_name,
+            website,
+            youtube,
+            instagram,
+            linkedin,
+            tiktok,)
+    return RedirectResponse("/custom_admin/exhibitions/", status_code=303)
