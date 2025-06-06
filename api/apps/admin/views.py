@@ -1,9 +1,10 @@
 # admin/routes.py
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 import pytz
 from fastapi import APIRouter, Request, Form, UploadFile, File
+from piccolo.columns import Timestamptz
 from starlette.responses import RedirectResponse
 
 from api.apps.admin.services import AdminService
@@ -38,6 +39,8 @@ async def exhibition_form_create(request: Request):
     return templates.TemplateResponse("admin/exhibition_create.html", {
         "request": request,
         'exhibition': exhibition,
+        "now": datetime.now(pytz.UTC),
+        "tomorrow": datetime.now(pytz.UTC) + timedelta(days=7)
     })
 
 @router.post("/exhibition/create/")
@@ -48,6 +51,8 @@ async def exhibition_create(
     short_description: str = Form(default='Very short description'),
     category_title: str = Form(default='category title'),
     category_slug: str = Form(default='category slug'),
+        start_date: datetime = Form(default=datetime.now(pytz.UTC)),
+        end_date: datetime = Form(default=datetime.now(pytz.UTC)),
     detail: str = Form(default='full information about exhibition'),
     location: str = Form(default='Location'),
     latitude: float = Form(default=40.1814),
@@ -63,7 +68,8 @@ async def exhibition_create(
     linkedin: str = Form(default='https://www.linkedin.com'),
     tiktok: str = Form(default='https://www.tiktok.com'),
 ):
-    await AdminService.create_exhibition(title, slug, images, short_description, category_title, category_slug, detail,
+    await AdminService.create_exhibition(title, slug, images, short_description, category_title, category_slug,      start_date,
+        end_date, detail,
                                 location, latitude, longitude, country, city, price, currency, organizer_name,
                                 website, youtube, instagram, linkedin, tiktok)
     return RedirectResponse("/custom_admin/exhibitions/", status_code=303)
@@ -95,6 +101,8 @@ async def exhibition_update(
     short_description: str = Form(default='Very short description'),
     category_title: str = Form(default='category title'),
     category_slug: str = Form(default='category slug'),
+    start_date: datetime = Form(default=datetime.now(pytz.UTC)),
+    end_date: datetime = Form(default=datetime.now(pytz.UTC)),
     detail: str = Form(default='full information about exhibition'),
     location: str = Form(default='Location'),
     latitude: float = Form(default=40.1814),
@@ -118,6 +126,8 @@ async def exhibition_update(
             short_description,
             category_title,
             category_slug,
+        start_date,
+        end_date,
             detail,
             location,
             latitude,
@@ -132,4 +142,11 @@ async def exhibition_update(
             instagram,
             linkedin,
             tiktok,)
+    return RedirectResponse("/custom_admin/exhibitions/", status_code=303)
+
+@router.post("/exhibition/{exhibition_slug}/delete/")
+async def exhibition_delete(
+    exhibition_slug: str,
+):
+    await AdminService.delete_exhibition(exhibition_slug)
     return RedirectResponse("/custom_admin/exhibitions/", status_code=303)

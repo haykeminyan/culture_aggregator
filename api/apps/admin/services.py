@@ -62,7 +62,8 @@ class AdminService:
         return category
 
     @staticmethod
-    async def create_exhibition(title, slug, images, short_description, category_title, category_slug, detail,
+    async def create_exhibition(title, slug, images, short_description, category_title, category_slug,           start_date,
+            end_date,detail,
                                 location, latitude, longitude, country, city, price, currency, organizer_name,
                                 website, youtube, instagram, linkedin, tiktok):
         if ' ' in slug:
@@ -139,6 +140,8 @@ class AdminService:
         await Exhibition.objects().create(
             title=title,
             slug=slug,
+            start_date=start_date,
+            end_date=end_date,
             short_description=short_description,
             category=category['id'],
             detail=detail['id'],
@@ -162,6 +165,8 @@ class AdminService:
             short_description,
             category_title,
             category_slug,
+            start_date,
+            end_date,
             details,
             location,
             latitude,
@@ -183,6 +188,8 @@ class AdminService:
 
         exhibition.title = title
         exhibition.short_description = short_description
+        exhibition.start_date = start_date
+        exhibition.end_date = end_date
 
         category = (
             await ExhibitionCategory.objects().where(ExhibitionCategory.slug == category_slug).first()
@@ -272,3 +279,7 @@ class AdminService:
         return HTMLResponse(
             f"<div class='text-green-600'>Exhibition {exhibition_slug} updated successfully!</div>",
         )
+
+    @staticmethod
+    async def delete_exhibition(slug: str):
+        return await Exhibition.delete().where(Exhibition.slug == slug)

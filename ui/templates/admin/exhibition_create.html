@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Exhibition</title>
   <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 </head>
 <body class="bg-gray-100 text-gray-900">
 
@@ -36,6 +39,21 @@
       <input type="text" name="category_slug" id="category_slug" placeholder="art-culture"
              class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
     </div>
+
+      <div>
+  <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
+  <input type="text" name="start_date" id="start_date" value="{{now}}"
+         class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" required>
+</div>
+
+
+<div>
+  <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
+  <input type="text" name="end_date" id="end_date" value="{{tomorrow}}"
+         class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" required>
+</div>
+
+
 
     <div class="md:col-span-2">
       <label for="short_description" class="block text-sm font-medium text-gray-700">Short Description</label>
@@ -160,4 +178,7 @@
   </div>
 
 </body>
+        {% block scripts %}
+        <script src="/static/admin/js/flatpickr.js"></script>
+    {% endblock %}
 </html>
