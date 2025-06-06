@@ -1,9 +1,16 @@
 # admin/routes.py
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Form
 from fastapi.templating import Jinja2Templates
+from starlette.responses import RedirectResponse
+from starlette.status import HTTP_303_SEE_OTHER
+from api.apps.exhibitions.models import ExhibitionCategory
 from api.apps.exhibitions.models import Exhibition
 from api.core.templates import templates
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 router = APIRouter(prefix="/custom_admin")
 
@@ -17,9 +24,23 @@ async def exhibition_list(request: Request):
 
 @router.get("/exhibitions/create/")
 async def exhibition_form(request: Request):
-    from api.apps.exhibitions.models import ExhibitionCategory
     categories = await ExhibitionCategory.select()
     return templates.TemplateResponse("admin/exhibition_form.html", {
         "request": request,
-        "categories": categories,
+        'categories': categories
     })
+
+@router.post("/exhibitions/create/")
+async def exhibition_create(
+    request: Request,
+    title: str = Form(...),
+    description: str = Form(...),
+    category_id: int = Form(...),
+):
+    await Exhibition.objects().create(
+
+        title=title,
+        description=description,
+        category=category_id
+    )
+    return RedirectResponse("/admin/exhibitions/", status_code=303)
