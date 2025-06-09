@@ -4,9 +4,9 @@ import os
 
 DB = PostgresEngine(
     config={
-        'database': os.environ['DATABASE'],
-        'user': os.environ['USER'],
-        'password': os.environ['PASSWORD'],
+        'database': os.environ['POSTGRES_DB'],
+        'user': os.environ['POSTGRES_USER'],
+        'password': os.environ['POSTGRES_PASSWORD'],
         'host': 'postgres',
         'port': 5432,
     },
