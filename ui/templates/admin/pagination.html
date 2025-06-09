@@ -1,0 +1,40 @@
+<div class="pagination flex items-center gap-2 text-sm">
+    {% set current_page = offset // limit + 1 %}
+    {% set total_pages = (total // limit) + (1 if total % limit > 0 else 0) %}
+    {# Собираем query-строку для всех ссылок #}
+    {% set extra_params = "" %}
+    {% if search %}
+        {% set extra_params = extra_params ~ "&search=" ~ search %}
+    {% endif %}
+    {% if from_date %}
+        {% set extra_params = extra_params ~ "&from_date=" ~ from_date %}
+    {% endif %}
+    {% if until_date %}
+        {% set extra_params = extra_params ~ "&until_date=" ~ until_date %}
+    {% endif %}
+    {# ← Previous #}
+    {% if current_page > 1 %}
+        <a href="{{ request.url.path }}?limit={{ limit }}&offset={{ (current_page - 2) * limit }}{{ extra_params }}"
+           class="px-2 py-1 border rounded">←</a>
+    {% endif %}
+    {# Page numbers #}
+    {% for page in range(1, total_pages + 1) %}
+        {% if page == 1 or page == total_pages or (current_page - 2 <= page <= current_page + 2) %}
+            {% if page == current_page %}
+                <span class="px-3 py-1 border rounded font-bold bg-gray-200">{{ page }}</span>
+            {% else %}
+                <a href="{{ request.url.path }}?limit={{ limit }}&offset={{ (page - 1) * limit }}{{ extra_params }}"
+                   class="px-2 py-1 border rounded">{{ page }}</a>
+            {% endif %}
+        {% elif page == 2 and current_page > 4 %}
+            <span>…</span>
+        {% elif page == total_pages - 1 and current_page < total_pages - 3 %}
+            <span>…</span>
+        {% endif %}
+    {% endfor %}
+    {# → Next #}
+    {% if current_page < total_pages %}
+        <a href="{{ request.url.path }}?limit={{ limit }}&offset={{ current_page * limit }}{{ extra_params }}"
+           class="px-2 py-1 border rounded">→</a>
+    {% endif %}
+</div>

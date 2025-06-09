@@ -323,3 +323,13 @@ class AdminService:
     @staticmethod
     async def delete_exhibition(slug: str):
         return await Exhibition.delete().where(Exhibition.slug == slug)
+
+    @staticmethod
+    def get_pagination_context(limit: int, offset: int, total: int):
+        return {
+            'limit': limit,
+            'offset': offset,
+            'total': total,
+            'next_offset': offset + limit if offset + limit < total else None,
+            'prev_offset': offset - limit if offset - limit >= 0 else None,
+        }

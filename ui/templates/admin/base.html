@@ -20,6 +20,10 @@
       }
     };
         </script>
+                {% block stylesheets %}
+            <link rel="stylesheet"
+                  href="{{ url_for('static', path='exhibitions/css/list.css') }}" />
+        {% endblock %}
         <!-- Optional: Inter Font -->
         <link href="https://rsms.me/inter/inter.css" rel="stylesheet" />
     </head>

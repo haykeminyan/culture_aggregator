@@ -9,6 +9,21 @@
                 + New
             </a>
         </div>
+
+            <div x-data="{ category: '', search: '' }" class="p-4">
+        <form method="GET"
+              action="{{ request.url.path }}"
+              class="flex flex-col gap-4">
+            <input type="text"
+                   name="search"
+                   value="{{ search }}"
+                   placeholder="Search exhibitions..."
+                   class="w-full border rounded px-4 py-2 shadow-sm" />
+            <div class="filter-section-categories">
+                <span class="filter-label">Search with categories</span>
+            </div>
+        </form>
+    </div>
         <!-- Table Wrapper -->
         <div class="overflow-x-auto bg-white rounded-lg shadow">
             <table class="min-w-full divide-y divide-gray-200">
@@ -60,4 +75,5 @@
             </table>
         </div>
     </div>
+    {% include "exhibitions/pagination.html" %}
 {% endblock %}

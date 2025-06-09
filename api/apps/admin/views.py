@@ -5,12 +5,15 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import pytz
-from fastapi import APIRouter, File, Form, Request, UploadFile
+from fastapi import APIRouter, File, Form, Request, UploadFile, Query
+from piccolo.query import Select
+from sqlalchemy.testing.util import total_size
 from starlette.responses import RedirectResponse
 
 from api.apps.admin.services import AdminService
 from api.apps.exhibitions.models import Exhibition
 from api.core.templates import templates
+from piccolo.query.functions import Count
 
 logger = logging.getLogger(__name__)
 
@@ -22,14 +25,35 @@ router = APIRouter(prefix='/custom_admin')
 
 
 @router.get('/exhibitions/')
-async def exhibition_list(request: Request):
-    exhibitions = await Exhibition.select().order_by(Exhibition.created_at)
+async def exhibition_list(request: Request,     limit: int = Query(4),
+    offset: int = Query(0),
+                          search: Optional[str] = Query(''),):
+
+    query: Select = Exhibition.select().order_by(Exhibition.created_at)
+    if search:
+        query = query.where(Exhibition.title.ilike(f'%{search}%'))
+
+    # Count query (must NOT select non-aggregated fields)
+    count_query = Exhibition.select(Count(alias='total'))
+    if search:
+        count_query = count_query.where(Exhibition.title.ilike(f'%{search}%'))
+
+    total_row = await count_query.first()
+    total = total_row['total'] if total_row else 0
+
+    # Get paginated results
+    paginated_exhibitions = await query.limit(limit).offset(offset)
 
     return templates.TemplateResponse(
         'admin/exhibition_list.html',
         {
             'request': request,
-            'exhibitions': exhibitions,
+            'exhibitions': paginated_exhibitions,
+            'limit': limit,
+            'offset': offset,
+            'total': total,
+            'search': search,
+            **AdminService.get_pagination_context(limit, offset, total),
             'now': datetime.now(pytz.UTC),
         },
     )
