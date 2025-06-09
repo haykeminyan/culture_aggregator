@@ -1,12 +1,14 @@
 from piccolo.conf.apps import AppRegistry
 from piccolo.engine.postgres import PostgresEngine
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 DB = PostgresEngine(
     config={
-        'database': os.getenv('POSTGRES_DB', 'culture_aggregator'),
-        'user': os.getenv('POSTGRES_USER', 'admin'),
-        'password': os.getenv('POSTGRES_PASSWORD', 'postgres'),
+        'database': os.environ['POSTGRES_DB'],
+        'user': os.environ['POSTGRES_USER'],
+        'password': os.environ['POSTGRES_PASSWORD'],
         'host': 'postgres',
         'port': 5432,
     },
