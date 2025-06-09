@@ -2,6 +2,9 @@ from piccolo.conf.apps import AppRegistry
 from piccolo.engine.postgres import PostgresEngine
 import os
 from dotenv import load_dotenv
+import logging
+
+logger = logging.getLogger(__name__)
 load_dotenv()
 
 DB = PostgresEngine(
@@ -23,3 +26,5 @@ APP_REGISTRY = AppRegistry(
 )
 
 print("🔍 POSTGRES_USER =", os.environ.get("POSTGRES_USER"))
+logger.error("<UNK> POSTGRES_USER =", os.environ.get("POSTGRES_USER"))
+logger.error('!'*100)
