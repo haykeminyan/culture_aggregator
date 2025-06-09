@@ -34,7 +34,7 @@ body {
 /* Мягкий красный (армянский флаг - верхняя полоса) */
 .tag-location {
   background-color: #d9534f; /* мягкий красный */
-    padding: 6px 12px;
+  padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;
@@ -45,7 +45,7 @@ body {
 /* Мягкий синий (средняя полоса) */
 .tag-city {
   background-color: #337ab7; /* спокойный синий */
-      padding: 6px 12px;
+  padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;
@@ -56,14 +56,13 @@ body {
 /* Мягкий оранжевый (нижняя полоса) */
 .tag-country {
   background-color: #f0ad4e; /* тёплый янтарный */
-      padding: 6px 12px;
+  padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;
   border: 1px solid #ddd;
   cursor: pointer;
 }
-
 
 /* CHARITY CARDS */
 .exhibition-list {
@@ -576,16 +575,17 @@ input.w-full {
   margin-top: 30px;
 }
 
-.exhibition-short-description{
+.exhibition-short-description {
   margin-top: 20px;
 }
 
 .text-2xl {
-margin-top: 15px;
+  margin-top: 15px;
 }
 
-.swiper-button-next, .swiper-button-prev {
-  top: var(--swiper-navigation-top-offset,49%) !important;
-width: calc(var(--swiper-navigation-size)/ 50 * 48) !important;
-margin-top: calc(0px - (var(--swiper-navigation-size)/ 3)) !important;
+.swiper-button-next,
+.swiper-button-prev {
+  top: var(--swiper-navigation-top-offset, 49%) !important;
+  width: calc(var(--swiper-navigation-size) / 50 * 48) !important;
+  margin-top: calc(0px - (var(--swiper-navigation-size) / 3)) !important;
 }

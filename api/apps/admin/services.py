@@ -1,26 +1,23 @@
 # routes/admin/exhibitions.py
 import json
 import logging
+import os
 import uuid
 
 from fastapi import HTTPException
-
-from api.apps.admin.schemas import CategoryDict
-from api.apps.exhibitions.models import ExhibitionCategory
-import os
-from typing import Optional
-
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.responses import HTMLResponse
 from starlette.responses import JSONResponse
 
+from api.apps.admin.schemas import CategoryDict
 from api.apps.exhibitions.models import (
     Exhibition,
     ExhibitionCategory,
     ExhibitionContact,
     ExhibitionDetail,
     ExhibitionGeo,
-    ExhibitionMedia, ExhibitionPrice, ExhibitionOrganizer,
+    ExhibitionMedia,
+    ExhibitionOrganizer,
+    ExhibitionPrice,
 )
 
 logger = logging.getLogger(__name__)
@@ -28,6 +25,7 @@ logger = logging.getLogger(__name__)
 UPLOAD_DIR = 'ui/static/exhibitions/exhibition_pictures'
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
 
 class AdminService:
     @staticmethod
@@ -62,10 +60,30 @@ class AdminService:
         return category
 
     @staticmethod
-    async def create_exhibition(title, slug, images, short_description, category_title, category_slug,           start_date,
-            end_date,detail,
-                                location, latitude, longitude, country, city, price, currency, organizer_name,
-                                website, youtube, instagram, linkedin, tiktok):
+    async def create_exhibition(
+        title,
+        slug,
+        images,
+        short_description,
+        category_title,
+        category_slug,
+        start_date,
+        end_date,
+        detail,
+        location,
+        latitude,
+        longitude,
+        country,
+        city,
+        price,
+        currency,
+        organizer_name,
+        website,
+        youtube,
+        instagram,
+        linkedin,
+        tiktok,
+    ):
         if ' ' in slug:
             return JSONResponse({'error': 'Slug cannot contain spaces.'}, status_code=400)
 
@@ -77,7 +95,10 @@ class AdminService:
                 status_code=400,
             )
 
-        category = await AdminService().check_unique_category_title_slug(category_title, category_slug)
+        category = await AdminService().check_unique_category_title_slug(
+            category_title,
+            category_slug,
+        )
 
         detail = await ExhibitionDetail.objects().create(description=detail)
         geo = await ExhibitionGeo.objects().create(
@@ -158,29 +179,29 @@ class AdminService:
 
     @staticmethod
     async def update_exhibition(
-            exhibition_slug,
-            title,
-            images,
-            remaining_images,
-            short_description,
-            category_title,
-            category_slug,
-            start_date,
-            end_date,
-            details,
-            location,
-            latitude,
-            longitude,
-            country,
-            city,
-            price,
-            currency,
-            organizer_name,
-            website,
-            youtube,
-            instagram,
-            linkedin,
-            tiktok,
+        exhibition_slug,
+        title,
+        images,
+        remaining_images,
+        short_description,
+        category_title,
+        category_slug,
+        start_date,
+        end_date,
+        details,
+        location,
+        latitude,
+        longitude,
+        country,
+        city,
+        price,
+        currency,
+        organizer_name,
+        website,
+        youtube,
+        instagram,
+        linkedin,
+        tiktok,
     ):
         exhibition = await Exhibition.objects().where(Exhibition.slug == exhibition_slug).first()
         if not exhibition:
@@ -192,7 +213,9 @@ class AdminService:
         exhibition.end_date = end_date
 
         category = (
-            await ExhibitionCategory.objects().where(ExhibitionCategory.slug == category_slug).first()
+            await ExhibitionCategory.objects()
+            .where(ExhibitionCategory.slug == category_slug)
+            .first()
         )
         if category:
             exhibition.category = category['id']
@@ -214,7 +237,9 @@ class AdminService:
             await geo.save()
 
         # update geo fields
-        contacts = await ExhibitionContact.objects().get(ExhibitionContact.id == exhibition.contact)
+        contacts = await ExhibitionContact.objects().get(
+            ExhibitionContact.id == exhibition.contact,
+        )
         if contacts:
             contacts.website = website
             contacts.youtube = youtube
@@ -223,8 +248,9 @@ class AdminService:
             contacts.tiktok = tiktok
             await contacts.save()
 
-
-        organizer = await ExhibitionOrganizer.objects().get(ExhibitionOrganizer.id == exhibition.organizer)
+        organizer = await ExhibitionOrganizer.objects().get(
+            ExhibitionOrganizer.id == exhibition.organizer,
+        )
         if organizer:
             organizer.name = organizer_name
             await organizer.save()
@@ -250,11 +276,11 @@ class AdminService:
         if images:
             saved_paths = []
             for image in images:
-                if not image.filename or image.filename.endswith("/"):
+                if not image.filename or image.filename.endswith('/'):
                     continue
                 safe_filename = os.path.basename(image.filename)
                 ext = os.path.splitext(safe_filename)[1]
-                unique_name = f"{uuid.uuid4().hex}{ext}"
+                unique_name = f'{uuid.uuid4().hex}{ext}'
                 filepath = os.path.join(UPLOAD_DIR, unique_name)
                 with open(filepath, 'wb') as buffer:
                     buffer.write(await image.read())
@@ -269,7 +295,9 @@ class AdminService:
                 exhibition.media = new_media['id']
 
         # update details fields
-        details_obj = await ExhibitionDetail.objects().get(ExhibitionDetail.id == exhibition.detail)
+        details_obj = await ExhibitionDetail.objects().get(
+            ExhibitionDetail.id == exhibition.detail,
+        )
         if details_obj:
             details_obj.description = details
             await details_obj.save()

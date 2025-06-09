@@ -1,199 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Update Exhibition</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-</head>
-<body class="bg-gray-100 text-gray-900">
-  <div class="py-12">
-   <form method="POST" action="/custom_admin/exhibition/{{exhibition.slug}}/" enctype="multipart/form-data" class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg space-y-6">
-       <h2 class="text-3xl font-bold text-gray-800">Update Exhibition</h2>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-      <input type="text" name="title" id="title" value="{{exhibition.title}}" placeholder="{{exhibition.title}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" required>
-    </div>
-    <div>
-      <label for="slug" class="block text-sm font-medium text-gray-700">Slug</label>
-      <input type="text" name="slug" id="slug" value="{{exhibition.slug}}" placeholder="{{exhibition.slug}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" required>
-    </div>
-
-<div>
-  <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
-  <input type="text" name="start_date" id="start_date"
-         value="{{ exhibition.start_date.strftime('%Y-%m-%d %H:%M') if exhibition.start_date else '' }}"
-         class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" required>
-</div>
-
-
-<div>
-  <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
-  <input type="text" name="end_date" id="end_date"
-         value="{{ exhibition.end_date.strftime('%Y-%m-%d %H:%M') if exhibition.end_date else '' }}"
-         class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" required>
-</div>
-
-
-
-
-    <div>
-      <label for="category_title" class="block text-sm font-medium text-gray-700">Category Title</label>
-      <input type="text" name="category_title" id="category_title" value="{{exhibition.category.title}}" placeholder="{{exhibition.category.title}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="category_slug" class="block text-sm font-medium text-gray-700">Category Slug</label>
-      <input type="text" name="category_slug" id="category_slug" value="{{exhibition.category.slug}}" placeholder="{{exhibition.category.slug}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div class="md:col-span-2">
-      <label for="short_description" class="block text-sm font-medium text-gray-700">Short Description</label>
-      <input type="text" name="short_description" id="short_description" value="{{exhibition.short_description}}" placeholder="{{exhibition.short_description}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div class="md:col-span-2">
-      <label for="detail" class="block text-sm font-medium text-gray-700">Full Description</label>
-      <textarea name="detail" id="detail" rows="5" placeholder="{{exhibition.detail.description}}"
-                class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500 resize-y">{{ exhibition.detail.description }}</textarea>
-    </div>
-
-    <div>
-      <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
-      <input type="text" name="location" id="location" value="{{exhibition.geo.location}}" placeholder="{{exhibition.geo.location}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-<div>
-  <label for="images" class="block text-sm font-medium text-gray-700">Images</label>
-  <input type="file" name="images" id="images" multiple
-         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-                file:rounded-lg file:border-0
-                file:text-sm file:font-semibold
-                file:bg-indigo-50 file:text-indigo-700
-                hover:file:bg-indigo-100">
-<div id="image-preview" class="mt-2 flex gap-2 flex-wrap">
-  {% for image in exhibition.media.images %}
-    <div class="image-wrapper relative w-24 h-24 rounded overflow-hidden border-2 border-transparent hover:border-indigo-500 cursor-move">
-      <img src="/static/{{ image }}"
-           data-image="{{ image }}"
-           class="sortable-image w-full h-full object-cover">
-      <button type="button" class="delete-btn absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-800">
-        &times;
-      </button>
-    </div>
-  {% endfor %}
-</div>
-
-</div>
-
-
-    <div>
-      <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
-      <input type="number" step="any" name="latitude" id="latitude" value="{{exhibition.geo.latitude}}" placeholder="{{exhibition.geo.latitude}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
-      <input type="number" step="any" name="longitude" id="longitude" value="{{exhibition.geo.longitude}}" placeholder="{{exhibition.geo.longitude}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
-      <input type="text" name="country" id="country" value="{{exhibition.geo.country}}" placeholder="{{exhibition.geo.country}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="city" class="block text-sm font-medium text-gray-700">City</label>
-      <input type="text" name="city" id="city" value="{{exhibition.geo.city}}" placeholder="{{exhibition.geo.city}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
-      <input type="text" name="price" id="price" value="{{exhibition.price.price}}" placeholder="{{exhibition.price.price}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
-      <input type="text" name="currency" id="currency" value="{{exhibition.price.currency}}" placeholder="{{exhibition.price.currency}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div class="md:col-span-2">
-      <label for="organizer_name" class="block text-sm font-medium text-gray-700">Organizer Name</label>
-      <input type="text" name="organizer_name" id="organizer_name"  value="{{exhibition.organizer.name}}" placeholder="{{exhibition.organizer.name}}"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
-        <input type="url" name="website" id="website" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"  value="{{exhibition.contact.website}}" placeholder="{{exhibition.contact.website}}">
-      </div>
-
-      <div>
-        <label for="youtube" class="block text-sm font-medium text-gray-700">YouTube</label>
-        <input type="url" name="youtube" id="youtube" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" value="{{exhibition.contact.youtube}}" placeholder="{{exhibition.contact.youtube}}">
-      </div>
-
-      <div>
-        <label for="instagram" class="block text-sm font-medium text-gray-700">Instagram</label>
-        <input type="url" name="instagram" id="instagram" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" value="{{exhibition.contact.instagram}}" placeholder="{{exhibition.contact.instagram}}">
-      </div>
-
-      <div>
-        <label for="linkedin" class="block text-sm font-medium text-gray-700">LinkedIn</label>
-        <input type="url" name="linkedin" id="linkedin" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" value="{{exhibition.contact.linkedin}}" placeholder="{{exhibition.contact.linkedin}}">
-      </div>
-
-      <div>
-        <label for="tiktok" class="block text-sm font-medium text-gray-700">TikTok</label>
-        <input type="url" name="tiktok" id="tiktok" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" value="{{exhibition.contact.tiktok}}" placeholder="{{exhibition.contact.tiktok}}">
-      </div>
-    </div>
-  </div>
-
-  <div class="flex justify-between items-center pt-6 border-t mt-8">
-    <!-- Left: Return -->
-    <a href="/custom_admin/exhibitions/"
-       class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md shadow transition">
-      Return
-    </a>
-
-    <!-- Center: Clear -->
-    <button type="reset"
-      class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md border border-gray-300 shadow-sm transition">
-      Clear
-    </button>
-
-    <!-- Right: Submit -->
-    <button type="submit"
-      class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow transition">
-      Save
-    </button>
-  </div>
-
-</form>
-
-  </div>
-
-</body>
-        {% block scripts %}
-        <script src="/static/admin/js/flatpickr.js"></script>
-    {% endblock %}
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Update Exhibition</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    </head>
+    <body class="bg-gray-100 text-gray-900">
+        <div class="py-12">
+            <form method="POST"
+                  action="/custom_admin/exhibition/{{ exhibition.slug }}/"
+                  enctype="multipart/form-data"
+                  class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg space-y-6">
+                <h2 class="text-3xl font-bold text-gray-800">Update Exhibition</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text"
+                               name="title"
+                               id="title"
+                               value="{{ exhibition.title }}"
+                               placeholder="{{ exhibition.title }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                               required>
+                    </div>
+                    <div>
+                        <label for="slug" class="block text-sm font-medium text-gray-700">Slug</label>
+                        <input type="text"
+                               name="slug"
+                               id="slug"
+                               value="{{ exhibition.slug }}"
+                               placeholder="{{ exhibition.slug }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                               required>
+                    </div>
+                    <div>
+                        <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
+                        <input type="text"
+                               name="start_date"
+                               id="start_date"
+                               value="{{ exhibition.start_date.strftime("%Y-%m-%d %H:%M") if exhibition.start_date else '' }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                               required>
+                    </div>
+                    <div>
+                        <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
+                        <input type="text"
+                               name="end_date"
+                               id="end_date"
+                               value="{{ exhibition.end_date.strftime("%Y-%m-%d %H:%M") if exhibition.end_date else '' }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                               required>
+                    </div>
+                    <div>
+                        <label for="category_title" class="block text-sm font-medium text-gray-700">Category Title</label>
+                        <input type="text"
+                               name="category_title"
+                               id="category_title"
+                               value="{{ exhibition.category.title }}"
+                               placeholder="{{ exhibition.category.title }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="category_slug" class="block text-sm font-medium text-gray-700">Category Slug</label>
+                        <input type="text"
+                               name="category_slug"
+                               id="category_slug"
+                               value="{{ exhibition.category.slug }}"
+                               placeholder="{{ exhibition.category.slug }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="short_description"
+                               class="block text-sm font-medium text-gray-700">Short Description</label>
+                        <input type="text"
+                               name="short_description"
+                               id="short_description"
+                               value="{{ exhibition.short_description }}"
+                               placeholder="{{ exhibition.short_description }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="detail" class="block text-sm font-medium text-gray-700">Full Description</label>
+                        <textarea name="detail"
+                                  id="detail"
+                                  rows="5"
+                                  placeholder="{{exhibition.detail.description}}"
+                                  class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500 resize-y">{{ exhibition.detail.description }}</textarea>
+                    </div>
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                        <input type="text"
+                               name="location"
+                               id="location"
+                               value="{{ exhibition.geo.location }}"
+                               placeholder="{{ exhibition.geo.location }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="images" class="block text-sm font-medium text-gray-700">Images</label>
+                        <input type="file"
+                               name="images"
+                               id="images"
+                               multiple
+                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        <div id="image-preview" class="mt-2 flex gap-2 flex-wrap">
+                            {% for image in exhibition.media.images %}
+                                <div class="image-wrapper relative w-24 h-24 rounded overflow-hidden border-2 border-transparent hover:border-indigo-500 cursor-move">
+                                    <img src="/static/{{ image }}"
+                                         data-image="{{ image }}"
+                                         class="sortable-image w-full h-full object-cover">
+                                    <button type="button"
+                                            class="delete-btn absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-800">
+                                        &times;
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
+                        <input type="number"
+                               step="any"
+                               name="latitude"
+                               id="latitude"
+                               value="{{ exhibition.geo.latitude }}"
+                               placeholder="{{ exhibition.geo.latitude }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
+                        <input type="number"
+                               step="any"
+                               name="longitude"
+                               id="longitude"
+                               value="{{ exhibition.geo.longitude }}"
+                               placeholder="{{ exhibition.geo.longitude }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
+                        <input type="text"
+                               name="country"
+                               id="country"
+                               value="{{ exhibition.geo.country }}"
+                               placeholder="{{ exhibition.geo.country }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-700">City</label>
+                        <input type="text"
+                               name="city"
+                               id="city"
+                               value="{{ exhibition.geo.city }}"
+                               placeholder="{{ exhibition.geo.city }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                        <input type="text"
+                               name="price"
+                               id="price"
+                               value="{{ exhibition.price.price }}"
+                               placeholder="{{ exhibition.price.price }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
+                        <input type="text"
+                               name="currency"
+                               id="currency"
+                               value="{{ exhibition.price.currency }}"
+                               placeholder="{{ exhibition.price.currency }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="organizer_name" class="block text-sm font-medium text-gray-700">Organizer Name</label>
+                        <input type="text"
+                               name="organizer_name"
+                               id="organizer_name"
+                               value="{{ exhibition.organizer.name }}"
+                               placeholder="{{ exhibition.organizer.name }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
+                            <input type="url"
+                                   name="website"
+                                   id="website"
+                                   class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                                   value="{{ exhibition.contact.website }}"
+                                   placeholder="{{ exhibition.contact.website }}">
+                        </div>
+                        <div>
+                            <label for="youtube" class="block text-sm font-medium text-gray-700">YouTube</label>
+                            <input type="url"
+                                   name="youtube"
+                                   id="youtube"
+                                   class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                                   value="{{ exhibition.contact.youtube }}"
+                                   placeholder="{{ exhibition.contact.youtube }}">
+                        </div>
+                        <div>
+                            <label for="instagram" class="block text-sm font-medium text-gray-700">Instagram</label>
+                            <input type="url"
+                                   name="instagram"
+                                   id="instagram"
+                                   class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                                   value="{{ exhibition.contact.instagram }}"
+                                   placeholder="{{ exhibition.contact.instagram }}">
+                        </div>
+                        <div>
+                            <label for="linkedin" class="block text-sm font-medium text-gray-700">LinkedIn</label>
+                            <input type="url"
+                                   name="linkedin"
+                                   id="linkedin"
+                                   class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                                   value="{{ exhibition.contact.linkedin }}"
+                                   placeholder="{{ exhibition.contact.linkedin }}">
+                        </div>
+                        <div>
+                            <label for="tiktok" class="block text-sm font-medium text-gray-700">TikTok</label>
+                            <input type="url"
+                                   name="tiktok"
+                                   id="tiktok"
+                                   class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                                   value="{{ exhibition.contact.tiktok }}"
+                                   placeholder="{{ exhibition.contact.tiktok }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t mt-8">
+                    <!-- Left: Return -->
+                    <a href="/custom_admin/exhibitions/"
+                       class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md shadow transition">
+                        Return
+                    </a>
+                    <!-- Center: Clear -->
+                    <button type="reset"
+                            class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md border border-gray-300 shadow-sm transition">
+                        Clear
+                    </button>
+                    <!-- Right: Submit -->
+                    <button type="submit"
+                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow transition">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </body>
+    {% block scripts %}<script src="/static/admin/js/flatpickr.js"></script>{% endblock %}
 </html>

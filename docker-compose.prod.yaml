@@ -56,8 +56,8 @@ services:
       - ./nginx/certs:/etc/letsencrypt
       - ./nginx/html:/usr/share/nginx/html
     entrypoint: >
-      sh -c "certbot certonly --webroot --webroot-path=/usr/share/nginx/html 
-      --email your-email@example.com --agree-tos --no-eff-email 
+      sh -c "certbot certonly --webroot --webroot-path=/usr/share/nginx/html
+      --email your-email@example.com --agree-tos --no-eff-email
       -d yourdomain.com && echo 'Certificates obtained.'"
     networks:
       - culture_aggregator_network

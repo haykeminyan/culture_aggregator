@@ -1,184 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create Exhibition</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-</head>
-<body class="bg-gray-100 text-gray-900">
-
-  <div class="py-12">
-   <form method="post" action="/custom_admin/exhibition/create/" enctype="multipart/form-data" class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg space-y-6">
-  <h2 class="text-3xl font-bold text-gray-800">Create New Exhibition</h2>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-      <input type="text" name="title" id="title" placeholder="Exhibition Title"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" required>
-    </div>
-
-    <div>
-      <label for="slug" class="block text-sm font-medium text-gray-700">Slug</label>
-      <input type="text" name="slug" id="slug" placeholder="exhibition-title"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" required>
-    </div>
-
-    <div>
-      <label for="category_title" class="block text-sm font-medium text-gray-700">Category Title</label>
-      <input type="text" name="category_title" id="category_title" placeholder="Art / Culture"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="category_slug" class="block text-sm font-medium text-gray-700">Category Slug</label>
-      <input type="text" name="category_slug" id="category_slug" placeholder="art-culture"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-      <div>
-  <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
-  <input type="text" name="start_date" id="start_date" value="{{now}}"
-         class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" required>
-</div>
-
-
-<div>
-  <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
-  <input type="text" name="end_date" id="end_date" value="{{tomorrow}}"
-         class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" required>
-</div>
-
-
-
-    <div class="md:col-span-2">
-      <label for="short_description" class="block text-sm font-medium text-gray-700">Short Description</label>
-      <input type="text" name="short_description" id="short_description" placeholder="A quick summary"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div class="md:col-span-2">
-      <label for="detail" class="block text-sm font-medium text-gray-700">Full Description</label>
-      <textarea name="detail" id="detail" rows="5" placeholder="Detailed description of the exhibition"
-                class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500 resize-y"></textarea>
-    </div>
-
-    <div>
-      <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
-      <input type="text" name="location" id="location" placeholder="Gallery Name or Address"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="images" class="block text-sm font-medium text-gray-700">Images</label>
-      <input type="file" name="images" id="images" multiple
-             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-                    file:rounded-lg file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-indigo-50 file:text-indigo-700
-                    hover:file:bg-indigo-100">
-    </div>
-
-    <div>
-      <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
-      <input type="number" step="any" name="latitude" id="latitude" value="40.1814"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
-      <input type="number" step="any" name="longitude" id="longitude" value="44.5144"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
-      <input type="text" name="country" id="country" value="Armenia"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="city" class="block text-sm font-medium text-gray-700">City</label>
-      <input type="text" name="city" id="city" value="Yerevan"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
-      <input type="text" name="price" id="price" placeholder="Free or 1000"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div>
-      <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
-      <input type="text" name="currency" id="currency" value="AMD"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div class="md:col-span-2">
-      <label for="organizer_name" class="block text-sm font-medium text-gray-700">Organizer Name</label>
-      <input type="text" name="organizer_name" id="organizer_name" placeholder="Organizer or Institution"
-             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
-        <input type="url" name="website" id="website" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com">
-      </div>
-
-      <div>
-        <label for="youtube" class="block text-sm font-medium text-gray-700">YouTube</label>
-        <input type="url" name="youtube" id="youtube" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://youtube.com/">
-      </div>
-
-      <div>
-        <label for="instagram" class="block text-sm font-medium text-gray-700">Instagram</label>
-        <input type="url" name="instagram" id="instagram" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://instagram.com/">
-      </div>
-
-      <div>
-        <label for="linkedin" class="block text-sm font-medium text-gray-700">LinkedIn</label>
-        <input type="url" name="linkedin" id="linkedin" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://linkedin.com/">
-      </div>
-
-      <div>
-        <label for="tiktok" class="block text-sm font-medium text-gray-700">TikTok</label>
-        <input type="url" name="tiktok" id="tiktok" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://tiktok.com/">
-      </div>
-    </div>
-  </div>
-
-  <div class="flex justify-between items-center pt-6 border-t mt-8">
-    <!-- Left: Return -->
-    <a href="/custom_admin/exhibitions/"
-       class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md shadow transition">
-      Return
-    </a>
-
-    <!-- Center: Clear -->
-    <button type="reset"
-      class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md border border-gray-300 shadow-sm transition">
-      Clear
-    </button>
-
-    <!-- Right: Submit -->
-    <button type="submit"
-      class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow transition">
-      Save
-    </button>
-  </div>
-
-</form>
-
-  </div>
-
-</body>
-        {% block scripts %}
-        <script src="/static/admin/js/flatpickr.js"></script>
-    {% endblock %}
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Create Exhibition</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    </head>
+    <body class="bg-gray-100 text-gray-900">
+        <div class="py-12">
+            <form method="post"
+                  action="/custom_admin/exhibition/create/"
+                  enctype="multipart/form-data"
+                  class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg space-y-6">
+                <h2 class="text-3xl font-bold text-gray-800">Create New Exhibition</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text"
+                               name="title"
+                               id="title"
+                               placeholder="Exhibition Title"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                               required>
+                    </div>
+                    <div>
+                        <label for="slug" class="block text-sm font-medium text-gray-700">Slug</label>
+                        <input type="text"
+                               name="slug"
+                               id="slug"
+                               placeholder="exhibition-title"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                               required>
+                    </div>
+                    <div>
+                        <label for="category_title" class="block text-sm font-medium text-gray-700">Category Title</label>
+                        <input type="text"
+                               name="category_title"
+                               id="category_title"
+                               placeholder="Art / Culture"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="category_slug" class="block text-sm font-medium text-gray-700">Category Slug</label>
+                        <input type="text"
+                               name="category_slug"
+                               id="category_slug"
+                               placeholder="art-culture"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
+                        <input type="text"
+                               name="start_date"
+                               id="start_date"
+                               value="{{ now }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                               required>
+                    </div>
+                    <div>
+                        <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
+                        <input type="text"
+                               name="end_date"
+                               id="end_date"
+                               value="{{ tomorrow }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                               required>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="short_description"
+                               class="block text-sm font-medium text-gray-700">Short Description</label>
+                        <input type="text"
+                               name="short_description"
+                               id="short_description"
+                               placeholder="A quick summary"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="detail" class="block text-sm font-medium text-gray-700">Full Description</label>
+                        <textarea name="detail"
+                                  id="detail"
+                                  rows="5"
+                                  placeholder="Detailed description of the exhibition"
+                                  class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500 resize-y"></textarea>
+                    </div>
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                        <input type="text"
+                               name="location"
+                               id="location"
+                               placeholder="Gallery Name or Address"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="images" class="block text-sm font-medium text-gray-700">Images</label>
+                        <input type="file"
+                               name="images"
+                               id="images"
+                               multiple
+                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    </div>
+                    <div>
+                        <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
+                        <input type="number"
+                               step="any"
+                               name="latitude"
+                               id="latitude"
+                               value="40.1814"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
+                        <input type="number"
+                               step="any"
+                               name="longitude"
+                               id="longitude"
+                               value="44.5144"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
+                        <input type="text"
+                               name="country"
+                               id="country"
+                               value="Armenia"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-700">City</label>
+                        <input type="text"
+                               name="city"
+                               id="city"
+                               value="Yerevan"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                        <input type="text"
+                               name="price"
+                               id="price"
+                               placeholder="Free or 1000"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
+                        <input type="text"
+                               name="currency"
+                               id="currency"
+                               value="AMD"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="organizer_name" class="block text-sm font-medium text-gray-700">Organizer Name</label>
+                        <input type="text"
+                               name="organizer_name"
+                               id="organizer_name"
+                               placeholder="Organizer or Institution"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
+                            <input type="url"
+                                   name="website"
+                                   id="website"
+                                   class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                                   placeholder="https://example.com">
+                        </div>
+                        <div>
+                            <label for="youtube" class="block text-sm font-medium text-gray-700">YouTube</label>
+                            <input type="url"
+                                   name="youtube"
+                                   id="youtube"
+                                   class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                                   placeholder="https://youtube.com/">
+                        </div>
+                        <div>
+                            <label for="instagram" class="block text-sm font-medium text-gray-700">Instagram</label>
+                            <input type="url"
+                                   name="instagram"
+                                   id="instagram"
+                                   class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                                   placeholder="https://instagram.com/">
+                        </div>
+                        <div>
+                            <label for="linkedin" class="block text-sm font-medium text-gray-700">LinkedIn</label>
+                            <input type="url"
+                                   name="linkedin"
+                                   id="linkedin"
+                                   class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                                   placeholder="https://linkedin.com/">
+                        </div>
+                        <div>
+                            <label for="tiktok" class="block text-sm font-medium text-gray-700">TikTok</label>
+                            <input type="url"
+                                   name="tiktok"
+                                   id="tiktok"
+                                   class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                                   placeholder="https://tiktok.com/">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t mt-8">
+                    <!-- Left: Return -->
+                    <a href="/custom_admin/exhibitions/"
+                       class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md shadow transition">
+                        Return
+                    </a>
+                    <!-- Center: Clear -->
+                    <button type="reset"
+                            class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md border border-gray-300 shadow-sm transition">
+                        Clear
+                    </button>
+                    <!-- Right: Submit -->
+                    <button type="submit"
+                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow transition">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </body>
+    {% block scripts %}<script src="/static/admin/js/flatpickr.js"></script>{% endblock %}
 </html>

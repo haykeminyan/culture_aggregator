@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}Admin Panel{% endblock %}</title>
-
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Optional: Customize Tailwind theme -->
-  <script>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            {% block title %}Admin Panel{% endblock %}
+        </title>
+        <!-- Tailwind CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Optional: Customize Tailwind theme -->
+        <script>
     tailwind.config = {
       theme: {
         extend: {
@@ -19,33 +19,29 @@
         }
       }
     };
-  </script>
-
-  <!-- Optional: Inter Font -->
-  <link href="https://rsms.me/inter/inter.css" rel="stylesheet" />
-</head>
-
-<body class="bg-gray-100 text-gray-800 font-sans">
-  <!-- Header -->
-  <header class="bg-white shadow sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-      <h1 class="text-xl font-semibold text-gray-900">Baregorc Admin</h1>
-      <nav>
-        <a href="/custom_admin/exhibitions/" class="text-sm text-blue-600 hover:underline">Exhibitions</a>
-        <!-- Add other nav links if needed -->
-      </nav>
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="py-10">
-    {% block content %}
-    <!-- Page-specific content will go here -->
-    {% endblock %}
-  </main>
-  <!-- Footer (optional) -->
-  <footer class="text-center text-xs text-gray-500 py-6">
-    &copy; {{ now.year }} Baregorc. All rights reserved.
-  </footer>
-</body>
+        </script>
+        <!-- Optional: Inter Font -->
+        <link href="https://rsms.me/inter/inter.css" rel="stylesheet" />
+    </head>
+    <body class="bg-gray-100 text-gray-800 font-sans">
+        <!-- Header -->
+        <header class="bg-white shadow sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <h1 class="text-xl font-semibold text-gray-900">Baregorc Admin</h1>
+                <nav>
+                    <a href="/custom_admin/exhibitions/"
+                       class="text-sm text-blue-600 hover:underline">Exhibitions</a>
+                    <!-- Add other nav links if needed -->
+                </nav>
+            </div>
+        </header>
+        <!-- Main Content -->
+        <main class="py-10">
+            {% block content %}<!-- Page-specific content will go here -->{% endblock %}
+        </main>
+        <!-- Footer (optional) -->
+        <footer class="text-center text-xs text-gray-500 py-6">
+            &copy; {{ now.year }} Baregorc. All rights reserved.
+        </footer>
+    </body>
 </html>

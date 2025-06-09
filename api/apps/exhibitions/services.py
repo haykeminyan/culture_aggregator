@@ -83,7 +83,7 @@ class ExhibitionService:
                 Exhibition.media,
                 Exhibition.geo,
                 Exhibition.organizer,
-                Exhibition.price
+                Exhibition.price,
             )
             .first()
         )

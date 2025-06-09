@@ -1,69 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <title>Exhibitions</title>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    {% block stylesheets %}
-        <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/list.css') }}" />
-        <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/header.css') }}" />
-        <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/details.css') }}" />
-        <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/footer.css') }}" />
-    {% endblock %}
-
-    <!-- JS Libraries in head if needed with defer -->
-    <script src="https://unpkg.com/htmx.org@2.0" defer></script>
-    <script src="https://unpkg.com/alpinejs" defer></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
-
-    <!-- JQuery и Bootstrap лучше в конце body -->
-</head>
-<body class="min-h-screen flex flex-col">
-
-    <!-- HEADER -->
-    <div class="header">
-        <img src="{{ url_for('static', path='exhibitions/img/logo.png') }}" alt="logo" class="top-left-logo" />
-        <div class="dropdown-container">
-            <div class="dropdown-content" id="dropdownMenu">
-                <div class="service-item">
-                    <div class="title-line">
-                        <span class="plus">+</span>
-                        <span class="service-title">
-                            <a href="https://baregorc.com" class="filter-link">
-                                <h4>Charity Organization</h4>
-                            </a>
-                        </span>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Exhibitions</title>
+        <!-- CSS -->
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+        <link rel="stylesheet"
+              href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        {% block stylesheets %}
+            <link rel="stylesheet"
+                  href="{{ url_for('static', path='exhibitions/css/list.css') }}" />
+            <link rel="stylesheet"
+                  href="{{ url_for('static', path='exhibitions/css/header.css') }}" />
+            <link rel="stylesheet"
+                  href="{{ url_for('static', path='exhibitions/css/details.css') }}" />
+            <link rel="stylesheet"
+                  href="{{ url_for('static', path='exhibitions/css/footer.css') }}" />
+        {% endblock %}
+        <!-- JS Libraries in head if needed with defer -->
+        <script src="https://unpkg.com/htmx.org@2.0" defer></script>
+        <script src="https://unpkg.com/alpinejs" defer></script>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
+                defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+        <!-- JQuery и Bootstrap лучше в конце body -->
+    </head>
+    <body class="min-h-screen flex flex-col">
+        <!-- HEADER -->
+        <div class="header">
+            <img src="{{ url_for('static', path='exhibitions/img/logo.png') }}"
+                 alt="logo"
+                 class="top-left-logo" />
+            <div class="dropdown-container">
+                <div class="dropdown-content" id="dropdownMenu">
+                    <div class="service-item">
+                        <div class="title-line">
+                            <span class="plus">+</span>
+                            <span class="service-title">
+                                <a href="https://baregorc.com" class="filter-link">
+                                    <h4>Charity Organization</h4>
+                                </a>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="nav">
+                <a href="/">
+                    <h1 class="text-2xl font-bold mb-4">🎨 Exhibitions</h1>
+                </a>
+            </div>
         </div>
-        <div class="nav">
-            <a href="/">
-                <h1 class="text-2xl font-bold mb-4">🎨 Exhibitions</h1>
-            </a>
-        </div>
-    </div>
-
-    <main class="flex-grow p-8">
-        {% block content %}{% endblock %}
-    </main>
-    {% include "exhibitions/footer.html" %}
-
-
-    <!-- JQuery и Bootstrap -->
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
-    {% block scripts %}
-        <script src="/static/exhibitions/js/swiper.js"></script>
-        <script src="/static/exhibitions/js/map.js"></script>
-    {% endblock %}
-
-</body>
+        <main class="flex-grow p-8">
+            {% block content %}{% endblock %}
+        </main>
+        {% include "exhibitions/footer.html" %}
+        <!-- JQuery и Bootstrap -->
+        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        {% block scripts %}
+            <script src="/static/exhibitions/js/swiper.js"></script>
+            <script src="/static/exhibitions/js/map.js"></script>
+        {% endblock %}
+    </body>
 </html>

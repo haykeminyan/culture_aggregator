@@ -128,7 +128,7 @@ article {
     transform: scale(1);
   }
 }
-#title{
+#title {
   margin-bottom: 50px;
   margin-top: 150px;
 }
@@ -161,7 +161,7 @@ article {
   }
 }
 
-.exhibition-title-details{
+.exhibition-title-details {
   text-align: center;
 }
 
@@ -176,13 +176,13 @@ article {
   display: flex;
   margin: auto;
 }
-.filter-form{
+.filter-form {
   justify-content: center;
 }
 .organizer-card {
-text-align: center;
+  text-align: center;
 }
 
-article{
+article {
   text-align: center;
 }

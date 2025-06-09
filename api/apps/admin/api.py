@@ -1,25 +1,14 @@
 # routes/admin/exhibitions.py
 import logging
-import os
 from typing import Optional
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, UploadFile
 from fastapi.responses import HTMLResponse
 
 from api.apps.admin.services import AdminService
-from api.apps.exhibitions.models import (
-    Exhibition,
-    ExhibitionCategory,
-    ExhibitionContact,
-    ExhibitionDetail,
-    ExhibitionGeo,
-    ExhibitionMedia, ExhibitionPrice, ExhibitionOrganizer,
-)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-
 
 
 @router.post('/exhibitions/create/', response_class=HTMLResponse)
@@ -46,9 +35,29 @@ async def create_exhibition(
     tiktok: str = Form(default='https://www.tiktok.com'),
 ):
 
-    return await AdminService.create_exhibition(title, slug, images, short_description, category_title, category_slug, detail,
-                                location, latitude, longitude, country, city, price, currency, organizer_name,
-                                website, youtube, instagram, linkedin, tiktok)
+    return await AdminService.create_exhibition(
+        title,
+        slug,
+        images,
+        short_description,
+        category_title,
+        category_slug,
+        detail,
+        location,
+        latitude,
+        longitude,
+        country,
+        city,
+        price,
+        currency,
+        organizer_name,
+        website,
+        youtube,
+        instagram,
+        linkedin,
+        tiktok,
+    )
+
 
 @router.put('/exhibitions/{exhibition_slug}/', response_class=HTMLResponse)
 async def update_exhibition(
@@ -73,21 +82,21 @@ async def update_exhibition(
 ):
     return await AdminService.update_exhibition(
         exhibition_slug,
-            title,
-            images,
-            remaining_images,
-            short_description,
-            category_title,
-            category_slug,
-            details,
-            location,
-            latitude,
-            longitude,
-            country,
-            city,
-            website,
-            youtube,
-            instagram,
-            linkedin,
-            tiktok,
+        title,
+        images,
+        remaining_images,
+        short_description,
+        category_title,
+        category_slug,
+        details,
+        location,
+        latitude,
+        longitude,
+        country,
+        city,
+        website,
+        youtube,
+        instagram,
+        linkedin,
+        tiktok,
     )

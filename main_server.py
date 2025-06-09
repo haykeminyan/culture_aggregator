@@ -13,8 +13,8 @@ from strawberry.fastapi import GraphQLRouter
 from strawberry.subscriptions import GRAPHQL_TRANSPORT_WS_PROTOCOL
 
 from api.apps.admin.api import router as admin_router_api
-from api.apps.exhibitions.api import router as exhibition_router_api
 from api.apps.admin.views import router as custom_admin_router_api
+from api.apps.exhibitions.api import router as exhibition_router_api
 from api.apps.exhibitions.graphql.schema import schema
 from api.apps.exhibitions.models import (
     Exhibition,
