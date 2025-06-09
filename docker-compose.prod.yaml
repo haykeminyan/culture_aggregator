@@ -32,6 +32,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - culture_aggregator_network
+    env_file:
+      - .env
 
   nginx:
     image: dasskelett/nginx-quic:latest
