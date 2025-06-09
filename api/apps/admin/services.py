@@ -264,11 +264,23 @@ class AdminService:
         # update images
         media = await ExhibitionMedia.objects().get(ExhibitionMedia.id == exhibition.media)
 
-        if remaining_images:
-            if isinstance(remaining_images, str):
-                remaining_images = json.loads(remaining_images)
+        if media:
+            current_images = media.images or []
 
-            # Replace media.images with only remaining ones (deletion applied)
+            if remaining_images:
+                if isinstance(remaining_images, str):
+                    remaining_images = json.loads(remaining_images)
+            else:
+                remaining_images = []
+
+        # Then append new images if any:
+            images_to_delete = set(current_images) - set(remaining_images)
+            for rel_path in images_to_delete:
+                abs_path = os.path.join('ui/static', rel_path)
+                if os.path.exists(abs_path):
+                    os.remove(abs_path)
+
+            # Update with only remaining images
             media.images = remaining_images
             await media.save()
 

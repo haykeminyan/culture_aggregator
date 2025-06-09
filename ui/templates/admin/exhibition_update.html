@@ -107,19 +107,45 @@
                                id="images"
                                multiple
                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                        <div id="image-preview" class="mt-2 flex gap-2 flex-wrap">
-                            {% for image in exhibition.media.images %}
-                                <div class="image-wrapper relative w-24 h-24 rounded overflow-hidden border-2 border-transparent hover:border-indigo-500 cursor-move">
-                                    <img src="/static/{{ image }}"
-                                         data-image="{{ image }}"
-                                         class="sortable-image w-full h-full object-cover">
-                                    <button type="button"
-                                            class="delete-btn absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-800">
-                                        &times;
-                                    </button>
-                                </div>
-                            {% endfor %}
-                        </div>
+                        <div id="images-container">
+  {% for image in exhibition.media.images %}
+  <div class="image-wrapper relative w-24 h-24 rounded overflow-hidden border-2 border-transparent hover:border-indigo-500 cursor-move">
+    <img src="/static/{{ image }}" data-image="{{ image }}" class="sortable-image w-full h-full object-cover" />
+    <button type="button"
+            class="delete-btn absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-800"
+            onclick="deleteImage('{{ image }}', this)">
+      &times;
+    </button>
+  </div>
+  {% endfor %}
+</div>
+
+<input type="hidden" name="remaining_images" id="remaining_images_input" />
+
+<script>
+  // Attach deleteImage globally
+  window.deleteImage = function(imageName, button) {
+    const wrapper = button.closest('.image-wrapper');
+    if (wrapper) wrapper.remove();
+
+    const input = document.getElementById('remaining_images_input');
+    if (input) {
+      try {
+        const current = JSON.parse(input.value || '[]');
+        const updated = current.filter(img => img !== imageName);
+        input.value = JSON.stringify(updated);
+      } catch (e) {
+        console.error("Failed to parse remaining_images_input:", e);
+      }
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const images = {{ exhibition.media.images | tojson | safe }};
+    document.getElementById('remaining_images_input').value = JSON.stringify(images);
+  });
+</script>
+
                     </div>
                     <div>
                         <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
@@ -254,5 +280,7 @@
             </form>
         </div>
     </body>
-    {% block scripts %}<script src="/static/admin/js/flatpickr.js"></script>{% endblock %}
+    {% block scripts %}<script src="/static/admin/js/flatpickr.js"></script>
+    <script src="/static/admin/js/images.js"></script>
+    {% endblock %}
 </html>
