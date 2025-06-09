@@ -12,7 +12,7 @@ services:
     container_name: culture_aggregator
     environment:
       - PYTHONUNBUFFERED=1
-      - DATABASE_URL=postgresql+asyncpg://admin:postgres@postgres:5432/culture_aggregator
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/culture_aggregator
       - PICCOLO_CONF=piccolo_conf
       - PYTHONPATH=/app
     depends_on:
