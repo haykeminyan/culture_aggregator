@@ -34,7 +34,7 @@ services:
       - culture_aggregator_network
 
   nginx:
-    image: nginx-quic:latest
+    image: dasskelett/nginx-quic:latest
     container_name: nginx
     ports:
       - "80:80"
