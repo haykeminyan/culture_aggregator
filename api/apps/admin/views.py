@@ -4,16 +4,25 @@ import os
 from datetime import datetime, timedelta
 from typing import Optional
 
+from piccolo.utils.sync import run_sync
+
+from api.apps.users.models import AdminUser, Sessions
+from piccolo_api.session_auth.endpoints import session_logout
+
+
 import pytz
-from fastapi import APIRouter, File, Form, Request, UploadFile, Query
+from fastapi import APIRouter, File, Form, Request, UploadFile, Query, Depends
 from piccolo.query import Select
-from sqlalchemy.testing.util import total_size
+from starlette import status
 from starlette.responses import RedirectResponse
+from starlette.status import HTTP_302_FOUND
 
 from api.apps.admin.services import AdminService
 from api.apps.exhibitions.models import Exhibition
 from api.core.templates import templates
 from piccolo.query.functions import Count
+
+from auth_utils import auth_dependency_router
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +30,30 @@ logger = logging.getLogger(__name__)
 UPLOAD_DIR = 'ui/static/exhibitions/exhibition_pictures'
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-router = APIRouter(prefix='/custom_admin')
+router = APIRouter(prefix='/custom_admin', dependencies=[Depends(auth_dependency_router)])
+
+
+
+@router.get('/', include_in_schema=False)
+async def admin_index(request: Request):
+    return templates.TemplateResponse(
+        'admin/index.html',
+        {
+            'request': request,
+            'now': datetime.now(pytz.UTC),
+        }
+    )
+
+@router.get('/logout/')
+async def logout(request: Request):
+    session_id = request.cookies.get('id')
+    if session_id:
+        await Sessions.delete().where(Sessions.token == session_id).run()
+
+    response = RedirectResponse(url='/admin/', status_code=302)
+    response.delete_cookie('id')
+    return response
+
 
 
 @router.get('/exhibitions/')

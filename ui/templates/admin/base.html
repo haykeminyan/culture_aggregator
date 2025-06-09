@@ -33,9 +33,13 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                 <h1 class="text-xl font-semibold text-gray-900">Baregorc Admin</h1>
                 <nav>
-                    <a href="/custom_admin/exhibitions/"
-                       class="text-sm text-blue-600 hover:underline">Exhibitions</a>
                     <!-- Add other nav links if needed -->
+<form method="GET" action="/custom_admin/logout/" id="logoutForm">
+  <input type="hidden" name="csrf_token" id="csrfTokenInput" />
+  <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded">
+    Logout
+  </button>
+</form>
                 </nav>
             </div>
         </header>
