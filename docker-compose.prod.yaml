@@ -18,12 +18,14 @@ services:
       - PICCOLO_CONF=piccolo_conf
       - PYTHONPATH=/app
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - culture_aggregator_network
     command: >
       sh -c "piccolo migrations forwards all &&
              uvicorn main_server:app --host 0.0.0.0 --port 8000"
+    
 
   postgres:
     image: postgres:17.5
@@ -34,6 +36,11 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 3s
+      timeout: 5s
+      retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
