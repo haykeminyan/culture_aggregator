@@ -24,7 +24,3 @@ APP_REGISTRY = AppRegistry(
         'api.apps.exhibitions.piccolo_app',
     ],
 )
-
-print("🔍 POSTGRES_USER =", os.environ.get("POSTGRES_USER"))
-logger.error("<UNK> POSTGRES_USER =", os.environ.get("POSTGRES_USER"))
-logger.error('!'*100)
