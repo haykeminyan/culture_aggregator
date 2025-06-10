@@ -13,6 +13,8 @@ services:
     container_name: culture_aggregator
     env_file:
       - .env
+    environment:
+      - PICCOLO_CONF=piccolo_conf
     depends_on:
       - postgres
     networks:

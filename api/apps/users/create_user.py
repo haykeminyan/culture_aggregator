@@ -1,10 +1,14 @@
 import asyncio
 import os
 
-from api.apps.users.models import AdminUser
 import os
 from dotenv import load_dotenv
 import logging
+
+from api.apps.users.models import AdminUser
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..')))
 
 logger = logging.getLogger(__name__)
 load_dotenv()

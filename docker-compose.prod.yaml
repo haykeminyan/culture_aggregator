@@ -10,6 +10,8 @@ services:
       - "8002:8000"
     env_file:
       - .env
+    environment:
+      - PICCOLO_CONF=piccolo_conf
     depends_on:
       postgres:
         condition: service_healthy
