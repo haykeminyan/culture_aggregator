@@ -11,11 +11,8 @@ services:
     volumes:
       - .:/app
     container_name: culture_aggregator
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DATABASE_URL=postgresql+asyncpg://admin:postgres@postgres:5432/culture_aggregator
-      - PICCOLO_CONF=piccolo_conf
-      - PYTHONPATH=/app
+    env_file:
+      - .env
     depends_on:
       - postgres
     networks:
@@ -25,10 +22,8 @@ services:
   postgres:
     image: postgres:17.5
     container_name: postgres
-    environment:
-      POSTGRES_DB: culture_aggregator
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
