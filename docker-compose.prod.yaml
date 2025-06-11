@@ -7,7 +7,7 @@ services:
         ENV: production
     container_name: culture_aggregator
     ports:
-      - "8002:8000"
+      - "8000:8000"
     env_file:
       - .env
     environment:
