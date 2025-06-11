@@ -16,19 +16,17 @@ sleep 5
 echo "Obtaining SSL certificates..."
 
 # Request or renew SSL certificates
-if [ ! -f "/etc/letsencrypt/live/baregorc.com/fullchain.pem" ]; then
-  echo "Obtaining SSL certificate for baregorc.com, www.baregorc.com, flower.baregorc.com, and docs.baregorc.com..."
+if [ ! -f "/etc/letsencrypt/live/travelculturehub.com/fullchain.pem" ]; then
+  echo "Obtaining SSL certificate for travelculturehub.com, www.travelculturehub.com, flower.travelculturehub.com, and docs.travelculturehub.com..."
   certbot --nginx \
-    -d baregorc.com \
-    -d www.baregorc.com \
-    -d flower.baregorc.com \
-    -d docs.baregorc.com \
+    -d travelculturehub.com \
+    -d www.travelculturehub.com \
     --email ibhayk@gmail.com \
     --agree-tos \
     --no-eff-email \
     --non-interactive
 else
-  echo "Certificate for baregorc.com already exists."
+  echo "Certificate for travelculturehub.com already exists."
 fi
 
 # Check if both succeeded
