@@ -59,7 +59,7 @@ services:
     entrypoint: >
       sh -c "certbot certonly --webroot --webroot-path=/usr/share/nginx/html
       --email ibhayk@gmail.com --agree-tos --no-eff-email
-      -d yourdomain.com && echo 'Certificates obtained.'"
+      -d travelculturehub.com && echo 'Certificates obtained.'"
     networks:
       - culture_aggregator_network
 
