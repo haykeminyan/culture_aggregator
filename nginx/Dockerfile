@@ -5,7 +5,8 @@ RUN apt-get update -y && \
     apt-get install --reinstall nginx -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
+RUN apk update && \
+    apk add certbot certbot-nginx curl bash
 # Install Certbot and Nginx plugin for Certbot
 RUN apt-get update -y && \
     apt-get install -y certbot python3-certbot-nginx cron && \
