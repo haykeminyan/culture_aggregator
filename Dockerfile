@@ -6,8 +6,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 FROM base as build
 COPY . .
 
-# Ensure entrypoint is executable
-RUN chmod +x entrypoint.sh
-
-# Default command
-CMD ["./entrypoint.sh"]
+CMD ["uvicorn", "main_server:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]

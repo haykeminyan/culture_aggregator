@@ -28,6 +28,7 @@ EXPOSE 80 443
 # Copy the entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+RUN apk add certbot certbot-nginx
 
 # Use the custom entrypoint script to manage Nginx and Certbot
 ENTRYPOINT ["/entrypoint.sh"]
