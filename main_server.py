@@ -85,17 +85,26 @@ async def protected_redoc(request: Request):
         """,
     )
 
-CSRF_CONFIG = {
-    "cookie_name": "csrftoken",
-    "header_name": "X-CSRFToken",
-    "verify_referer": False,  # Отключить проверку Referer/Origin
-}
-app.add_middleware(
-    CSRFMiddleware,
-    cookie_name="csrftoken",
-    header_name="X-CSRFToken",
-    verify_referer=False,  # <== важный флаг
-)
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+class DisableRefererOriginCheckMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Удаляем заголовки Origin и Referer из заголовков запроса
+        headers = request.headers.mutablecopy()
+        if 'origin' in headers:
+            del headers['origin']
+        if 'referer' in headers:
+            del headers['referer']
+
+        # Патчим request._headers (на самом деле internal API, но работает)
+        request._headers = headers
+
+        response = await call_next(request)
+        return response
+
+# Добавляешь middleware так:
+app.add_middleware(DisableRefererOriginCheckMiddleware)
 
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 app.add_middleware(SessionMiddleware, secret_key='super-secret')
