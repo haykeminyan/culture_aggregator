@@ -115,7 +115,6 @@ app.add_middleware(
 )
 app.add_middleware(
     CSRFMiddleware,
-    verify_origin=False  # Отключает проверку Origin/Referer
 )
 # app.add_middleware(CSRFMiddleware)
 
