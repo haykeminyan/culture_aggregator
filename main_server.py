@@ -122,10 +122,10 @@ app.include_router(exhibition_router_view)
 app.include_router(exhibition_router_view, prefix='/categories')
 app.include_router(exhibition_router_view, prefix='/exhibitions')
 app.include_router(admin_router_api, prefix='/admin_api')
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # путь к файлу main_server.py, например /app
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # /root/culture_aggregator
 STATIC_DIR = os.path.join(BASE_DIR, 'ui', 'static')
 
-print("STATIC_DIR =", STATIC_DIR)  # отладка
+print("STATIC_DIR =", STATIC_DIR)  # для отладки
 
 app.mount('/static/', StaticFiles(directory=STATIC_DIR), name='static')
 
