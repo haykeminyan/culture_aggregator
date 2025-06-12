@@ -50,6 +50,25 @@ services:
     networks:
       - culture_aggregator_network
 
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/certs:/etc/letsencrypt
+      - ./nginx/html:/usr/share/nginx/html
+    command: certonly --webroot --webroot-path=/usr/share/nginx/html --email your-email@example.com --agree-tos --no-eff-email -d travelculturehub.com -d www.travelculturehub.com
+    networks:
+      - culture_aggregator_network
+
+  certbot-renew:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/certs:/etc/letsencrypt
+      - ./nginx/html:/usr/share/nginx/html
+    command: renew --quiet --post-hook "nginx -s reload"
+    networks:
+      - culture_aggregator_network
+
+
 
 networks:
   culture_aggregator_network:
