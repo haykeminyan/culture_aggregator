@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 UPLOAD_DIR = 'ui/static/exhibitions/exhibition_pictures'
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-router = APIRouter(prefix='/custom_admin')
+router = APIRouter(prefix='/custom_admin', dependencies=[Depends(auth_dependency_router)])
 
 
 
