@@ -3,6 +3,6 @@
 }
 
 https://travelculturehub.com:8443 {
-    tls /certs/fullchain.pem /certs/privkey.pem
+    tls /etc/letsencrypt/live/travelculturehub.com/fullchain.pem /etc/letsencrypt/live/travelculturehub.com/privkey.pem
     reverse_proxy culture_aggregator:8002
 }

@@ -44,7 +44,7 @@ services:
       - "8443:8443/udp" # UDP для HTTP/3
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - /etc/letsencrypt/live/travelculturehub.com:/certs:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     networks:
       - culture_aggregator_network
 
