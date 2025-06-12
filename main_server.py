@@ -64,17 +64,15 @@ STATIC_DIR = "/app/ui/static"
 
 # ------------------ Middleware ------------------
 
-class DisableRefererOriginCheckMiddleware(BaseHTTPMiddleware):
+class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: StarletteRequest, call_next):
-        headers = [
-            (name, value)
-            for name, value in request.scope["headers"]
-            if name.lower() not in (b"origin", b"referer")
-        ]
-        request.scope["headers"] = headers
-        return await call_next(request)
+        origin = request.headers.get("origin")
+        referer = request.headers.get("referer")
+        logger.info(f"Origin: {origin}, Referer: {referer}")
+        response = await call_next(request)
+        return response
 
-app.add_middleware(DisableRefererOriginCheckMiddleware)
+app.add_middleware(LoggingMiddleware)
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.add_middleware(
