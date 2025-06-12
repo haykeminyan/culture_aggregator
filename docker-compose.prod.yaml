@@ -43,11 +43,9 @@ services:
       - "8443:443"
       - "8443:443/udp"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/certs:/etc/letsencrypt
-      - ./ui/static:/app/ui/static
-      - /etc/letsencrypt/live/travelculturehub.com:/etc/letsencrypt/live/travelculturehub.com:ro
-      - /etc/letsencrypt/archive:/etc/letsencrypt/archive:ro
+      - ./nginx:/etc/nginx   # Mount Nginx config
+      - ./nginx_logs:/var/log/nginx
+      - ./letsencrypt:/etc/letsencrypt  # Mount Certbot certificates
     depends_on:
       - culture_aggregator
     networks:
