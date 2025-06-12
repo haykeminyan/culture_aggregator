@@ -1,8 +1,0 @@
-:8081 {
-    redir https://{host}:8443{uri}
-}
-
-https://travelculturehub.com:8443 {
-    tls /etc/letsencrypt/live/travelculturehub.com/fullchain.pem /etc/letsencrypt/live/travelculturehub.com/privkey.pem
-    reverse_proxy culture_aggregator:8002
-}
