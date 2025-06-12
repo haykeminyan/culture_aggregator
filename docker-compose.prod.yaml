@@ -68,15 +68,6 @@ services:
     networks:
       - culture_aggregator_network
 
-  certbot-renew:
-    image: certbot/certbot
-    volumes:
-      - ./nginx/certs:/etc/letsencrypt
-      - ./nginx/html:/usr/share/nginx/html
-    command: >
-      renew --quiet --no-self-upgrade
-    networks:
-      - culture_aggregator_network
 
 
 

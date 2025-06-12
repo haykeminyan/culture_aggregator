@@ -19,4 +19,4 @@ DROP TABLE IF EXISTS exhibition_media CASCADE;
 DROP TABLE IF EXISTS exhibition_meta CASCADE;
 
 
-docker compose -f docker-compose.prod.yaml run --rm certbot-rene
+docker compose -f docker-compose.prod.yaml run --rm certbot certonly --webroot --webroot-path=/usr/share/nginx/html --email ibhayk@gmail.com --agree-tos --no-eff-email -d travelculturehub.com -d www.travelculturehub.com --non-interactive --keep-until-expiring
