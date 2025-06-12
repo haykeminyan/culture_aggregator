@@ -6,8 +6,9 @@ services:
       args:
         ENV: production
     container_name: culture_aggregator
-    ports:
-      - "8002:8000"
+    expose:
+      - "8002"  # доступно только внутри Docker-сети
+    ports: [ ]  # убери это
     env_file:
       - .env
     environment:
@@ -38,9 +39,9 @@ services:
     image: dasskelett/nginx-quic:latest
     container_name: nginx
     ports:
-      - "81:80"
-      - "444:443"
-      - "444:443/udp"
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/certs:/etc/letsencrypt
