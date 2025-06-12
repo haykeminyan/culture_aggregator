@@ -90,20 +90,18 @@ from starlette.requests import Request
 
 class DisableRefererOriginCheckMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        # Удаляем заголовки Origin и Referer из заголовков запроса
-        headers = request.headers.mutablecopy()
-        if 'origin' in headers:
-            del headers['origin']
-        if 'referer' in headers:
-            del headers['referer']
-
-        # Патчим request._headers (на самом деле internal API, но работает)
-        request._headers = headers
+        # scope["headers"] — список кортежей (байты)
+        headers = [
+            (name, value)
+            for name, value in request.scope["headers"]
+            if name.lower() not in (b"origin", b"referer")
+        ]
+        request.scope["headers"] = headers  # заменяем заголовки
 
         response = await call_next(request)
         return response
 
-# Добавляешь middleware так:
+# Добавление middleware
 app.add_middleware(DisableRefererOriginCheckMiddleware)
 
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
