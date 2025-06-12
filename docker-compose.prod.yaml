@@ -55,11 +55,16 @@ services:
     volumes:
       - ./nginx/certs:/etc/letsencrypt
       - ./nginx/html:/usr/share/nginx/html
-    command: certonly --webroot --webroot-path=/usr/share/nginx/html \
-             --email ibhayk@gmail.com \
-             --agree-tos --no-eff-email \
-             -d travelculturehub.com -d www.travelculturehub.com \
-             --non-interactive --keep-until-expiring
+    command: >
+      certonly --webroot
+      --webroot-path=/usr/share/nginx/html
+      --email ibhayk@gmail.com
+      --agree-tos
+      --no-eff-email
+      -d travelculturehub.com
+      -d www.travelculturehub.com
+      --non-interactive
+      --keep-until-expiring
     networks:
       - culture_aggregator_network
 
@@ -68,7 +73,8 @@ services:
     volumes:
       - ./nginx/certs:/etc/letsencrypt
       - ./nginx/html:/usr/share/nginx/html
-    command: renew --quiet --post-hook "nginx -s reload"
+    command: >
+      renew --quiet --no-self-upgrade --post-hook "nginx -s reload"
     networks:
       - culture_aggregator_network
 
