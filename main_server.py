@@ -95,6 +95,7 @@ app.add_middleware(
     allow_headers=['*'],
 )
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+app.add_middleware(CSRFMiddleware)
 
 # ✅ Admin
 admin = create_admin(
