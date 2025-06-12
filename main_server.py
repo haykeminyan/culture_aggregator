@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
 from piccolo_api.csrf.middleware import CSRFMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from api.core.templates import templates
 from fastapi import Form
@@ -92,6 +93,7 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 # ✅ Admin
 admin = create_admin(
