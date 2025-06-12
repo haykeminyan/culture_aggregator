@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime
 
 import pytz
@@ -121,7 +122,10 @@ app.include_router(exhibition_router_view)
 app.include_router(exhibition_router_view, prefix='/categories')
 app.include_router(exhibition_router_view, prefix='/exhibitions')
 app.include_router(admin_router_api, prefix='/admin_api')
-app.mount('/static/', StaticFiles(directory='ui/static/'), name='static')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, 'ui', 'static')
+
+app.mount('/static/', StaticFiles(directory=STATIC_DIR), name='static')
 
 # ✅ PubSub & GraphQL
 
