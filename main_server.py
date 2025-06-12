@@ -85,7 +85,23 @@ async def protected_redoc(request: Request):
         """,
     )
 
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 
+class DisableRefererOriginCheckMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Удаляем заголовки Origin и Referer перед обработкой
+        headers = request.headers.mutablecopy()
+        headers.pop('origin', None)
+        headers.pop('referer', None)
+
+        request._headers = headers  # принудительно меняем заголовки (возможно зависит от версии starlette)
+
+        response = await call_next(request)
+        return response
+
+app.add_middleware(DisableRefererOriginCheckMiddleware)
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 app.add_middleware(SessionMiddleware, secret_key='super-secret')
 app.add_middleware(
