@@ -122,8 +122,10 @@ app.include_router(exhibition_router_view)
 app.include_router(exhibition_router_view, prefix='/categories')
 app.include_router(exhibition_router_view, prefix='/exhibitions')
 app.include_router(admin_router_api, prefix='/admin_api')
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, 'ui', 'static')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # допустим, /app/api
+PROJECT_ROOT = os.path.dirname(BASE_DIR)              # тогда /app
+
+STATIC_DIR = os.path.join(PROJECT_ROOT, 'ui', 'static')
 
 app.mount('/static/', StaticFiles(directory=STATIC_DIR), name='static')
 
