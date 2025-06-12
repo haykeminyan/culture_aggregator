@@ -46,7 +46,8 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
-      - ./nginx/certs:/etc/letsencrypt
+      - /etc/letsencrypt/live/travelculturehub.com/fullchain.pem:/certs/fullchain.pem:ro
+      - /etc/letsencrypt/live/travelculturehub.com/privkey.pem:/certs/privkey.pem:ro
     networks:
       - culture_aggregator_network
 

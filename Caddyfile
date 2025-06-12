@@ -2,7 +2,7 @@
     redir https://{host}:8443{uri}
 }
 
-:8443 {
-    tls /etc/letsencrypt/live/travelculturehub.com/fullchain.pem /etc/letsencrypt/live/travelculturehub.com/privkey.pem
+https://travelculturehub.com:8443 {
+    tls /certs/fullchain.pem /certs/privkey.pem
     reverse_proxy culture_aggregator:8002
 }
