@@ -85,31 +85,19 @@ async def protected_redoc(request: Request):
         """,
     )
 
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
+CSRF_CONFIG = {
+    "cookie_name": "csrftoken",
+    "header_name": "X-CSRFToken",
+    "verify_referer": False,  # Отключить проверку Referer/Origin
+}
+app.add_middleware(
+    CSRFMiddleware,
+    secret="super-secret",
+    cookie_name="csrftoken",
+    header_name="X-CSRFToken",
+    verify_referer=False,  # <== важный флаг
+)
 
-class DisableRefererOriginCheckMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        headers = request.headers.mutablecopy()
-
-        if 'origin' in headers:
-            del headers['origin']
-        if 'referer' in headers:
-            del headers['referer']
-
-        # Теперь заголовки без Origin и Referer — но как их подменить в request?
-
-        # В starlette  и fastapi Request.headers — readonly, менять нельзя напрямую,
-        # Поэтому сам подход не сработает, если CSRF-мидлварь читает request.headers
-
-        # Можно попробовать положить headers в scope
-        # Но это хак и не рекомендуется.
-
-        response = await call_next(request)
-        return response
-
-
-app.add_middleware(DisableRefererOriginCheckMiddleware)
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 app.add_middleware(SessionMiddleware, secret_key='super-secret')
 app.add_middleware(
