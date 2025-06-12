@@ -6,9 +6,8 @@ services:
       args:
         ENV: production
     container_name: culture_aggregator
-    expose:
-      - "8002"  # доступно только внутри Docker-сети
-    ports: [ ]  # убери это
+    ports:
+      - "8002:8000"
     env_file:
       - .env
     environment:
@@ -32,24 +31,6 @@ services:
       retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - charity_aggregator_network
-
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./nginx/certs:/etc/letsencrypt
-      - ./nginx/html:/usr/share/nginx/html
-    command: >
-      certonly --webroot
-      --webroot-path=/usr/share/nginx/html
-      --email ibhayk@gmail.com
-      --agree-tos
-      --no-eff-email
-      -d travelculturehub.com
-      -d www.travelculturehub.com
-      --non-interactive
-      --keep-until-expiring
     networks:
       - charity_aggregator_network
 
