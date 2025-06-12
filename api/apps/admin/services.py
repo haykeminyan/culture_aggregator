@@ -19,6 +19,7 @@ from api.apps.exhibitions.models import (
     ExhibitionOrganizer,
     ExhibitionPrice,
 )
+from markdown import markdown
 
 logger = logging.getLogger(__name__)
 
@@ -311,7 +312,7 @@ class AdminService:
             ExhibitionDetail.id == exhibition.detail,
         )
         if details_obj:
-            details_obj.description = details
+            details_obj.description = markdown(details)
             await details_obj.save()
 
         await exhibition.save()

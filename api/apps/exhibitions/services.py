@@ -5,6 +5,7 @@ from fastapi import Query
 from starlette.exceptions import HTTPException
 
 from api.apps.exhibitions.models import Exhibition, ExhibitionCategory
+from markdown import markdown
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +88,7 @@ class ExhibitionService:
             )
             .first()
         )
+        exhibition.detail = markdown(exhibition.detail.to_dict()['description'])
         if not exhibition:
             raise HTTPException(status_code=404, detail='Exhibition not found')
 

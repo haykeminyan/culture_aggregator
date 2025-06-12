@@ -108,6 +108,7 @@
                                multiple
                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                         <div id="images-container">
+                            {%if exhibition.media.images%}
   {% for image in exhibition.media.images %}
   <div class="image-wrapper relative w-24 h-24 rounded overflow-hidden border-2 border-transparent hover:border-indigo-500 cursor-move">
     <img src="/static/{{ image }}" data-image="{{ image }}" class="sortable-image w-full h-full object-cover" />
@@ -118,7 +119,9 @@
     </button>
   </div>
   {% endfor %}
+                                   {%endif%}
 </div>
+
 
 <input type="hidden" name="remaining_images" id="remaining_images_input" />
 

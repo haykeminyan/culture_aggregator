@@ -51,7 +51,6 @@ async def delete_html(request: Request, slug: str):
 async def get_by_slug_html(request: Request, slug: str):
     context = await ExhibitionService.get_by_slug(slug)
     context['request'] = request
-    logger.error(context)
     return templates.TemplateResponse('exhibitions/detail.html', context)
 
 
