@@ -113,6 +113,11 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+app.add_middleware(
+    CSRFMiddleware,
+    secret="super-secret",
+    verify_origin=False  # Отключает проверку Origin/Referer
+)
 # app.add_middleware(CSRFMiddleware)
 
 # ✅ Admin
