@@ -128,15 +128,7 @@ async def protected_redoc(request: Request):
 app.mount('/static/', StaticFiles(directory=STATIC_DIR), name='static')
 
 # Admin
-admin = create_admin(
-    tables=[
-        Exhibition, ExhibitionGeo, ExhibitionDetail, ExhibitionContact,
-        ExhibitionCategory, ExhibitionPrice, ExhibitionTag,
-        ExhibitionTagLink, ExhibitionMedia, AdminUser,
-    ],
-    auth_table=AdminUser,
-    session_table=Sessions,
-)
+
 admin = create_admin(
     tables=[
         Exhibition, ExhibitionGeo, ExhibitionDetail, ExhibitionContact,
