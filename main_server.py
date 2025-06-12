@@ -108,7 +108,7 @@ app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 app.add_middleware(SessionMiddleware, secret_key='super-secret')
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['http://127.0.0.1:8000', 'https://travelculturehub.com', 'https://www.travelculturehub.com'],
+    allow_origins=['http://127.0.0.1:8002', 'https://travelculturehub.com', 'https://www.travelculturehub.com'],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
