@@ -7,7 +7,6 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
-from piccolo_api.csrf.middleware import CSRFMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from piccolo.utils.sync import run_sync
 from piccolo_admin.endpoints import create_admin
@@ -86,7 +85,6 @@ app.add_middleware(
     allow_headers=['*'],
 )
 # Optional: Enable if you use forms
-# app.add_middleware(CSRFMiddleware)
 
 # ------------------------------------------------
 
@@ -139,6 +137,24 @@ admin = create_admin(
     auth_table=AdminUser,
     session_table=Sessions,
 )
+admin = create_admin(
+    tables=[
+        Exhibition, ExhibitionGeo, ExhibitionDetail, ExhibitionContact,
+        ExhibitionCategory, ExhibitionPrice, ExhibitionTag,
+        ExhibitionTagLink, ExhibitionMedia, AdminUser,
+    ],
+    auth_table=AdminUser,
+    session_table=Sessions,
+    allowed_hosts=[
+        "localhost",
+        "127.0.0.1",
+        "travelculturehub.com",
+        "www.travelculturehub.com",
+        "travelculture.baregorc.com",
+        "www.travelculture.baregorc.com",
+    ],
+)
+
 app.mount('/admin/', admin)
 
 # REST Routers
