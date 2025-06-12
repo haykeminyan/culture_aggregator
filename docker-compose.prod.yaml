@@ -17,8 +17,8 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - culture_aggregator_network
-    command: uvicorn main_server:app --host 0.0.0.0 --port 8002 --reload
+      - charity_aggregator_network
+    command: uvicorn main_server:app --host 0.0.0.0 --port 8002
 
   postgres:
     image: postgres:17.5
@@ -33,23 +33,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - culture_aggregator_network
-
-  nginx:
-    image: dasskelett/nginx-quic:latest
-    container_name: nginx
-    ports:
-      - "8082:80"
-      - "8443:443"
-      - "8443:443/udp"
-    volumes:
-      - ./nginx:/etc/nginx   # Mount Nginx config
-      - ./nginx_logs:/var/log/nginx
-      - ./letsencrypt:/etc/letsencrypt  # Mount Certbot certificates
-    depends_on:
-      - culture_aggregator
-    networks:
-      - culture_aggregator_network
+      - charity_aggregator_network
 
   certbot:
     image: certbot/certbot
@@ -67,14 +51,12 @@ services:
       --non-interactive
       --keep-until-expiring
     networks:
-      - culture_aggregator_network
-
-
+      - charity_aggregator_network
 
 
 networks:
-  culture_aggregator_network:
-    driver: bridge
+  charity_aggregator_network:
+    external: true
 
 volumes:
   postgres_data:
