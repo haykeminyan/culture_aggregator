@@ -38,9 +38,9 @@ services:
     image: dasskelett/nginx-quic:latest
     container_name: nginx
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - "81:80"
+      - "444:443"
+      - "444:443/udp"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/certs:/etc/letsencrypt
