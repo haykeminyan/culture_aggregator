@@ -86,6 +86,7 @@ async def protected_redoc(request: Request):
     )
 
 
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 app.add_middleware(SessionMiddleware, secret_key='super-secret')
 app.add_middleware(
     CORSMiddleware,
@@ -94,7 +95,6 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
-app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 app.add_middleware(CSRFMiddleware)
 
 # ✅ Admin
