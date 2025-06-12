@@ -92,7 +92,6 @@ CSRF_CONFIG = {
 }
 app.add_middleware(
     CSRFMiddleware,
-    secret="super-secret",
     cookie_name="csrftoken",
     header_name="X-CSRFToken",
     verify_referer=False,  # <== важный флаг
