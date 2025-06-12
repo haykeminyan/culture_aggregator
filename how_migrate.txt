@@ -17,3 +17,6 @@ DROP TABLE IF EXISTS exhibition_details CASCADE;
 DROP TABLE IF EXISTS exhibition_geo CASCADE;
 DROP TABLE IF EXISTS exhibition_media CASCADE;
 DROP TABLE IF EXISTS exhibition_meta CASCADE;
+
+
+docker compose -f docker-compose.prod.yaml run --rm certbot-rene

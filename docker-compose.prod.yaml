@@ -74,7 +74,7 @@ services:
       - ./nginx/certs:/etc/letsencrypt
       - ./nginx/html:/usr/share/nginx/html
     command: >
-      renew --quiet --no-self-upgrade --post-hook "docker exec nginx nginx -s reload"
+      renew --quiet --no-self-upgrade
     networks:
       - culture_aggregator_network
 
