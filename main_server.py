@@ -122,10 +122,7 @@ app.include_router(exhibition_router_view)
 app.include_router(exhibition_router_view, prefix='/categories')
 app.include_router(exhibition_router_view, prefix='/exhibitions')
 app.include_router(admin_router_api, prefix='/admin_api')
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # /root/culture_aggregator
-STATIC_DIR = os.path.join(BASE_DIR, 'ui', 'static')
-
-print("STATIC_DIR =", STATIC_DIR)  # для отладки
+STATIC_DIR = "/app/ui/static"
 
 app.mount('/static/', StaticFiles(directory=STATIC_DIR), name='static')
 
