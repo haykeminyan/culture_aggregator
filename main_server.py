@@ -9,20 +9,22 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
 from piccolo_api.csrf.middleware import CSRFMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
-
-from api.core.templates import templates
-from fastapi import Form
 from piccolo.utils.sync import run_sync
 from piccolo_admin.endpoints import create_admin
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.status import HTTP_302_FOUND
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request as StarletteRequest
 from strawberry.fastapi import GraphQLRouter
 from strawberry.subscriptions import GRAPHQL_TRANSPORT_WS_PROTOCOL
+from dotenv import load_dotenv
 
+# Routers and models
 from api.apps.admin.api import router as admin_router_api
 from api.apps.admin.views import router as custom_admin_router_api
 from api.apps.exhibitions.api import router as exhibition_router_api
+from api.apps.exhibitions.views import router as exhibition_router_view
 from api.apps.exhibitions.graphql.schema import schema
 from api.apps.exhibitions.models import (
     Exhibition,
@@ -35,42 +37,82 @@ from api.apps.exhibitions.models import (
     ExhibitionTag,
     ExhibitionTagLink,
 )
-from api.apps.exhibitions.views import router as exhibition_router_view
 from api.apps.users.models import AdminUser, Sessions
 
+# Logging setup
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Load env variables
+load_dotenv()
 
-# ✅ Приложение
+# App
 app = FastAPI(docs_url=None, redoc_url=None)
 
+# -------------------- Config --------------------
+SECRET_KEY = os.environ.get("SECRET_KEY", "super-secret")
+ALLOWED_ORIGINS = [
+    'http://127.0.0.1:8002',
+    'http://localhost:8002',
+    'https://travelculturehub.com',
+    'https://www.travelculturehub.com',
+    'https://travelculture.baregorc.com',
+    'https://www.travelculture.baregorc.com'
+]
+STATIC_DIR = "/app/ui/static"
+# ------------------------------------------------
 
-def user_is_authenticated(request):
+
+# ------------------ Middleware ------------------
+
+class DisableRefererOriginCheckMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: StarletteRequest, call_next):
+        headers = [
+            (name, value)
+            for name, value in request.scope["headers"]
+            if name.lower() not in (b"origin", b"referer")
+        ]
+        request.scope["headers"] = headers
+        return await call_next(request)
+
+app.add_middleware(DisableRefererOriginCheckMiddleware)
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
+# Optional: Enable if you use forms
+# app.add_middleware(CSRFMiddleware)
+
+# ------------------------------------------------
+
+
+# ------------------- Routes ---------------------
+
+def user_is_authenticated(request: Request):
     session_id = request.cookies.get('id')
     if not session_id:
         return False
-
     session = run_sync(
-        Sessions.objects().where(Sessions.token == session_id).first().run(),
+        Sessions.objects().where(Sessions.token == session_id).first().run()
     )
     return session is not None and not session.has_expired
-
 
 @app.get('/docs', include_in_schema=False)
 async def protected_docs(request: Request):
     if not user_is_authenticated(request):
         return RedirectResponse(url='/admin/', status_code=HTTP_302_FOUND)
-
     return get_swagger_ui_html(openapi_url=app.openapi_url, title='Docs')
-
 
 @app.get('/redoc', include_in_schema=False)
 async def protected_redoc(request: Request):
     if not user_is_authenticated(request):
         return RedirectResponse(url='/admin/', status_code=HTTP_302_FOUND)
-
-    return HTMLResponse(
-        f"""
+    return HTMLResponse(f"""
         <!DOCTYPE html>
         <html>
           <head>
@@ -82,76 +124,37 @@ async def protected_redoc(request: Request):
             <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
           </body>
         </html>
-        """,
-    )
+    """)
 
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
+# Static
+app.mount('/static/', StaticFiles(directory=STATIC_DIR), name='static')
 
-class DisableRefererOriginCheckMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        # scope["headers"] — список кортежей (байты)
-        headers = [
-            (name, value)
-            for name, value in request.scope["headers"]
-            if name.lower() not in (b"origin", b"referer")
-        ]
-        request.scope["headers"] = headers  # заменяем заголовки
-
-        response = await call_next(request)
-        return response
-
-# Добавление middleware
-app.add_middleware(DisableRefererOriginCheckMiddleware)
-
-app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
-app.add_middleware(SessionMiddleware, secret_key='super-secret')
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['http://127.0.0.1:8002', 'http://localhost:8002', 'https://travelculturehub.com', 'https://www.travelculturehub.com'],
-    allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*'],
-)
-
-# app.add_middleware(CSRFMiddleware)
-
-# ✅ Admin
+# Admin
 admin = create_admin(
     tables=[
-        Exhibition,
-        ExhibitionGeo,
-        ExhibitionDetail,
-        ExhibitionContact,
-        ExhibitionCategory,
-        ExhibitionPrice,
-        ExhibitionTag,
-        ExhibitionTagLink,
-        ExhibitionMedia,
-        AdminUser,
+        Exhibition, ExhibitionGeo, ExhibitionDetail, ExhibitionContact,
+        ExhibitionCategory, ExhibitionPrice, ExhibitionTag,
+        ExhibitionTagLink, ExhibitionMedia, AdminUser,
     ],
     auth_table=AdminUser,
     session_table=Sessions,
 )
 app.mount('/admin/', admin)
-app.include_router(exhibition_router_api)
 
-# ✅ Static & Routers
+# REST Routers
 app.include_router(custom_admin_router_api)
 app.include_router(exhibition_router_view)
 app.include_router(exhibition_router_view, prefix='/categories')
 app.include_router(exhibition_router_view, prefix='/exhibitions')
+app.include_router(exhibition_router_api)
 app.include_router(admin_router_api, prefix='/admin_api')
-STATIC_DIR = "/app/ui/static"
 
-app.mount('/static/', StaticFiles(directory=STATIC_DIR), name='static')
-
-# ✅ PubSub & GraphQL
-
+# GraphQL
 graphql_app = GraphQLRouter(
     schema,
     subscription_protocols=[GRAPHQL_TRANSPORT_WS_PROTOCOL],
-    graphiql=True,
+    graphiql=True,  # Set to False in production
 )
-
 app.include_router(graphql_app, prefix='/graphql')
+
+# ------------------------------------------------
