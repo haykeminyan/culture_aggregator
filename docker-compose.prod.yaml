@@ -13,13 +13,13 @@ services:
     environment:
       - PICCOLO_CONF=piccolo_conf
     depends_on:
-      postgres:
+      postgres_data_culture:
         condition: service_healthy
     networks:
       - charity_aggregator_network
     command: uvicorn main_server:app --host 0.0.0.0 --port 8002
 
-  postgres:
+  postgres_data_culture:
     image: postgres:17.5
     container_name: postgres
     env_file:
@@ -30,7 +30,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_culture:/var/lib/postgresql/data
     networks:
       - charity_aggregator_network
 
@@ -40,4 +40,4 @@ networks:
     external: true
 
 volumes:
-  postgres_data:
+  postgres_data_culture:
