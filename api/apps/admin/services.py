@@ -31,6 +31,11 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 class AdminService:
     @staticmethod
     async def check_unique_category_title_slug(title: str, slug: str) -> CategoryDict:
+        if not title:
+            raise HTTPException(status_code=400, detail='Please provide a title')
+        if not slug:
+            raise HTTPException(status_code=400, detail='Please provide a slug for a title')
+
         existing_title = (
             await ExhibitionCategory.select().where(ExhibitionCategory.title == title).first()
         )
@@ -132,14 +137,16 @@ class AdminService:
         # 1. Обработка загруженных изображений
         if images:
             for image in images:
-                try:
-                    filename = os.path.join(UPLOAD_DIR, image.filename)
-                    with open(filename, 'wb') as buffer:
-                        buffer.write(await image.read())
-                    relative_path = os.path.relpath(filename, 'ui/static')
-                    saved_paths.append(relative_path)
-                except AttributeError:
-                    pass
+                if image.filename:
+                    try:
+                        filename = os.path.join(UPLOAD_DIR, image.filename)
+                        if filename:
+                            with open(filename, 'wb') as buffer:
+                                buffer.write(await image.read())
+                            relative_path = os.path.relpath(filename, 'ui/static')
+                            saved_paths.append(relative_path)
+                    except AttributeError:
+                        pass
 
         # 2. Если нет изображений — используем дефолтное
         if not saved_paths:

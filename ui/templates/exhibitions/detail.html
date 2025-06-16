@@ -53,6 +53,7 @@
                 {% for tag in tags %}<span class="tag">{{ tag.tag }}</span>{% endfor %}
             </div>
             <!-- Sidebar -->
+            {% if organizer.name or price.price or contact.instagram or contact.linkedin or contact.website %}
             <aside class="col-span-1 sticky top-4">
                 <div class="organizer-card">
                     {% if  organizer.name %}<h3>Organizer: {{ organizer.name }}</h3>{% endif %}
@@ -77,5 +78,6 @@
                     </ul>
                 </div>
             </aside>
+            {%endif%}
         </section>
     {% endblock %}
