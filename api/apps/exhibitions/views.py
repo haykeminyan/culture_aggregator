@@ -16,7 +16,7 @@ router = APIRouter(prefix='', tags=['Exhibitions Views'])
 async def get_all_html(
     request: Request,
     search: str = Query('', alias='search'),
-    limit: int = Query(10),
+    limit: int = Query(4),
     offset: int = Query(0),
 ):
     service = ExhibitionService(limit, offset, search)
@@ -62,7 +62,7 @@ async def get_by_slug_html(request: Request, slug: str):
 async def get_by_category_html(
     request: Request,
     category_slug: str,
-    limit: int = Query(10),
+    limit: int = Query(4),
     offset: int = Query(0),
     search: str = Query('', alias='search'),
 ):
@@ -92,7 +92,7 @@ async def get_by_date_api(
     request: Request,
     from_date: str = Query(...),
     until_date: str = Query(...),
-    limit: int = Query(10),
+    limit: int = Query(4),
     offset: int = Query(0),
 ):
     exhibitions = await ExhibitionService.get_exhibition_by_dates(from_date, until_date)

@@ -11,7 +11,7 @@ router = APIRouter(prefix='/api', tags=['Exhibitions API'])
 
 @router.get('/')
 async def get_all_json(
-    limit: int = Query(10),
+    limit: int = Query(4),
     offset: int = Query(0),
 ):
     return await ExhibitionService(limit, offset).get_all()
