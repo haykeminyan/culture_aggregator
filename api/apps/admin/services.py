@@ -139,12 +139,14 @@ class AdminService:
             for image in images:
                 if image.filename:
                     try:
-                        filename = os.path.join(UPLOAD_DIR, image.filename)
-                        if filename:
-                            with open(filename, 'wb') as buffer:
-                                buffer.write(await image.read())
-                            relative_path = os.path.relpath(filename, 'ui/static')
-                            saved_paths.append(relative_path)
+                        safe_filename = os.path.basename(image.filename)
+                        ext = os.path.splitext(safe_filename)[1]
+                        unique_name = f'{uuid.uuid4().hex}{ext}'
+                        filepath = os.path.join(UPLOAD_DIR, unique_name)
+                        with open(filepath, 'wb') as buffer:
+                            buffer.write(await image.read())
+                        relative_path = os.path.relpath(filepath, 'ui/static')
+                        saved_paths.append(relative_path)
                     except AttributeError:
                         pass
 
