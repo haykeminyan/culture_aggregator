@@ -8,6 +8,8 @@ services:
     container_name: culture_aggregator
     ports:
       - "8002:8000"
+    volumes:
+      - .:/app
     env_file:
       - .env
     environment:
