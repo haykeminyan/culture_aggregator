@@ -71,7 +71,7 @@ class Exhibition(ExhibitionMeta):
 
 class ExhibitionPrice(Table):
     price: Varchar = Varchar(length=100, null=True)
-    currency: Varchar = Varchar(length=100, null=True, default='AMD')
+    currency: Varchar = Varchar(length=100, null=True)
 
     def save(self, *args, **kwargs):
         self.currency = self.currency.upper()

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import Query
 from starlette.exceptions import HTTPException
 
-from api.apps.exhibitions.models import Exhibition, ExhibitionCategory
+from api.apps.exhibitions.models import Exhibition, ExhibitionCategory, ExhibitionGeo
 from markdown import markdown
 
 logger = logging.getLogger(__name__)
@@ -120,6 +120,58 @@ class ExhibitionService:
         categories = list(set(await ExhibitionCategory.objects()))
         categories.sort(key=lambda c: c.title, reverse=False)
         return categories
+
+    @staticmethod
+    async def get_by_country(country: str):
+        country = (
+            await ExhibitionGeo.objects()
+            .where(ExhibitionGeo.country == country)
+        )
+        country_ids = [geo['id'] for geo in country]
+
+        exhibitions = (
+            await Exhibition.objects()
+            .where(Exhibition.geo.is_in(country_ids))
+            .prefetch(Exhibition.media, Exhibition.category)
+        )
+        await ExhibitionService.insert_format_dates(context=exhibitions)
+
+        return [await ExhibitionService.insert_pictures(e) for e in exhibitions]
+
+    @staticmethod
+    async def get_countries():
+        countries = await ExhibitionGeo.objects()
+        country_unique = []
+        for elem in countries:
+            if elem.country not in country_unique:
+                country_unique.append(elem.country)
+        return sorted(country_unique)
+
+    @staticmethod
+    async def get_by_city(city: str):
+        city = (
+            await ExhibitionGeo.objects()
+            .where(ExhibitionGeo.city == city)
+        )
+        city_ids = [geo['id'] for geo in city]
+
+        exhibitions = (
+            await Exhibition.objects()
+            .where(Exhibition.geo.is_in(city_ids))
+            .prefetch(Exhibition.media, Exhibition.category)
+        )
+        await ExhibitionService.insert_format_dates(context=exhibitions)
+
+        return [await ExhibitionService.insert_pictures(e) for e in exhibitions]
+
+    @staticmethod
+    async def get_cities():
+        cities = await ExhibitionGeo.objects()
+        city_unique = []
+        for elem in cities:
+            if elem.city not in city_unique:
+                city_unique.append(elem.city)
+        return sorted(city_unique)
 
     @staticmethod
     async def format_dates(context):

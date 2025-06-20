@@ -9,6 +9,38 @@
                    value="{{ search }}"
                    placeholder="Search exhibitions..."
                    class="w-full border rounded px-4 py-2 shadow-sm" />
+            <div class="filter-section-country">
+                <span class="filter-label">Search with country</span>
+                <div class="country-filter flex gap-2 flex-wrap">
+                    {% for country in countries %}
+                    {% set url = '/country/' + country + '/' %}
+                        <a href="/country/{{ country }}/?{% if search %}search={{ search }}{% endif %}"
+                                  class="country block px-2 py-1 border rounded {% if request.url.path == url %}active{% endif %}">
+
+                            {{ country }}
+                        </a>
+
+                    {% endfor %}
+                        <a href="/exhibitions/?{% if search %}search={{ search }}{% endif %}"
+                           class="remove-btn ml-2 text-red-600 text-xl">×</a>
+                </div>
+            </div>
+                        <div class="filter-section-city">
+                <span class="filter-label">Search with city</span>
+                <div class="city-filter flex gap-2 flex-wrap">
+                    {% for city in cities %}
+                    {% set url = '/city/' + city + '/' %}
+                        <a href="/city/{{ city }}/?{% if search %}search={{ search }}{% endif %}"
+                                  class="city block px-2 py-1 border rounded {% if request.url.path == url %}active{% endif %}">
+
+                            {{ city }}
+                        </a>
+
+                    {% endfor %}
+                        <a href="/exhibitions/?{% if search %}search={{ search }}{% endif %}"
+                           class="remove-btn ml-2 text-red-600 text-xl">×</a>
+                </div>
+            </div>
             <div class="filter-section-categories">
                 <span class="filter-label">Search with categories</span>
                 <div class="category-filter flex gap-2 flex-wrap">
@@ -18,10 +50,8 @@
                             {{ category.title }}
                         </a>
                     {% endfor %}
-                    {% if category_slug %}
                         <a href="/exhibitions/?{% if search %}search={{ search }}{% endif %}"
                            class="remove-btn ml-2 text-red-600 text-xl">×</a>
-                    {% endif %}
                 </div>
             </div>
         </form>
