@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse
@@ -16,18 +17,36 @@ router = APIRouter(prefix='', tags=['Exhibitions Views'])
 async def get_all_html(
     request: Request,
     search: str = Query('', alias='search'),
+    country: Optional[str] = Query(None),
+    city: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
     limit: int = Query(4),
     offset: int = Query(0),
 ):
     service = ExhibitionService(limit, offset, search)
     data = await service.get_all()
 
+    if country:
+        data['exhibitions'] = await service.get_by_country(country)
+        data['total'] = len(data['exhibitions'])
+
+    if city:
+        data['exhibitions'] = await service.get_by_city(city)
+        data['total'] = len(data['exhibitions'])
+
+    if category:
+        data['exhibitions'] = await service.get_by_category(category)
+        data['total'] = len(data['exhibitions'])
+
     context = {
         'request': request,
         'exhibitions': data['exhibitions'],
         'categories': await service.get_categories(),
+        'selected_category':category,
         'countries': await service.get_countries(),
+        'selected_country': country,
         'cities': await service.get_cities(),
+        'selected_city': city,
         'search': search,
         **ExhibitionService.get_pagination_context(limit, offset, data['total']),
     }
@@ -54,68 +73,6 @@ async def get_by_slug_html(request: Request, slug: str):
     context = await ExhibitionService.get_by_slug(slug)
     context['request'] = request
     return templates.TemplateResponse('exhibitions/detail.html', context)
-
-
-@router.get(
-    '/categories/{category_slug}/',
-    response_class=HTMLResponse,
-    include_in_schema=False,
-)
-async def get_by_category_html(
-    request: Request,
-    category_slug: str,
-    limit: int = Query(4),
-    offset: int = Query(0),
-    search: str = Query('', alias='search'),
-):
-    exhibitions = await ExhibitionService.get_by_category(category_slug)
-    categories = await ExhibitionService.get_categories()
-    if search:
-        exhibitions = [e for e in exhibitions if search.lower() in e['title'].lower()]
-
-    total = len(exhibitions)
-    paginated_exhibitions = exhibitions[offset : offset + limit]
-
-    context = {
-        'exhibitions': paginated_exhibitions,
-        'request': request,
-        'categories': categories,
-        'category_slug': category_slug,
-        'search': search,
-        **ExhibitionService.get_pagination_context(limit, offset, total),
-    }
-
-    return templates.TemplateResponse('exhibitions/list.html', context)
-
-@router.get(
-    '/country/{country}/',
-    response_class=HTMLResponse,
-    include_in_schema=False,
-)
-async def get_by_country_html(
-    request: Request,
-    country: str,
-    limit: int = Query(4),
-    offset: int = Query(0),
-    search: str = Query('', alias='search'),
-):
-    exhibitions = await ExhibitionService.get_by_country(country)
-    countries = await ExhibitionService.get_countries()
-
-    if search:
-        exhibitions = [e for e in exhibitions if search.lower() in e['title'].lower()]
-
-    total = len(exhibitions)
-    paginated_exhibitions = exhibitions[offset : offset + limit]
-
-    context = {
-        'exhibitions': paginated_exhibitions,
-        'request': request,
-        'countries': countries,
-        'search': search,
-        **ExhibitionService.get_pagination_context(limit, offset, total),
-    }
-    return templates.TemplateResponse('exhibitions/list.html', context)
 
 @router.get(
     '/city/{city}/',

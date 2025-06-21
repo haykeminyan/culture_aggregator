@@ -132,7 +132,7 @@ class ExhibitionService:
         exhibitions = (
             await Exhibition.objects()
             .where(Exhibition.geo.is_in(country_ids))
-            .prefetch(Exhibition.media, Exhibition.category)
+            .prefetch(Exhibition.media, Exhibition.category, Exhibition.geo)
         )
         await ExhibitionService.insert_format_dates(context=exhibitions)
 
@@ -158,7 +158,7 @@ class ExhibitionService:
         exhibitions = (
             await Exhibition.objects()
             .where(Exhibition.geo.is_in(city_ids))
-            .prefetch(Exhibition.media, Exhibition.category)
+            .prefetch(Exhibition.media, Exhibition.category, Exhibition.geo)
         )
         await ExhibitionService.insert_format_dates(context=exhibitions)
 

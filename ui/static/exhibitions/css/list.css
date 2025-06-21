@@ -332,6 +332,11 @@ body {
   color: var(--categories-tags-text);
   border-color: #a1000f;
 }
+.city.active {
+  background-color: #8ac8f3;
+  color: var(--categories-tags-text);
+  border-color: #8ac8f3;
+}
 .category.active {
   background-color: #e19a00; /* blue */
   color: var(--categories-tags-text);
