@@ -40,7 +40,7 @@ class ExhibitionService:
                 Exhibition.detail,
                 Exhibition.contact,
                 Exhibition.media)
-        exhibitions = await query.offset(self.offset).limit(self.limit).order_by('-created_at')
+        exhibitions = await query.offset(self.offset).limit(self.limit).order_by('-created_at').all()
 
         result = [
             {

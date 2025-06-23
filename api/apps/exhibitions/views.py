@@ -39,7 +39,6 @@ async def get_all_html(
 
     total = len(exhibitions)
     exhibitions = exhibitions[offset : offset + limit]
-
     categories, countries, cities = await gather(
         service.get_categories(),
         service.get_countries(),
