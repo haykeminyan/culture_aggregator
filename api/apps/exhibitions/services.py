@@ -30,16 +30,15 @@ class ExhibitionService:
         query = (
             Exhibition.objects()
             .order_by(Exhibition.created_at, ascending=False)
-            .prefetch(
+        )
+        if filter_:
+            query = query.where(filter_)
+        query = query.prefetch(
                 Exhibition.geo,
                 Exhibition.category,
                 Exhibition.detail,
                 Exhibition.contact,
-                Exhibition.media,
-            )
-        )
-        if filter_:
-            query = query.where(filter_)
+                Exhibition.media)
         exhibitions = await query.offset(self.offset).limit(self.limit)
 
         result = [
