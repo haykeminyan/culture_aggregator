@@ -18,7 +18,7 @@
                 {{ country }}
             </a>
                     {% endfor %}
-                        <a href="/exhibitions/?{% if search %}search={{ search }}{% endif %}"
+                        <a href="/?{% if search %}search={{ search }}{% endif %}"
                            class="remove-btn ml-2 text-red-600 text-xl">×</a>
                 </div>
             </div>
@@ -32,7 +32,7 @@
             </a>
 
                     {% endfor %}
-                        <a href="/exhibitions/?{% if search %}search={{ search }}{% endif %}"
+                        <a href="/?{% if search %}search={{ search }}{% endif %}"
                            class="remove-btn ml-2 text-red-600 text-xl">×</a>
                 </div>
             </div>
@@ -45,21 +45,21 @@
                             {{ category.title }}
                         </a>
                     {% endfor %}
-                        <a href="/exhibitions/?{% if search %}search={{ search }}{% endif %}"
+                        <a href="/?{% if search %}search={{ search }}{% endif %}"
                            class="remove-btn ml-2 text-red-600 text-xl">×</a>
                 </div>
             </div>
-            <div class="filter-form">
-        <label for="from_date">From:</label>
-        <input type="date" id="from_date" name="from_date" required>
-        <label for="until_date">Until:</label>
-        <input type="date" id="until_date" name="until_date" required>
-        <button type="submit">Filter</button>
-        <a href="/" class="remove-btn">×</a>
-            </div>
         </form>
     </div>
+        <form action="{{ request.url.path }}" method="get" class="filter-form">
+  <label for="from_date">From:</label>
+  <input type="date" id="from_date" name="from_date" required>
 
+  <label for="until_date">Until:</label>
+  <input type="date" id="until_date" name="until_date" required>
+
+  <button type="submit">Filter</button>
+</form>
     <!-- Server-side rendered exhibitions list -->
     <!-- CHARITY LIST -->
     <div class="exhibition-list">
