@@ -34,9 +34,9 @@
                 <!-- 📆 Dates & Countdown -->
                 <div class="dates">
                     <p>
-                        🕒 From <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong>
+                        🕒 From <strong>{{ start_date.strftime('%Y-%m-%d') }}</strong> to <strong>{{ end_date.strftime('%Y-%m-%d') }}</strong>
                     </p>
-                    <div id="countdown-timer" data-end="{{ end_date }}"></div>
+                    <div id="countdown-timer" data-end="{{ end_date.strftime('%Y-%m-%d') }}"></div>
                 </div>
                 <!-- 📖 Description -->
                 <article>

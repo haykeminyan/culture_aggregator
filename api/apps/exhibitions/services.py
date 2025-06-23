@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import Query
 from starlette.exceptions import HTTPException
+from dateutil.parser import parse
 
 from api.apps.exhibitions.models import Exhibition, ExhibitionCategory, ExhibitionGeo
 from markdown import markdown
@@ -64,6 +65,38 @@ class ExhibitionService:
             'offset': self.offset,
             'exhibitions': result,
         }
+
+    @staticmethod
+    async def get_filtered(countries=None, cities=None, categories=None, from_date=None, until_date=None):
+        query = Exhibition.objects().prefetch(
+            Exhibition.media,
+            Exhibition.category,
+            Exhibition.geo,
+        )
+
+        if countries:
+            geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
+                ExhibitionGeo.country.is_in(countries)
+            ).run()
+            geo_ids = [g['id'] for g in geo_ids]
+            query = query.where(Exhibition.geo.is_in(geo_ids))
+
+        if cities:
+            geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
+                ExhibitionGeo.city.is_in(cities)
+            ).run()
+            geo_ids = [g['id'] for g in geo_ids]
+            query = query.where(Exhibition.geo.is_in(geo_ids))
+
+        if categories:
+            query = query.where(Exhibition.category.is_in(categories))
+
+        if from_date and until_date:
+            results = await ExhibitionService.get_exhibition_by_dates(from_date, until_date)
+        else:
+            results = await query.run()
+        await ExhibitionService.insert_format_dates(results)
+        return [await ExhibitionService.insert_pictures(e) for e in results]
 
     @staticmethod
     async def delete(slug: str):
@@ -174,12 +207,8 @@ class ExhibitionService:
 
     @staticmethod
     async def format_dates(context):
-        context['start_date'] = datetime.fromisoformat(str(context['start_date'])).strftime(
-            '%d %B %Y at %H:%M',
-        )
-        context['end_date'] = datetime.fromisoformat(str(context['end_date'])).strftime(
-            '%d %B %Y at %H:%M',
-        )
+        context['start_date'] = parse(str(context['start_date']))
+        context['end_date'] = parse(str(context['end_date']))
         return context
 
     @staticmethod
@@ -189,15 +218,20 @@ class ExhibitionService:
 
     @staticmethod
     async def insert_pictures(exhibition):
+        if isinstance(exhibition, dict):
+            exhibition_dict = exhibition
+        else:
+            exhibition_dict = exhibition.to_dict()
+
         return {
-            **exhibition.to_dict(),
+            **exhibition_dict,
             'images': (
-                exhibition.media['images']
+                exhibition['media']['images']
                 if isinstance(
-                    exhibition.media and exhibition.media['images'],
+                    exhibition['media'] and exhibition['media']['images'],
                     str,
                 )
-                else exhibition.media['images']
+                else exhibition['media']['images']
             ),
         }
 

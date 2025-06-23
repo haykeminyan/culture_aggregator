@@ -18,34 +18,27 @@ router = APIRouter(prefix='', tags=['Exhibitions Views'])
 async def get_all_html(
     request: Request,
     search: str = Query('', alias='search'),
-    country: Optional[str] = Query(None),
-    city: Optional[str] = Query(None),
-    category: Optional[str] = Query(None),
-    from_date: str = Query(None),
-    until_date: str = Query(None),
+    country: Optional[list[str]] = Query(default=[]),
+    city: Optional[list[str]] = Query(default=[]),
+    category: Optional[list[str]] = Query(default=[]),
+        from_date: str = Query(None),
+        until_date: str = Query(None),
     limit: int = Query(4),
     offset: int = Query(0),
 ):
     service = ExhibitionService(limit, offset, search)
 
-    if country:
-        exhibitions = await service.get_by_country(country)
-    elif city:
-        exhibitions = await service.get_by_city(city)
-    elif category:
-        exhibitions = await service.get_by_category(category)
-    elif from_date and until_date:
-        exhibitions = await ExhibitionService.get_exhibition_by_dates(from_date, until_date)
-        total = len(exhibitions)
-    else:
-        data = await service.get_all()
-        exhibitions = data['exhibitions']
-        total = data['total']
+    # фильтрация по множеству
+    exhibitions = await service.get_filtered(
+        countries=country,
+        cities=city,
+        categories=category,
+        from_date=from_date,
+        until_date=until_date,
+    )
 
-    if country or city or category or (from_date and until_date):
-        total = len(exhibitions)
-        exhibitions = exhibitions[offset : offset + limit]
-
+    total = len(exhibitions)
+    exhibitions = exhibitions[offset : offset + limit]
 
     categories, countries, cities = await gather(
         service.get_categories(),
@@ -57,19 +50,16 @@ async def get_all_html(
         'request': request,
         'exhibitions': exhibitions,
         'categories': categories,
-        'selected_category':category,
+        'selected_category': category,
         'countries': countries,
         'selected_country': country,
         'cities': cities,
         'selected_city': city,
-        'from_date': from_date,
-        'until_date': until_date,
         'search': search,
         **ExhibitionService.get_pagination_context(limit, offset, total),
     }
 
     return templates.TemplateResponse('exhibitions/list.html', context)
-
 
 
 @router.delete('/exhibitions/{slug}', response_class=HTMLResponse, include_in_schema=False)

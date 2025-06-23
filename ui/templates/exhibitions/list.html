@@ -1,65 +1,113 @@
 {% extends "exhibitions/base.html" %}
 {% block content %}
     <div x-data="{ category: '', search: '' }" class="p-4">
-        <form method="GET"
-              action="{{ request.url.path }}"
-              class="flex flex-col gap-4">
-            <input type="text"
-                   name="search"
-                   value="{{ search }}"
-                   placeholder="Search exhibitions..."
-                   class="w-full border rounded px-4 py-2 shadow-sm" />
-            <div class="filter-section-country">
-                <span class="filter-label">Search with country</span>
-                <div class="country-filter flex gap-2 flex-wrap">
-                    {% for country in countries %}
-            <a href="/?country={{ country }}{% if category %}&category={{ category }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
-               class="country block px-2 py-1 border rounded {% if country == selected_country %}active{% endif %}">
-                {{ country }}
-            </a>
-                    {% endfor %}
-                        <a href="/?{% if search %}search={{ search }}{% endif %}"
-                           class="remove-btn ml-2 text-red-600 text-xl">×</a>
-                </div>
-            </div>
-                        <div class="filter-section-city">
-                <span class="filter-label">Search with city</span>
-                <div class="city-filter flex gap-2 flex-wrap">
-                    {% for city in cities %}
-            <a href="/?city={{ city }}{% if category %}&category={{ category }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
-               class="city block px-2 py-1 border rounded {% if city == selected_city %}active{% endif %}">
-                {{ city }}
-            </a>
+<form id="filter-form" method="GET" action="{{ request.url.path }}" class="flex flex-col gap-4">
 
-                    {% endfor %}
-                        <a href="/?{% if search %}search={{ search }}{% endif %}"
-                           class="remove-btn ml-2 text-red-600 text-xl">×</a>
-                </div>
-            </div>
-            <div class="filter-section-categories">
-                <span class="filter-label">Search with category</span>
-                <div class="category-filter flex gap-2 flex-wrap">
-                    {% for category in categories %}
-                        <a href="/?category={{ category.slug }}{% if search %}/?search={{ search }}{% endif %}"
-                           class="category block px-2 py-1 border rounded {% if category.slug == selected_category %}active{% endif %}">
-                            {{ category.title }}
-                        </a>
-                    {% endfor %}
-                        <a href="/?{% if search %}search={{ search }}{% endif %}"
-                           class="remove-btn ml-2 text-red-600 text-xl">×</a>
-                </div>
-            </div>
-        </form>
+  <input type="text"
+         name="search"
+         value="{{ search }}"
+         placeholder="Search exhibitions..."
+         class="w-full border rounded px-4 py-2 shadow-sm" />
+
+<!-- Фильтр по странам -->
+<div class="filter-section-country">
+  <span class="filter-label">Search with country</span>
+  <div class="country-filter flex gap-2 flex-wrap items-center">
+    {% for country in countries %}
+      <button type="button"
+              class="country block px-2 py-1 border rounded {% if country == selected_country %}active{% endif %}"
+              data-type="country"
+              data-value="{{ country }}">
+        {{ country }}
+
+      </button>
+    {% endfor %}
+<button type="button"
+        id="clear-country"
+        class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">
+  ×
+</button>
+  </div>
+
+</div>
+
+
+  <!-- Фильтр по городам -->
+  <div class="filter-section-city">
+    <span class="filter-label">Search with city</span>
+    <div class="city-filter flex gap-2 flex-wrap">
+      {% for city in cities %}
+      <button type="button"
+              class="city block px-2 py-1 border rounded {% if city == selected_city %}active{% endif %}"
+              data-type="city"
+              data-value="{{ city }}">
+        {{ city }}
+      </button>
+      {% endfor %}
+<button type="button"
+        id="clear-city"
+        class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">
+  ×
+</button>
     </div>
-        <form action="{{ request.url.path }}" method="get" class="filter-form">
-  <label for="from_date">From:</label>
-  <input type="date" id="from_date" name="from_date" required>
+  </div>
 
-  <label for="until_date">Until:</label>
-  <input type="date" id="until_date" name="until_date" required>
+  <!-- Фильтр по категориям -->
+  <div class="filter-section-categories">
+    <span class="filter-label">Search with category</span>
+    <div class="category-filter flex gap-2 flex-wrap">
+      {% for category in categories %}
+      <button type="button"
+              class="category block px-2 py-1 border rounded {% if category.slug == selected_category %}active{% endif %}"
+              data-type="category"
+              data-value="{{ category.slug }}">
+        {{ category.title }}
+      </button>
+      {% endfor %}
+<button type="button"
+        id="clear-category"
+        class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">
+  ×
+</button>
+    </div>
+  </div>
 
-  <button type="submit">Filter</button>
+  <!-- Даты -->
+  <div class="filter-section-dates flex gap-4 items-center">
+    <label for="from_date">From:</label>
+    <input type="date"
+           id="from_date"
+           name="from_date"
+           value="{{ from_date or '' }}"
+           class="border px-2 py-1 rounded" />
+
+    <label for="until_date">Until:</label>
+    <input type="date"
+           id="until_date"
+           name="until_date"
+           value="{{ until_date or '' }}"
+           class="border px-2 py-1 rounded" />
+  </div>
+
+  <!-- Hidden inputs -->
+  <div id="hidden-filters"></div>
+
+<div class="flex items-center mt-2 space-x-1 filter-btn">
+  <button type="submit"
+          class="px-3 py-2 bg-blue-500 text-white rounded shadow">
+    Filter
+  </button>
+
+  <a href="{{ request.url.path }}"
+     class="px-3 py-2 bg-gray-200 text-red-600 rounded shadow hover:bg-gray-300">
+    Reset all
+  </a>
+</div>
+
+
 </form>
+
+
     <!-- Server-side rendered exhibitions list -->
     <!-- CHARITY LIST -->
     <div class="exhibition-list">
@@ -107,7 +155,7 @@
                                 {% if exhibition.start_date %}
                                     <div class="dates">
                                         <p>
-                                            🕒 From <strong>{{ exhibition.start_date.split("at").0 }}</strong> to <strong>{{ exhibition.end_date.split("at").0 }}</strong>
+                                            🕒 From <strong>{{ exhibition.start_date.strftime('%Y-%m-%d') }}</strong> to <strong>{{ exhibition.end_date.strftime('%Y-%m-%d') }}</strong>
                                         </p>
                                         <div id="countdown-timer" data-end="{{ end_date }}"></div>
                                     </div>
