@@ -74,14 +74,22 @@ class ExhibitionService:
             Exhibition.geo,
         )
 
-        if countries:
+        if countries and cities:
+            geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
+                ExhibitionGeo.country.is_in(countries),
+                ExhibitionGeo.city.is_in(cities),
+            ).run()
+            geo_ids = [g['id'] for g in geo_ids]
+            query = query.where(Exhibition.geo.is_in(geo_ids))
+
+        elif countries:
             geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
                 ExhibitionGeo.country.is_in(countries)
             ).run()
             geo_ids = [g['id'] for g in geo_ids]
             query = query.where(Exhibition.geo.is_in(geo_ids))
 
-        if cities:
+        elif cities:
             geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
                 ExhibitionGeo.city.is_in(cities)
             ).run()
