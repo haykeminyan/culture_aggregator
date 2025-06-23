@@ -522,7 +522,7 @@ body {
   justify-content: center;
 }
 
-form.filter-form {
+.filter-form {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -534,13 +534,13 @@ form.filter-form {
   font-family: system-ui, sans-serif;
 }
 
-form.filter-form label {
+.filter-form label {
   font-weight: 500;
   margin-right: 0.25rem;
   color: #374151;
 }
 
-form.filter-form input[type="date"] {
+.filter-form input[type="date"] {
   padding: 0.4rem 0.6rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -550,12 +550,12 @@ form.filter-form input[type="date"] {
   transition: border 0.2s ease;
 }
 
-form.filter-form input[type="date"]:focus {
+.filter-form input[type="date"]:focus {
   border-color: #6366f1;
   outline: none;
 }
 
-form.filter-form button {
+.filter-form button {
   background: #4f46e5;
   color: white;
   border: none;
@@ -567,7 +567,7 @@ form.filter-form button {
   transition: background 0.2s ease;
 }
 
-form.filter-form button:hover {
+.filter-form button:hover {
   background: #4338ca;
 }
 

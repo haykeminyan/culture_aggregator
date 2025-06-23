@@ -21,6 +21,8 @@ async def get_all_html(
     country: Optional[str] = Query(None),
     city: Optional[str] = Query(None),
     category: Optional[str] = Query(None),
+    from_date: str = Query(None),
+    until_date: str = Query(None),
     limit: int = Query(4),
     offset: int = Query(0),
 ):
@@ -32,12 +34,15 @@ async def get_all_html(
         exhibitions = await service.get_by_city(city)
     elif category:
         exhibitions = await service.get_by_category(category)
+    elif from_date and until_date:
+        exhibitions = await ExhibitionService.get_exhibition_by_dates(from_date, until_date)
+        total = len(exhibitions)
     else:
         data = await service.get_all()
         exhibitions = data['exhibitions']
         total = data['total']
 
-    if country or city or category:
+    if country or city or category or (from_date and until_date):
         total = len(exhibitions)
         exhibitions = exhibitions[offset : offset + limit]
 
@@ -57,6 +62,8 @@ async def get_all_html(
         'selected_country': country,
         'cities': cities,
         'selected_city': city,
+        'from_date': from_date,
+        'until_date': until_date,
         'search': search,
         **ExhibitionService.get_pagination_context(limit, offset, total),
     }
@@ -77,25 +84,3 @@ async def get_by_slug_html(request: Request, slug: str):
     context = await ExhibitionService.get_by_slug(slug)
     context['request'] = request
     return templates.TemplateResponse('exhibitions/detail.html', context)
-
-@router.get('/filter', response_class=HTMLResponse, include_in_schema=False)
-async def get_by_date_api(
-    request: Request,
-    from_date: str = Query(...),
-    until_date: str = Query(...),
-    limit: int = Query(4),
-    offset: int = Query(0),
-):
-    exhibitions = await ExhibitionService.get_exhibition_by_dates(from_date, until_date)
-    total = len(exhibitions)
-    paginated_exhibitions = exhibitions[offset : offset + limit]
-
-    context = {
-        'request': request,
-        'exhibitions': paginated_exhibitions,
-        'from_date': from_date,
-        'until_date': until_date,
-        **ExhibitionService.get_pagination_context(limit, offset, total),
-    }
-
-    return templates.TemplateResponse('exhibitions/list.html', context)
