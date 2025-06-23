@@ -15,7 +15,7 @@
   <div class="country-filter flex gap-2 flex-wrap items-center">
     {% for country in countries %}
       <button type="button"
-              class="country block px-2 py-1 border rounded {% if country == selected_country %}active{% endif %}"
+              class="country block px-2 py-1 border rounded {% if country in selected_country %}active{% endif %}"
               data-type="country"
               data-value="{{ country }}">
         {{ country }}
@@ -38,7 +38,7 @@
     <div class="city-filter flex gap-2 flex-wrap">
       {% for city in cities %}
       <button type="button"
-              class="city block px-2 py-1 border rounded {% if city == selected_city %}active{% endif %}"
+              class="city block px-2 py-1 border rounded {% if city in selected_city %}active{% endif %}"
               data-type="city"
               data-value="{{ city }}">
         {{ city }}

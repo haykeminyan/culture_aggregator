@@ -4,6 +4,8 @@ const selected = {
   category: null,
 };
 
+
+
 document.querySelectorAll('button[data-type]').forEach(btn => {
   btn.addEventListener('click', () => {
     const type = btn.dataset.type;
@@ -42,12 +44,12 @@ function updateHiddenInputs() {
 // Первичная инициализация
 updateHiddenInputs();
 
-// Удаляем пустые поля только у type="text" и hidden (оставляем даты!)
-document.getElementById('filter-form').addEventListener('submit', function () {
-  this.querySelectorAll('input[name]').forEach(input => {
-    const isSafe = input.type === 'text' || input.type === 'hidden';
-    if (isSafe && !input.value.trim()) {
-      input.remove();
+document.getElementById('filter-form').addEventListener('submit', function (e) {
+  // Удаляем пустые поля из формы, чтобы они не отправлялись
+  this.querySelectorAll('input').forEach(input => {
+    console.log(input.value)
+    if (!input.value.trim()) {
+      input.name = ''; // убираем name, поле не попадет в GET-запрос
     }
   });
 });

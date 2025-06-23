@@ -89,9 +89,8 @@ class ExhibitionService:
             query = query.where(Exhibition.geo.is_in(geo_ids))
 
         if categories:
-            query = query.where(Exhibition.category.is_in(categories))
-
-        if from_date and until_date:
+            results = await ExhibitionService.get_by_category(categories)
+        elif from_date and until_date:
             results = await ExhibitionService.get_exhibition_by_dates(from_date, until_date)
         else:
             results = await query.run()
