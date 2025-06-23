@@ -30,7 +30,7 @@ class ExhibitionService:
         # Загружаем записи с фильтром и пагинацией
         query = (
             Exhibition.objects()
-            .order_by(Exhibition.created_at, ascending=False)
+            .order_by(Exhibition.created_at, ascending=True)
         )
         if filter_:
             query = query.where(filter_)
@@ -40,7 +40,7 @@ class ExhibitionService:
                 Exhibition.detail,
                 Exhibition.contact,
                 Exhibition.media)
-        exhibitions = await query.offset(self.offset).limit(self.limit).order_by('-created_at').all()
+        exhibitions = await query.offset(self.offset).limit(self.limit)
 
         result = [
             {
