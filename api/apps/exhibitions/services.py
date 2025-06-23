@@ -81,14 +81,12 @@ class ExhibitionService:
             ).run()
             geo_ids = [g['id'] for g in geo_ids]
             query = query.where(Exhibition.geo.is_in(geo_ids))
-
         elif countries:
             geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
                 ExhibitionGeo.country.is_in(countries)
             ).run()
             geo_ids = [g['id'] for g in geo_ids]
             query = query.where(Exhibition.geo.is_in(geo_ids))
-
         elif cities:
             geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
                 ExhibitionGeo.city.is_in(cities)
@@ -97,11 +95,19 @@ class ExhibitionService:
             query = query.where(Exhibition.geo.is_in(geo_ids))
 
         if categories:
-            results = await ExhibitionService.get_by_category(categories)
-        elif from_date and until_date:
-            results = await ExhibitionService.get_exhibition_by_dates(from_date, until_date)
-        else:
-            results = await query.run()
+            category_objs = await ExhibitionService.get_by_category(categories)
+            logger.error(category_objs)
+            category_ids = [c['id'] for c in category_objs]
+            query = query.where(Exhibition.category.is_in(category_ids))
+
+        # Фильтрация по датам
+        if from_date and until_date:
+            query = query.where(
+                (Exhibition.start_date >= from_date) &
+                (Exhibition.end_date <= until_date)
+            )
+
+        results = await query.run()
         await ExhibitionService.insert_format_dates(results)
         return [await ExhibitionService.insert_pictures(e) for e in results]
 
