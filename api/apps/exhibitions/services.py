@@ -67,12 +67,11 @@ class ExhibitionService:
         }
 
     @staticmethod
-    async def get_filtered(countries=None, cities=None, categories=None, from_date=None, until_date=None):
-        query = Exhibition.objects().prefetch(
-            Exhibition.media,
-            Exhibition.category,
-            Exhibition.geo,
-        ).order_by(Exhibition.created_at, ascending=False)
+    async def get_filtered(search=None, countries=None, cities=None, categories=None, from_date=None, until_date=None):
+        query = Exhibition.objects()
+
+        if search:
+            query = query.where(Exhibition.title.ilike(f'%{search}%'))
 
         if countries and cities:
             geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
@@ -108,6 +107,11 @@ class ExhibitionService:
                 (Exhibition.start_date >= from_date) &
                 (Exhibition.end_date <= until_date)
             )
+        query = query.prefetch(
+            Exhibition.media,
+            Exhibition.category,
+            Exhibition.geo,
+        ).order_by(Exhibition.created_at, ascending=False)
         results = await query.run()
         await ExhibitionService.insert_format_dates(results)
         return [await ExhibitionService.insert_pictures(e) for e in results]

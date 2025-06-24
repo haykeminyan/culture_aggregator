@@ -1,6 +1,6 @@
 import logging
 from typing import Optional
-
+from datetime import datetime
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse
 
@@ -21,8 +21,8 @@ async def get_all_html(
     country: Optional[list[str]] = Query(default=[]),
     city: Optional[list[str]] = Query(default=[]),
         category: Optional[str] = Query(None),
-    from_date: str = Query(None),
-        until_date: str = Query(None),
+    from_date: datetime = Query(None),
+        until_date: datetime = Query(None),
     limit: int = Query(4),
     offset: int = Query(0),
 ):
@@ -30,6 +30,7 @@ async def get_all_html(
 
     # фильтрация по множеству
     exhibitions = await service.get_filtered(
+        search=search,
         countries=country,
         cities=city,
         categories=category,
