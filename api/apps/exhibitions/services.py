@@ -72,7 +72,7 @@ class ExhibitionService:
             Exhibition.media,
             Exhibition.category,
             Exhibition.geo,
-        )
+        ).order_by(Exhibition.created_at, ascending=False)
 
         if countries and cities:
             geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
@@ -96,7 +96,6 @@ class ExhibitionService:
 
         if categories:
             category_objs = await ExhibitionService.get_by_category(categories)
-            logger.error(category_objs)
             category_ids = [c['id'] for c in category_objs]
             query = query.where(Exhibition.category.is_in(category_ids))
 
