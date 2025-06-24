@@ -44,7 +44,9 @@ async def get_all_html(
         service.get_countries(),
         service.get_cities(),
     )
+    logger.error(f"selected_country in context: {country} ({type(country)})")
 
+    logger.error('!'*100)
     context = {
         'request': request,
         'exhibitions': exhibitions,

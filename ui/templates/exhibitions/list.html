@@ -9,7 +9,22 @@
          value="{{ search }}"
          placeholder="Search exhibitions..."
          class="w-full border rounded px-4 py-2 shadow-sm" />
+  <!-- Даты -->
+  <div class="filter-section-dates flex gap-4 items-center">
+    <label for="from_date">From:</label>
+    <input type="date"
+           id="from_date"
+           name="from_date"
+           value="{{ from_date or '' }}"
+           class="border px-2 py-1 rounded" />
 
+    <label for="until_date">Until:</label>
+    <input type="date"
+           id="until_date"
+           name="until_date"
+           value="{{ until_date or '' }}"
+           class="border px-2 py-1 rounded" />
+  </div>
 <!-- Фильтр по странам -->
 <div class="filter-section-country">
   <span class="filter-label">Search with country</span>
@@ -73,35 +88,16 @@
     </div>
   </div>
 
-  <!-- Даты -->
-  <div class="filter-section-dates flex gap-4 items-center">
-    <label for="from_date">From:</label>
-    <input type="date"
-           id="from_date"
-           name="from_date"
-           value="{{ from_date or '' }}"
-           class="border px-2 py-1 rounded" />
 
-    <label for="until_date">Until:</label>
-    <input type="date"
-           id="until_date"
-           name="until_date"
-           value="{{ until_date or '' }}"
-           class="border px-2 py-1 rounded" />
-  </div>
 
   <!-- Hidden inputs -->
   <div id="hidden-filters"></div>
 
 <div class="flex items-center mt-2 space-x-1 filter-btn">
-  <button type="submit"
-          class="px-3 py-2 bg-blue-500 text-white rounded shadow">
-    Filter
-  </button>
 
   <a href="{{ request.url.path }}"
      class="px-3 py-2 bg-gray-200 text-red-600 rounded shadow hover:bg-gray-300">
-    Reset all
+    Reset all filters
   </a>
 </div>
 
