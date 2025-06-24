@@ -155,7 +155,7 @@
                                 {% if exhibition.start_date %}
                                     <div class="dates">
                                         <p>
-                                            🕒 From <strong>{{ exhibition.start_date.strftime('%Y-%m-%d') }}</strong> to <strong>{{ exhibition.end_date.strftime('%Y-%m-%d') }}</strong>
+                                            🕒 From <strong>{{ exhibition.start_date.strftime('%d-%m-%Y') }}</strong> to <strong>{{ exhibition.end_date.strftime('%d-%m-%Y') }}</strong>
                                         </p>
                                         <div id="countdown-timer" data-end="{{ end_date }}"></div>
                                     </div>
