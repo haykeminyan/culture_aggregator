@@ -80,7 +80,10 @@ class ExhibitionService:
                 ExhibitionGeo.city.is_in(cities),
             ).run()
             geo_ids = [g['id'] for g in geo_ids]
-            query = query.where(Exhibition.geo.is_in(geo_ids))
+            if geo_ids:
+                query = query.where(Exhibition.geo.is_in(geo_ids))
+            else:
+                return []
         elif countries:
             geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
                 ExhibitionGeo.country.is_in(countries)
@@ -105,7 +108,6 @@ class ExhibitionService:
                 (Exhibition.start_date >= from_date) &
                 (Exhibition.end_date <= until_date)
             )
-
         results = await query.run()
         await ExhibitionService.insert_format_dates(results)
         return [await ExhibitionService.insert_pictures(e) for e in results]
