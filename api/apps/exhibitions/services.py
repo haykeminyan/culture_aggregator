@@ -67,54 +67,64 @@ class ExhibitionService:
         }
 
     @staticmethod
-    async def get_filtered(search=None, countries=None, cities=None, categories=None, from_date=None, until_date=None):
-        query = Exhibition.objects()
+    async def get_filtered(limit: int = 4, offset: int = 0, search=None, countries=None, cities=None, categories=None, from_date=None, until_date=None):
+        # Общие фильтры
+        filters = []
 
         if search:
-            query = query.where(Exhibition.title.ilike(f'%{search}%'))
+            filters.append(Exhibition.title.ilike(f"%{search}%"))
 
-        if countries and cities:
-            geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
-                ExhibitionGeo.country.is_in(countries),
-                ExhibitionGeo.city.is_in(cities),
-            ).run()
-            geo_ids = [g['id'] for g in geo_ids]
-            if geo_ids:
-                query = query.where(Exhibition.geo.is_in(geo_ids))
-            else:
-                return []
-        elif countries:
-            geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
-                ExhibitionGeo.country.is_in(countries)
-            ).run()
-            geo_ids = [g['id'] for g in geo_ids]
-            query = query.where(Exhibition.geo.is_in(geo_ids))
-        elif cities:
-            geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(
-                ExhibitionGeo.city.is_in(cities)
-            ).run()
-            geo_ids = [g['id'] for g in geo_ids]
-            query = query.where(Exhibition.geo.is_in(geo_ids))
+        # География
+        if countries or cities:
+            geo_filters = []
+            if countries:
+                geo_filters.append(ExhibitionGeo.country.is_in(countries))
+            if cities:
+                geo_filters.append(ExhibitionGeo.city.is_in(cities))
 
+            geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(*geo_filters).run()
+            geo_ids = [g["id"] for g in geo_ids]
+
+            if not geo_ids:
+                return [], 0
+
+            filters.append(Exhibition.geo.is_in(geo_ids))
+
+        # Категории
         if categories:
             category_objs = await ExhibitionService.get_by_category(categories)
-            category_ids = [c['id'] for c in category_objs]
-            query = query.where(Exhibition.category.is_in(category_ids))
+            category_ids = [c["id"] for c in category_objs]
+            filters.append(Exhibition.category.is_in(category_ids))
 
-        # Фильтрация по датам
+        # Даты
         if from_date and until_date:
-            query = query.where(
-                (Exhibition.start_date >= from_date) &
-                (Exhibition.end_date <= until_date)
+            filters.append(
+                (Exhibition.start_date >= from_date)
+                & (Exhibition.end_date <= until_date)
             )
-        query = query.prefetch(
-            Exhibition.media,
-            Exhibition.category,
-            Exhibition.geo,
-        ).order_by(Exhibition.created_at, ascending=False)
-        results = await query.run()
-        await ExhibitionService.insert_format_dates(results)
-        return [await ExhibitionService.insert_pictures(e) for e in results]
+
+        # Считаем общее количество
+        count_query = Exhibition.select("id").where(*filters)
+        total = len(await count_query.run())
+
+        # Получаем с пагинацией
+        exhibitions = (
+            await Exhibition.objects()
+            .where(*filters)
+            .order_by(Exhibition.created_at, ascending=False)
+            .offset(offset)
+            .limit(limit)
+            .prefetch(
+                Exhibition.media,
+                Exhibition.category,
+                Exhibition.geo,
+            )
+            .run()
+        )
+
+        await ExhibitionService.insert_format_dates(exhibitions)
+        exhibitions = [await ExhibitionService.insert_pictures(e) for e in exhibitions]
+        return exhibitions, total
 
     @staticmethod
     async def delete(slug: str):

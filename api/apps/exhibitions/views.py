@@ -20,26 +20,25 @@ async def get_all_html(
     search: str = Query('', alias='search'),
     country: Optional[list[str]] = Query(default=[]),
     city: Optional[list[str]] = Query(default=[]),
-        category: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
     from_date: datetime = Query(None),
-        until_date: datetime = Query(None),
+    until_date: datetime = Query(None),
     limit: int = Query(4),
     offset: int = Query(0),
 ):
     service = ExhibitionService(limit, offset, search)
 
     # фильтрация по множеству
-    exhibitions = await service.get_filtered(
+    exhibitions, total = await service.get_filtered(
         search=search,
         countries=country,
         cities=city,
         categories=category,
         from_date=from_date,
         until_date=until_date,
+        offset=offset,
+        limit=limit,
     )
-
-    total = len(exhibitions)
-    exhibitions = exhibitions[offset : offset + limit]
     categories, countries, cities = await gather(
         service.get_categories(),
         service.get_countries(),

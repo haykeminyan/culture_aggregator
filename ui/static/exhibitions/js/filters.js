@@ -1,25 +1,43 @@
 const selected = {
-  country: null,
-  city: null,
+  country: [],
+  city: [],
   category: null,
 };
 
+function getUrlParamsArray(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.getAll(name);
+}
 
+// Инициализируем selected из URL
+selected.country = getUrlParamsArray('country');
+selected.city = getUrlParamsArray('city');
+const categoryFromUrl = new URLSearchParams(window.location.search).get('category');
+selected.category = categoryFromUrl ? categoryFromUrl : null;
 
 document.querySelectorAll('button[data-type]').forEach(btn => {
   btn.addEventListener('click', () => {
     const type = btn.dataset.type;
     const value = btn.dataset.value;
 
-    // Снять активные в этой группе
-    document.querySelectorAll(`button[data-type="${type}"]`).forEach(b => b.classList.remove('active'));
-
-    // Если уже выбрано это же значение — снимаем
-    if (selected[type] === value) {
-      selected[type] = null;
+    if (type === 'category') {
+      if (selected.category === value) {
+        selected.category = null;
+        btn.classList.remove('active');
+      } else {
+        document.querySelectorAll('button[data-type="category"]').forEach(b => b.classList.remove('active'));
+        selected.category = value;
+        btn.classList.add('active');
+      }
     } else {
-      selected[type] = value;
-      btn.classList.add('active');
+      const index = selected[type].indexOf(value);
+      if (index > -1) {
+        selected[type].splice(index, 1);
+        btn.classList.remove('active');
+      } else {
+        selected[type].push(value);
+        btn.classList.add('active');
+      }
     }
 
     updateHiddenInputs();
@@ -31,7 +49,15 @@ function updateHiddenInputs() {
   container.innerHTML = '';
 
   Object.entries(selected).forEach(([key, value]) => {
-    if (value) {
+    if (Array.isArray(value)) {
+      value.forEach(v => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = v;
+        container.appendChild(input);
+      });
+    } else if (value) {
       const input = document.createElement('input');
       input.type = 'hidden';
       input.name = key;
@@ -41,20 +67,30 @@ function updateHiddenInputs() {
   });
 }
 
-// Первичная инициализация
-updateHiddenInputs();
+window.addEventListener('DOMContentLoaded', () => {
+  if (selected.category) {
+    document.querySelectorAll('button[data-type="category"]').forEach(btn => {
+      if (btn.dataset.value === selected.category) btn.classList.add('active');
+    });
+  }
+  ['country', 'city'].forEach(type => {
+    selected[type].forEach(val => {
+      document.querySelectorAll(`button[data-type="${type}"]`).forEach(btn => {
+        if (btn.dataset.value === val) btn.classList.add('active');
+      });
+    });
+  });
+  updateHiddenInputs();
+});
 
 document.getElementById('filter-form').addEventListener('submit', function (e) {
-  // Удаляем пустые поля из формы, чтобы они не отправлялись
   this.querySelectorAll('input').forEach(input => {
-    console.log(input.value)
     if (!input.value.trim()) {
-      input.name = ''; // убираем name, поле не попадет в GET-запрос
+      input.name = '';
     }
   });
 });
 
-// Очистка каждого фильтра по кнопке
 document.getElementById("clear-category").addEventListener("click", function () {
   const url = new URL(window.location.href);
   url.searchParams.delete("category");

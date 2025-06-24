@@ -2,7 +2,8 @@
 {% block content %}
     <div x-data="{ category: '', search: '' }" class="p-4">
 <form id="filter-form" method="GET" action="{{ request.url.path }}" class="flex flex-col gap-4">
-
+  <input type="hidden" name="limit" value="{{ limit }}">
+  <input type="hidden" name="offset" value="{{ offset }}">
   <input type="text"
          name="search"
          value="{{ search }}"

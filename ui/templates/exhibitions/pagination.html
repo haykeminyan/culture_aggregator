@@ -12,6 +12,21 @@
     {% if until_date %}
         {% set extra_params = extra_params ~ "&until_date=" ~ until_date %}
     {% endif %}
+    {# Для списков стран и городов нужно сериализовать их в строку, например через запятую #}
+{% if selected_country %}
+    {% for c in selected_country %}
+        {% set extra_params = extra_params ~ "&country=" ~ c %}
+    {% endfor %}
+{% endif %}
+{% if selected_city %}
+    {% for c in selected_city %}
+        {% set extra_params = extra_params ~ "&city=" ~ c %}
+    {% endfor %}
+{% endif %}
+
+{% if selected_category %}
+    {% set extra_params = extra_params ~ "&category=" ~ selected_category %}
+{% endif %}
     {# ← Previous #}
     {% if current_page > 1 %}
         <a href="{{ request.url.path }}?limit={{ limit }}&offset={{ (current_page - 2) * limit }}{{ extra_params }}"
