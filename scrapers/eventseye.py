@@ -40,10 +40,10 @@ for event_link in links:
 		city = re.search(r'([A-Z][A-Za-zÀ-ÿ\'\- ]+)\s*\([A-Za-zÀ-ÿ\'\- ]+\)', elem.text.strip()).group(1).strip()
 		# Пробуем сначала "Month DD - DD, YYYY"
 		range_match = re.search(r'([A-Za-z]+)\s(\d{1,2})\s*-\s*(\d{1,2}),\s*(\d{4})', elem.text.strip())
-
+		print(elem.text.strip())
 		# Пробуем "on Month YYYY"
 		month_year_match = re.search(r'on\s([A-Za-z]+)\s(\d{4})', elem.text.strip())
-
+		month_match  = re.search(r'([A-Za-z]{3,9})\.?\s+(\d{1,2})\s*-\s*(\d{1,2}),\s*(\d{4})', elem.text.strip())
 		if range_match:
 			month_str, day_start, day_end, year = range_match.groups()
 			month_num = datetime.strptime(month_str, "%B").month
@@ -54,6 +54,15 @@ for event_link in links:
 			month_num = datetime.strptime(month_str, "%B").month
 			start_date = f"{year}-{month_num:02d}-01"
 			end_date = f"{year}-{month_num:02d}-28"
+		elif month_match:
+			month_str, day_start, day_end, year = month_match.groups()
+			try:
+				month_num = datetime.strptime(month_str.strip('.'), "%b").month
+			except ValueError:
+				month_num = datetime.strptime(month_str.strip('.'), "%B").month
+
+			start_date = f"{year}-{month_num:02d}-{int(day_start):02d}"
+			end_date = f"{year}-{month_num:02d}-{int(day_end):02d}"
 		else:
 			start_date = None
 			end_date = None
