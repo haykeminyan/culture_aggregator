@@ -13,7 +13,7 @@ from scrapers.util import parsed_photo
 
 UPLOAD_DIR = '../ui/static/exhibitions/exhibition_pictures'
 
-URL = ['https://www.eventseye.com/fairs/zd1_trade-shows_europe_july_0.html' , 'https://www.eventseye.com/fairs/zd1_trade-shows_europe_july_0_1.html'
+URL = [ 'https://www.eventseye.com/fairs/zd1_trade-shows_europe_july_0_1.html'
        'https://www.eventseye.com/fairs/zd1_trade-shows_europe_august_0.html', 'https://www.eventseye.com/fairs/zd1_trade-shows_europe_august_0_1.html']
 
 links = []
@@ -27,6 +27,7 @@ for url in URL:
 
 full_data = []
 for event_link in links:
+	print(event_link)
 	req = requests.get(event_link)
 	soup = BeautifulSoup(req.content, 'lxml')
 	for image in soup.select('.title-line'):
