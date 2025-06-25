@@ -44,6 +44,14 @@ for event_link in links:
 		# Пробуем "on Month YYYY"
 		month_year_match = re.search(r'on\s([A-Za-z]+)\s(\d{4})', elem.text.strip())
 		month_match  = re.search(r'([A-Za-z]{3,9})\.?\s+(\d{1,2})\s*-\s*(\d{1,2}),\s*(\d{4})', elem.text.strip())
+		range_match_1 = re.search(r'([A-Za-z]{3,9})\.?\s+(\d{1,2})\s*-\s*(\d{1,2}),\s*(\d{4})', elem.text.strip())
+
+		# 2. Одна дата: "on Aug. 26, 2025"
+		single_date_match = re.search(r'on\s+([A-Za-z]{3,9})\.?\s+(\d{1,2}),\s*(\d{4})', elem.text.strip())
+
+		# 3. Только месяц и год: "on July 2025"
+		month_year_match_1 = re.search(r'on\s+([A-Za-z]{3,9})\.?\s+(\d{4})', elem.text.strip())
+
 		if range_match:
 			month_str, day_start, day_end, year = range_match.groups()
 			month_num = datetime.strptime(month_str, "%B").month
@@ -63,6 +71,22 @@ for event_link in links:
 
 			start_date = f"{year}-{month_num:02d}-{int(day_start):02d}"
 			end_date = f"{year}-{month_num:02d}-{int(day_end):02d}"
+		elif range_match_1:
+			month_str, day_start, day_end, year = range_match.groups()
+			month_num = datetime.strptime(month_str.strip('.'), "%b").month
+			start_date = f"{year}-{month_num:02d}-{int(day_start):02d}"
+			end_date = f"{year}-{month_num:02d}-{int(day_end):02d}"
+
+		elif single_date_match:
+			month_str, day, year = single_date_match.groups()
+			month_num = datetime.strptime(month_str.strip('.'), "%b").month
+			start_date = end_date = f"{year}-{month_num:02d}-{int(day):02d}"
+
+		elif month_year_match_1:
+			month_str, year = month_year_match.groups()
+			month_num = datetime.strptime(month_str.strip('.'), "%b").month
+			start_date = f"{year}-{month_num:02d}-01"
+			end_date = f"{year}-{month_num:02d}-28"
 		else:
 			start_date = None
 			end_date = None
