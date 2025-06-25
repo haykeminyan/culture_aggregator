@@ -110,8 +110,8 @@ class ExhibitionMedia(Table):
 # Geolocation
 class ExhibitionGeo(Table):
     location: Varchar = Varchar(length=200)
-    latitude: DoublePrecision = DoublePrecision()
-    longitude: DoublePrecision = DoublePrecision()
+    latitude: DoublePrecision = DoublePrecision(null=True)
+    longitude: DoublePrecision = DoublePrecision(null=True)
     country: Varchar = Varchar(length=200)
     city: Varchar = Varchar(length=200)
 

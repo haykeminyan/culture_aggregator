@@ -26,7 +26,7 @@ for link in soup.select('.tradeshows'):
 			links.append('https://www.eventseye.com/fairs/' + a['href'])
 
 full_data = []
-for event_link in links[:2]:
+for event_link in links:
 	req = requests.get(event_link)
 	soup = BeautifulSoup(req.content, 'lxml')
 	for image in soup.select('.title-line'):
@@ -34,7 +34,6 @@ for event_link in links[:2]:
 		for img in image.select('img'):
 			image_url = 'https://www.eventseye.com'+ img['src']
 			image = parsed_photo(image_url)
-			print(image)
 
 	for elem in soup.select('.dates'):
 		city = re.search(r'([A-Z][A-Za-zÀ-ÿ\'\- ]+)\s*\([A-Za-zÀ-ÿ\'\- ]+\)', elem.text.strip()).group(1).strip()
@@ -81,8 +80,8 @@ for event_link in links[:2]:
 			soup_loc = BeautifulSoup(req_loc.content, 'lxml')
 			try:
 				coordinates = re.search(r'LatLng\((-?\d+\.\d+),\s*(-?\d+\.\d+)\)', str(soup_loc)).groups()
-				latitude = coordinates[0]
-				longitude = coordinates[1]
+				latitude = float(coordinates[0])
+				longitude = float(coordinates[1])
 			except AttributeError:
 				latitude = None
 				longitude = None
@@ -95,12 +94,11 @@ for event_link in links[:2]:
 			organization = org.get('title')
 
 	data = {'images': [image], 'title': title, 'slug': slugify(str(title)), 'short_description': description[:200], 'email': email,
-	        'category_title': final_category, 'category_slug': slugify(str(final_category)), 'location': location, 'latitude': float(latitude), 'longitude': float(longitude), 'country': country, 'city': city,
+	        'category_title': final_category, 'category_slug': slugify(str(final_category)), 'location': location, 'latitude': latitude, 'longitude': longitude, 'country': country, 'city': city,
 	           'detail': description, 'website': website, 'organizer_name': organization, 'start_date': datetime.strptime(start_date, "%Y-%m-%d"), 'end_date': datetime.strptime(end_date, "%Y-%m-%d"), 'price': '', 'currency': '', 'youtube': '', 'instagram':'', 'linkedin':'', 'tiktok': ''}
 
 	asyncio.run(AdminService.create_exhibition(**data))
 	full_data.append(data)
 
-# df = pd.DataFrame(full_data)
-#
-# df.to_csv('test.csv')
+df = pd.DataFrame(full_data)
+df.to_csv('test.csv')

@@ -154,8 +154,7 @@ class AdminService:
                     except AttributeError:
                         pass
         else:
-            unique_name = '5c503d6135144853987dd28c29d96b8e'
-            saved_paths = [f'exhibitions/exhibition_pictures/{unique_name}.jpg']
+            saved_paths = [f'exhibitions/exhibition_pictures/{images[0]}']
 
         # 2. Если нет изображений — используем дефолтное
         if not saved_paths:
