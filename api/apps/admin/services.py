@@ -21,6 +21,8 @@ from api.apps.exhibitions.models import (
 )
 from markdown import markdown
 
+from scrapers.util import parsed_photo
+
 logger = logging.getLogger(__name__)
 
 UPLOAD_DIR = 'ui/static/exhibitions/exhibition_pictures'
@@ -85,6 +87,7 @@ class AdminService:
         currency,
         organizer_name,
         website,
+        email,
         youtube,
         instagram,
         linkedin,
@@ -116,6 +119,7 @@ class AdminService:
         )
         contact = await ExhibitionContact.objects().create(
             website=website,
+            email=email,
             youtube=youtube,
             instagram=instagram,
             linkedin=linkedin,
@@ -135,7 +139,7 @@ class AdminService:
         saved_paths = []
 
         # 1. Обработка загруженных изображений
-        if images:
+        if images and len(images) > 1:
             for image in images:
                 if image.filename:
                     try:
@@ -149,6 +153,9 @@ class AdminService:
                         saved_paths.append(relative_path)
                     except AttributeError:
                         pass
+        else:
+            unique_name = '5c503d6135144853987dd28c29d96b8e'
+            saved_paths = [f'exhibitions/exhibition_pictures/{unique_name}.jpg']
 
         # 2. Если нет изображений — используем дефолтное
         if not saved_paths:

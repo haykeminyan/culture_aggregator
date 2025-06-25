@@ -92,6 +92,7 @@ class ExhibitionOrganizer(Table):
 
 class ExhibitionContact(Table):
     website: Varchar = Varchar(length=200)
+    email: Varchar = Varchar(length=200)
     youtube: Varchar = Varchar(length=200)
     linkedin: Varchar = Varchar(length=200)
     tiktok: Varchar = Varchar(length=200)
