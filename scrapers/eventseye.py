@@ -13,17 +13,17 @@ from scrapers.util import parsed_photo
 
 UPLOAD_DIR = '../ui/static/exhibitions/exhibition_pictures'
 
-URL = 'https://www.eventseye.com/fairs/zd1_trade-shows_europe_july_0.html'
+URL = ['https://www.eventseye.com/fairs/zd1_trade-shows_europe_july_0.html' , 'https://www.eventseye.com/fairs/zd1_trade-shows_europe_july_0_1.html'
+       'https://www.eventseye.com/fairs/zd1_trade-shows_europe_august_0.html', 'https://www.eventseye.com/fairs/zd1_trade-shows_europe_august_0_1.html']
 
-
-
-req = requests.get(URL)
-soup = BeautifulSoup(req.content, 'lxml')
 links = []
-for link in soup.select('.tradeshows'):
-	for a in link.select('a'):
-		if 'f-' in a['href']:
-			links.append('https://www.eventseye.com/fairs/' + a['href'])
+for url in URL:
+	req = requests.get(url)
+	soup = BeautifulSoup(req.content, 'lxml')
+	for link in soup.select('.tradeshows'):
+		for a in link.select('a'):
+			if 'f-' in a['href']:
+				links.append('https://www.eventseye.com/fairs/' + a['href'])
 
 full_data = []
 for event_link in links:
