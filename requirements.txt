@@ -18,3 +18,4 @@ lxml==5.4.0
 transformers==4.52.4
 python-slugify==8.0.4
 torch==2.7.1
+dateparser==1.2.2
