@@ -7,7 +7,7 @@ import re
 import pandas as pd
 from transformers import pipeline
 from slugify import slugify
-from datetime import datetime
+from datetime import datetime, timedelta
 from api.apps.admin.services import AdminService
 from scrapers.util import parsed_photo
 import dateparser
@@ -23,29 +23,25 @@ import re
 def parse_date_range(text):
     text = text.strip()
 
-    # Удалить лишние запятые
-    text = text.replace(',', '')
+    # Удалить "on", запятые и лишние пробелы
+    text = re.sub(r'(?i)\bon\b', '', text).replace(',', '').strip()
 
-    # Попробовать найти год в конце
+    # Найти год, если есть
     year_match = re.search(r'(\b\d{4}\b)$', text)
     year = year_match.group(1) if year_match else ''
-
-    # Удалить год из текста
     text_wo_year = text.replace(year, '').strip()
 
+    # Если это диапазон
     if '-' in text_wo_year:
         parts = [p.strip() for p in text_wo_year.split('-')]
 
         if len(parts) == 2:
-            # Обработка кейса: "Aug. 29 - Sept. 06"
-            # или "Aug. 29 - 31"
-
-            # Если обе части содержат месяцы — используем как есть
+            # Случай: обе части содержат месяцы
             if re.search(r'[A-Za-z]', parts[1]):
                 start_str = f"{parts[0]} {year}"
                 end_str = f"{parts[1]} {year}"
             else:
-                # Вторая часть — только число, значит месяц тот же
+                # Только одна часть с месяцем
                 month = re.match(r'[A-Za-z]+\.?', parts[0]).group()
                 start_str = f"{parts[0]} {year}"
                 end_str = f"{month} {parts[1]} {year}"
@@ -53,11 +49,15 @@ def parse_date_range(text):
             start_date = dateparser.parse(start_str, date_formats=["%Y-%m-%d"])
             end_date = dateparser.parse(end_str, date_formats=["%Y-%m-%d"])
             return start_date, end_date
-    else:
-        # Простой случай: одна дата
-        return dateparser.parse(text), None
 
-    return None, None  # если не удалось разобрать
+    else:
+        # Одиночная дата
+        single_date_str = f"{text_wo_year} {year}".strip()
+        single_date = dateparser.parse(single_date_str, date_formats=["%Y-%m-%d"])
+        return single_date, single_date  + timedelta(days=1)
+
+    return None, None
+
 
 links = []
 for url in URL:
