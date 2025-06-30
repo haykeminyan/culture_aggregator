@@ -14,8 +14,7 @@ import dateparser
 
 UPLOAD_DIR = '../ui/static/exhibitions/exhibition_pictures'
 
-URL = [ 'https://www.eventseye.com/fairs/zd1_trade-shows_europe_july_0_1.html'
-       'https://www.eventseye.com/fairs/zd1_trade-shows_europe_august_0.html', 'https://www.eventseye.com/fairs/zd1_trade-shows_europe_august_0_1.html']
+URL = ['https://www.eventseye.com/']
 
 import dateparser
 import re
@@ -58,9 +57,27 @@ def parse_date_range(text):
 
     return None, None
 
+main_links = []
+number_events = []
+for url in URL:
+    req = requests.get(url)
+    soup = BeautifulSoup(req.content, 'lxml')
+    for all_links_soup in soup.select('.zm-group'):
+        for all_links in all_links_soup.select('.monthgraph'):
+            for link in all_links.select('a'):
+                main_links.append('https://www.eventseye.com/fairs/' + link.get('href'))
+            number_events = re.findall(r'[A-Za-z]{3}\s+(\d+)', all_links.text.strip())
+number_pages = [int(elem)//48 for elem in number_events]
+all_pages = []
+for link, page in zip(main_links, number_pages):
+    for page_num in range(1, page + 1):
+        new_link_page = link + str(page_num)
+        new_link = link.replace('.html', f'_{page_num}.html')
+        main_links.append(new_link)
 
 links = []
-for url in URL:
+for url in main_links:
+    print(url)
     req = requests.get(url)
     soup = BeautifulSoup(req.content, 'lxml')
     for link in soup.select('.tradeshows'):
