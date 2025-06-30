@@ -21,7 +21,6 @@ from api.apps.exhibitions.models import (
 )
 from markdown import markdown
 
-from scrapers.util import parsed_photo
 
 logger = logging.getLogger(__name__)
 

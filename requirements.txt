@@ -19,3 +19,7 @@ transformers==4.52.4
 python-slugify==8.0.4
 torch==2.7.1
 dateparser==1.2.2
+aiohttp==3.12.13
+tqdm==4.67.1
+fake-agent==0.1.4
+chardet==5.2.0
