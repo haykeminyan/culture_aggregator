@@ -93,9 +93,8 @@ class ExhibitionService:
         # Категории
         if categories:
             category_objs = await ExhibitionService.get_by_category(categories)
-            category_ids = [c["id"] for c in category_objs]
+            category_ids = [c["category"] for c in category_objs]
             filters.append(Exhibition.category.is_in(category_ids))
-
         # Даты
         if from_date and until_date:
             filters.append(

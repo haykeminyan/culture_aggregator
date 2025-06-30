@@ -61,7 +61,7 @@ def extracting_all_main_pages(main_links: list[str], number_pages: list[int]) ->
         for page_num in range(1, page + 1):
             new_link = link.replace('.html', f'_{page_num}.html')
             main_links.append(new_link)
-    return main_links[:2]
+    return main_links[:10]
 
 async def extract_single_page(session: ClientSession, url: str) -> list[str]:
     req, content = await fetch(url, session)
@@ -88,7 +88,6 @@ async def parse_event_page(event_link: str, session: ClientSession, sem: asyncio
             req, content = await fetch(event_link, session)
             soup = BeautifulSoup(content, 'lxml')
 
-            # Твоя логика
             title = soup.select_one('.title-line').text.strip()
             img = soup.select_one('.title-line img')
             image = parsed_photo('https://www.eventseye.com' + img['src']) if img else None
@@ -100,11 +99,11 @@ async def parse_event_page(event_link: str, session: ClientSession, sem: asyncio
 
             country = soup.select_one('.countrylink').text.strip()
 
-            categories = [a.get('title') for a in soup.select_one('.industries').select('a')]
+            categories = [a.get('title').strip() for a in soup.select_one('.industries').select('a')]
             classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
             result = classifier(description, categories)
             final_category_ds = result['labels'][0]
-            final_category = final_category_ds.split('exhibitions in')[0]
+            final_category = final_category_ds.split('exhibitions in')[0].strip()
 
             venue = soup.select_one('.venue')
             phone = venue.select_one('.ev-phone').text.strip() if venue.select_one('.ev-phone') else ''
