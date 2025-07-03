@@ -61,7 +61,7 @@ def extracting_all_main_pages(main_links: list[str], number_pages: list[int]) ->
         for page_num in range(1, page + 1):
             new_link = link.replace('.html', f'_{page_num}.html')
             main_links.append(new_link)
-    return main_links[:10]
+    return main_links
 
 async def extract_single_page(session: ClientSession, url: str) -> list[str]:
     req, content = await fetch(url, session)
@@ -137,18 +137,10 @@ async def parse_event_page(event_link: str, session: ClientSession, sem: asyncio
             return None
 
 async def parsing(links: list[str], session: ClientSession) -> list[dict]:
-    sem = asyncio.Semaphore(5)
-    progress = tqdm(total=len(links), desc="Parsing")
-
-    async def wrapped(link):
-        result = await parse_event_page(link, session, sem)
-        progress.update(1)
-        return result
-
-    tasks = [wrapped(link) for link in links]
+    sem = asyncio.Semaphore(30)
+    tasks = [parse_event_page(link, session, sem) for link in links]
     results = await asyncio.gather(*tasks)
 
-    progress.close()
     full_data = [res for res in results if res]
     pd.DataFrame(full_data).to_csv('test.csv')
     return full_data
