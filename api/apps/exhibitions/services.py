@@ -164,7 +164,6 @@ class ExhibitionService:
             raise HTTPException(status_code=404, detail="Exhibition not found")
         exhibition_dict = dict(row)
         exhibition_dict['description'] = markdown(exhibition_dict['description'])
-        logger.error(exhibition_dict)
         await ExhibitionService.format_dates(context=exhibition_dict)
         return exhibition_dict
 
@@ -256,6 +255,23 @@ class ExhibitionService:
         for elem in context:
             await ExhibitionService.format_dates(context=elem)
 
+    @staticmethod
+    async def insert_pictures(exhibition):
+        if isinstance(exhibition, dict):
+            exhibition_dict = exhibition
+        else:
+            exhibition_dict = exhibition.to_dict()
+        return {
+            **exhibition_dict,
+            'images': (
+                exhibition['media']['images']
+                if isinstance(
+                    exhibition['media'] and exhibition['media']['images'],
+                    str,
+                )
+                else exhibition['media']['images']
+            ),
+        }
 
     @staticmethod
     def get_pagination_context(limit: int, offset: int, total: int):
