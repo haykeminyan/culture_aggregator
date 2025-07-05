@@ -1,6 +1,8 @@
+import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
 
+import asyncpg
 from fastapi import Query
 from starlette.exceptions import HTTPException
 from dateutil.parser import parse
@@ -8,8 +10,14 @@ from dateutil.parser import parse
 from api.apps.exhibitions.models import Exhibition, ExhibitionCategory, ExhibitionGeo
 from markdown import markdown
 
+from db import get_pool
+
 logger = logging.getLogger(__name__)
 
+from fastapi import Depends
+
+async def get_db_pool() -> asyncpg.pool.Pool:
+    return await get_pool()
 
 class ExhibitionService:
     def __init__(self, limit: int = 10, offset: int = 0, search: str = ''):
@@ -57,8 +65,7 @@ class ExhibitionService:
             for e in exhibitions
         ]
 
-        await ExhibitionService.insert_format_dates(context=result)
-
+        await asyncio.gather(*[ExhibitionService.insert_format_dates(context=result)])
         return {
             'total': total,
             'limit': self.limit,
@@ -103,8 +110,7 @@ class ExhibitionService:
             )
 
         # Считаем общее количество
-        count_query = Exhibition.select("id").where(*filters)
-        total = len(await count_query.run())
+        total = await Exhibition.count().where(*filters)
 
         # Получаем с пагинацией
         exhibitions = (
@@ -122,7 +128,6 @@ class ExhibitionService:
         )
 
         await ExhibitionService.insert_format_dates(exhibitions)
-        exhibitions = [await ExhibitionService.insert_pictures(e) for e in exhibitions]
         return exhibitions, total
 
     @staticmethod
@@ -133,27 +138,35 @@ class ExhibitionService:
         return {'message': 'Exhibition deleted', 'exhibition': slug}
 
     @staticmethod
-    async def get_by_slug(slug: str):
-        exhibition = await (
-            Exhibition.objects()
-            .where(Exhibition.slug == slug)
-            .prefetch(
-                Exhibition.contact,
-                Exhibition.detail,
-                Exhibition.media,
-                Exhibition.geo,
-                Exhibition.organizer,
-                Exhibition.price,
-            )
-            .first()
-        )
-        exhibition.detail = markdown(exhibition.detail.to_dict()['description'])
-        if not exhibition:
-            raise HTTPException(status_code=404, detail='Exhibition not found')
-
-        await ExhibitionService.format_dates(context=exhibition)
-
-        return await ExhibitionService.insert_pictures(exhibition)
+    async def get_by_slug(slug: str, pool: asyncpg.pool.Pool):
+        async with pool.acquire() as conn:
+            query = """
+                SELECT 
+                    e.title, e.start_date, e.end_date, 
+                    c.website, c.email, c.youtube, c.linkedin, c.tiktok, c.instagram,
+                    d.description,
+                    m.images,
+                    g.latitude, g.longitude,
+                    o.name as organizer_name,
+                    p.price, p.currency
+                FROM exhibition e
+                LEFT JOIN exhibition_contact c ON e.contact = c.id
+                LEFT JOIN exhibition_detail d ON e.detail = d.id
+                LEFT JOIN exhibition_media m ON e.media = m.id
+                LEFT JOIN exhibition_geo g ON e.geo = g.id
+                LEFT JOIN exhibition_organizer o ON e.organizer = o.id
+                LEFT JOIN exhibition_price p ON e.price = p.id
+                WHERE e.slug = $1
+                LIMIT 1
+            """
+            row = await conn.fetchrow(query, slug)
+        if not row:
+            raise HTTPException(status_code=404, detail="Exhibition not found")
+        exhibition_dict = dict(row)
+        exhibition_dict['description'] = markdown(exhibition_dict['description'])
+        logger.error(exhibition_dict)
+        await ExhibitionService.format_dates(context=exhibition_dict)
+        return exhibition_dict
 
     @staticmethod
     async def get_by_category(category_slug: str):
@@ -243,24 +256,6 @@ class ExhibitionService:
         for elem in context:
             await ExhibitionService.format_dates(context=elem)
 
-    @staticmethod
-    async def insert_pictures(exhibition):
-        if isinstance(exhibition, dict):
-            exhibition_dict = exhibition
-        else:
-            exhibition_dict = exhibition.to_dict()
-
-        return {
-            **exhibition_dict,
-            'images': (
-                exhibition['media']['images']
-                if isinstance(
-                    exhibition['media'] and exhibition['media']['images'],
-                    str,
-                )
-                else exhibition['media']['images']
-            ),
-        }
 
     @staticmethod
     def get_pagination_context(limit: int, offset: int, total: int):

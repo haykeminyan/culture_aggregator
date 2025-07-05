@@ -40,39 +40,39 @@
                 </div>
                 <!-- 📖 Description -->
                 <article>
-                    <p>{{ detail|safe }}</p>
+                    <p>{{ description|safe }}</p>
                 </article>
                 <!-- 📍 Location -->
                 <div id="map"
-                     data-lat="{{ geo.latitude }}"
-                     data-lng="{{ geo.longitude }}"
+                     data-lat="{{ latitude }}"
+                     data-lng="{{ longitude }}"
                      style="height: 400px"></div>
             </div>
             <!-- 🧩 Tags -->
             <div class="tags">
-                {% for tag in tags %}<span class="tag">{{ tag.tag }}</span>{% endfor %}
+                {% for tag in tags %}<span class="tag">{{ tag }}</span>{% endfor %}
             </div>
             <!-- Sidebar -->
-            {% if organizer.name or price.price or contact.instagram or contact.linkedin or contact.website %}
+            {% if organizer_name or price or instagram or linkedin or website %}
             <aside class="col-span-1 sticky top-4">
                 <div class="organizer-card">
-                    {% if  organizer.name %}<h3>Organizer: {{ organizer.name }}</h3>{% endif %}
-                    {% if price.price %}<p>🎟️ Price: {{ price.price }} {{ price.currency }}</p>{% endif %}
+                    {% if  organizer_name %}<h3>Organizer: {{ organizer }}</h3>{% endif %}
+                    {% if price %}<p>🎟️ Price: {{ price }} {{ currency }}</p>{% endif %}
                     <!-- 🔗 Social Links -->
                     <ul class="social-links">
-                        {% if contact.instagram %}
+                        {% if instagram %}
                             <li>
-                                <a href="{{ contact.instagram }}">Instagram</a>
+                                <a href="{{ instagram }}">Instagram</a>
                             </li>
                         {% endif %}
-                        {% if contact.linkedin %}
+                        {% if linkedin %}
                             <li>
-                                <a href="{{ contact.linkedin }}">LinkedIn</a>
+                                <a href="{{ linkedin }}">LinkedIn</a>
                             </li>
                         {% endif %}
-                        {% if contact.website %}
+                        {% if website %}
                             <li>
-                                <a href="{{ contact.website }}">Website</a>
+                                <a href="{{ website }}">Website</a>
                             </li>
                         {% endif %}
                     </ul>

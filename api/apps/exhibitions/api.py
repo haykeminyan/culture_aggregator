@@ -1,8 +1,9 @@
 import logging
 
-from fastapi import APIRouter, Query
+import asyncpg
+from fastapi import APIRouter, Query, Depends
 
-from api.apps.exhibitions.services import ExhibitionService
+from api.apps.exhibitions.services import ExhibitionService, get_db_pool
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +24,8 @@ async def delete_api(slug: str):
 
 
 @router.get('/exhibitions/{slug}')
-async def get_by_slug_api(slug: str):
-    return await ExhibitionService.get_by_slug(slug)
+async def get_by_slug_api(slug: str, pool: asyncpg.pool.Pool = Depends(get_db_pool)):
+    return await ExhibitionService.get_by_slug(slug, pool)
 
 
 @router.get('/categories/{category_slug}/')

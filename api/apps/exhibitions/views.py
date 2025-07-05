@@ -1,11 +1,13 @@
 import logging
 from typing import Optional
 from datetime import datetime
-from fastapi import APIRouter, Query, Request
+
+import asyncpg
+from fastapi import APIRouter, Query, Request, Depends
 from fastapi.responses import HTMLResponse
 
 from api.apps.exhibitions.schemas import ExhibitionCreate
-from api.apps.exhibitions.services import ExhibitionService
+from api.apps.exhibitions.services import ExhibitionService, get_db_pool
 from api.core.templates import templates
 from asyncio import gather
 
@@ -69,7 +71,7 @@ async def delete_html(request: Request, slug: str):
 
 
 @router.get('/exhibition/{slug}', response_class=HTMLResponse, include_in_schema=False)
-async def get_by_slug_html(request: Request, slug: str):
-    context = await ExhibitionService.get_by_slug(slug)
+async def get_by_slug_html(request: Request, slug: str, pool: asyncpg.pool.Pool = Depends(get_db_pool)):
+    context = await ExhibitionService.get_by_slug(slug, pool)
     context['request'] = request
     return templates.TemplateResponse('exhibitions/detail.html', context)
