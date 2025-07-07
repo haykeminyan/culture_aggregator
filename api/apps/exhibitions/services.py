@@ -74,61 +74,69 @@ class ExhibitionService:
         }
 
     @staticmethod
-    async def get_filtered(limit: int = 4, offset: int = 0, search=None, countries=None, cities=None, categories=None, from_date=None, until_date=None):
-        # Общие фильтры
+    async def get_filtered(pool: asyncpg.pool.Pool, limit: int = 4, offset: int = 0,  search=None, countries=None, cities=None, categories=None, from_date=None, until_date=None):
         filters = []
+        params = []
+        idx = 1
 
         if search:
-            filters.append(Exhibition.title.ilike(f"%{search}%"))
+            filters.append(f"e.title ILIKE '%' || ${idx} || '%'")
+            params.append(search)
+            idx += 1
 
-        # География
-        if countries or cities:
-            geo_filters = []
-            if countries:
-                geo_filters.append(ExhibitionGeo.country.is_in(countries))
-            if cities:
-                geo_filters.append(ExhibitionGeo.city.is_in(cities))
+        if countries:
+            filters.append(f"geo.country=ANY(${idx})")
+            params.append(countries)
+            idx += 1
 
-            geo_ids = await ExhibitionGeo.select(ExhibitionGeo.id).where(*geo_filters).run()
-            geo_ids = [g["id"] for g in geo_ids]
+        if cities:
+            filters.append(f"geo.city=ANY(${idx})")
+            params.append(cities)
+            idx += 1
 
-            if not geo_ids:
-                return [], 0
-
-            filters.append(Exhibition.geo.is_in(geo_ids))
-
-        # Категории
         if categories:
-            category_objs = await ExhibitionService.get_by_category(categories)
-            category_ids = [c["category"] for c in category_objs]
-            filters.append(Exhibition.category.is_in(category_ids))
-        # Даты
+            filters.append(f"c.slug = ANY(${idx})")
+            if isinstance(categories, str):
+                params.append([categories])
+            else:
+                params.append(categories)
+            idx += 1
+
         if from_date and until_date:
-            filters.append(
-                (Exhibition.start_date >= from_date)
-                & (Exhibition.end_date <= until_date)
-            )
+            filters.append(f"e.start_date >= ${idx} AND e.end_date <= ${idx + 1}")
+            params.append(from_date)
+            params.append(until_date)
+            idx += 2
 
-        # Считаем общее количество
-        total = await Exhibition.count().where(*filters)
+        where_clause = " AND ".join(filters)
+        if where_clause:
+            where_clause = "WHERE " + where_clause
 
-        # Получаем с пагинацией
-        exhibitions = (
-            await Exhibition.objects()
-            .where(*filters)
-            .order_by(Exhibition.created_at, ascending=False)
-            .offset(offset)
-            .limit(limit)
-            .prefetch(
-                Exhibition.media,
-                Exhibition.category,
-                Exhibition.geo,
-            )
-            .run()
-        )
+        query = f"""
+            SELECT
+                e.id, e.title, e.slug, e.start_date, e.end_date, e.short_description,
+                e.created_at,
+                geo.location, geo.country, geo.city,
+                m.images,
+                c.title AS category_title, c.slug AS category_slug
+            FROM exhibition e
+                LEFT JOIN exhibition_geo geo ON e.geo = geo.id
+                LEFT JOIN exhibition_media m ON e.media = m.id
+                LEFT JOIN exhibition_category c ON e.category = c.id
+            {where_clause}
+            ORDER BY e.created_at DESC
+            LIMIT ${idx} OFFSET ${idx + 1}
+        """
+        params += [limit, offset]
 
-        await ExhibitionService.insert_format_dates(exhibitions)
-        return exhibitions, total
+        count_query = f"SELECT COUNT(*) FROM exhibition e LEFT JOIN exhibition_geo geo ON e.geo = geo.id LEFT JOIN exhibition_category c ON e.category = c.id {where_clause}"
+
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(query, *params)
+            count = await conn.fetchval(count_query, *params[:-2])  # exclude limit/offset
+
+        exhibitions = [dict(r) for r in rows]
+        return exhibitions, count
 
     @staticmethod
     async def delete(slug: str):
@@ -193,23 +201,6 @@ class ExhibitionService:
         return categories
 
     @staticmethod
-    async def get_by_country(country: str):
-        country = (
-            await ExhibitionGeo.objects()
-            .where(ExhibitionGeo.country == country)
-        )
-        country_ids = [geo['id'] for geo in country]
-
-        exhibitions = (
-            await Exhibition.objects()
-            .where(Exhibition.geo.is_in(country_ids))
-            .prefetch(Exhibition.media, Exhibition.category, Exhibition.geo)
-        )
-        await ExhibitionService.insert_format_dates(context=exhibitions)
-
-        return [await ExhibitionService.insert_pictures(e) for e in exhibitions]
-
-    @staticmethod
     async def get_countries():
         countries = await ExhibitionGeo.objects()
         country_unique = []
@@ -217,23 +208,6 @@ class ExhibitionService:
             if elem.country not in country_unique:
                 country_unique.append(elem.country)
         return sorted(country_unique)
-
-    @staticmethod
-    async def get_by_city(city: str):
-        city = (
-            await ExhibitionGeo.objects()
-            .where(ExhibitionGeo.city == city)
-        )
-        city_ids = [geo['id'] for geo in city]
-
-        exhibitions = (
-            await Exhibition.objects()
-            .where(Exhibition.geo.is_in(city_ids))
-            .prefetch(Exhibition.media, Exhibition.category, Exhibition.geo)
-        )
-        await ExhibitionService.insert_format_dates(context=exhibitions)
-
-        return [await ExhibitionService.insert_pictures(e) for e in exhibitions]
 
     @staticmethod
     async def get_cities():

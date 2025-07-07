@@ -19,6 +19,7 @@ router = APIRouter(prefix='', tags=['Exhibitions Views'])
 @router.get('/', response_class=HTMLResponse, include_in_schema=False)
 async def get_all_html(
     request: Request,
+    pool: asyncpg.pool.Pool = Depends(get_db_pool),
     search: str = Query('', alias='search'),
     country: Optional[list[str]] = Query(default=[]),
     city: Optional[list[str]] = Query(default=[]),
@@ -32,6 +33,7 @@ async def get_all_html(
 
     # фильтрация по множеству
     exhibitions, total = await service.get_filtered(
+        pool=pool,
         search=search,
         countries=country,
         cities=city,
@@ -47,6 +49,8 @@ async def get_all_html(
         service.get_cities(),
     )
     logger.error(f"selected_country in context: {country} ({type(country)})")
+    logger.error([limit, offset, total])
+    logger.error('!'*100)
     context = {
         'request': request,
         'exhibitions': exhibitions,

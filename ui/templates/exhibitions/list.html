@@ -135,15 +135,15 @@
                         </div>
                         <a href='/exhibition/{{ exhibition.slug }}'>
                             <h3 class="exhibition-title">{{ exhibition.title }}</h3>
-                            <span class="tag-location">{{ exhibition.geo.location }}</span>
-                            <span class="tag-city">{{ exhibition.geo.city }}</span>
-                            <span class="tag-country">{{ exhibition.geo.country }}</span>
+                            <span class="tag-location">{{ exhibition.location }}</span>
+                            <span class="tag-city">{{ exhibition.city }}</span>
+                            <span class="tag-country">{{ exhibition.country }}</span>
                             <p class="exhibition-short-description">{{ exhibition.short_description }}</p>
                             <br />
                             <div class="charity-contact">
-                                {% if exhibition.contact.website %}
+                                {% if exhibition.website %}
                                     <p class="flex items-center">
-                                        🌐 <a href="{{ exhibition.contact.website }}"
+                                        🌐 <a href="{{ exhibition.website }}"
     target="_blank"
     class="text-blue-600 hover:underline ml-1">Website</a>
                                     </p>
