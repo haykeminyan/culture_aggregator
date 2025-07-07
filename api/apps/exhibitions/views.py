@@ -43,14 +43,13 @@ async def get_all_html(
         offset=offset,
         limit=limit,
     )
+
     categories, countries, cities = await gather(
-        service.get_categories(),
-        service.get_countries(),
-        service.get_cities(),
+        service.get_categories(pool=pool),
+        service.get_countries(pool=pool),
+        service.get_cities(pool=pool),
     )
-    logger.error(f"selected_country in context: {country} ({type(country)})")
-    logger.error([limit, offset, total])
-    logger.error('!'*100)
+
     context = {
         'request': request,
         'exhibitions': exhibitions,
