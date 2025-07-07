@@ -11,6 +11,7 @@ from api.apps.exhibitions.models import Exhibition, ExhibitionCategory, Exhibiti
 from markdown import markdown
 
 from db import get_pool
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +31,7 @@ class ExhibitionService:
         filters = []
         params = []
         idx = 1
-
+        start = time.monotonic()
         if search:
             filters.append(f"e.title ILIKE '%' || ${idx} || '%'")
             params.append(search)
@@ -80,13 +81,13 @@ class ExhibitionService:
             LIMIT ${idx} OFFSET ${idx + 1}
         """
         params += [limit, offset]
-
         count_query = f"SELECT COUNT(*) FROM exhibition e LEFT JOIN exhibition_geo geo ON e.geo = geo.id LEFT JOIN exhibition_category c ON e.category = c.id {where_clause}"
-
         async with pool.acquire() as conn:
             rows = await conn.fetch(query, *params)
             count = await conn.fetchval(count_query, *params[:-2])  # exclude limit/offset
-
+        elapsed = time.monotonic() - start
+        logger.error(f"get_filtered() SQL took {elapsed:.15f} seconds")
+        logger.error('!'*10)
         exhibitions = [dict(r) for r in rows]
         return exhibitions, count
 
@@ -99,6 +100,7 @@ class ExhibitionService:
 
     @staticmethod
     async def get_by_slug(slug: str, pool: asyncpg.pool.Pool):
+        start = time.monotonic()
         async with pool.acquire() as conn:
             query = """
                 SELECT 
@@ -122,6 +124,9 @@ class ExhibitionService:
             row = await conn.fetchrow(query, slug)
         if not row:
             raise HTTPException(status_code=404, detail="Exhibition not found")
+        elapsed = time.monotonic() - start
+        logger.error(f"get_by_slug() SQL took {elapsed:.15f} seconds")
+        logger.error('!'*10)
         exhibition_dict = dict(row)
         exhibition_dict['description'] = markdown(exhibition_dict['description'])
         await ExhibitionService.format_dates(context=exhibition_dict)
@@ -129,33 +134,43 @@ class ExhibitionService:
 
     @staticmethod
     async def get_categories(pool: asyncpg.pool.Pool):
+        start = time.monotonic()
         async with pool.acquire() as conn:
             query = """
                 SELECT DISTINCT title, slug FROM exhibition_category order by title ASC
             """
             row = await conn.fetch(query)
+        elapsed = time.monotonic() - start
+        logger.error(f"get_categories() SQL took {elapsed:.15f} seconds")
+        logger.error('!'*10)
         categories = [{'title': r['title'], 'slug': r['slug']} for r in row]
-
-        logger.error(categories)
         return categories
 
     @staticmethod
     async def get_countries(pool: asyncpg.pool.Pool):
+        start = time.monotonic()
         async with pool.acquire() as conn:
             query = """
                 SELECT DISTINCT country from exhibition_geo order by country ASC
             """
             rows = await conn.fetch(query)
+        elapsed = time.monotonic() - start
+        logger.error(f"get_countries() SQL took {elapsed:.15f} seconds")
+        logger.error('!'*10)
         countries = [r["country"] for r in rows]
         return countries
 
     @staticmethod
     async def get_cities(pool: asyncpg.pool.Pool):
+        start = time.monotonic()
         async with pool.acquire() as conn:
             query = """
                 SELECT DISTINCT city from exhibition_geo order by city ASC
             """
             rows = await conn.fetch(query)
+        elapsed = time.monotonic() - start
+        logger.error(f"get_cities() SQL took {elapsed:.15f} seconds")
+        logger.error('!'*10)
         cities = [r["city"] for r in rows]
         return cities
 
