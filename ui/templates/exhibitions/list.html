@@ -28,65 +28,81 @@
 <!-- Фильтр по странам -->
 <div class="filter-section-country">
   <span class="filter-label">Search with country</span>
-  <div class="country-filter flex gap-2 flex-wrap items-center">
+  <div class="country-filter flex gap-2 flex-wrap items-center" id="country-container">
     {% for country in countries %}
       <button type="button"
               class="country block px-2 py-1 border rounded {% if country in selected_country %}active{% endif %}"
               data-type="country"
               data-value="{{ country }}">
         {{ country }}
-
       </button>
     {% endfor %}
+
+<button id="load-more-countries"  class="text-sm text-blue-600 hover:underline flex items-center gap-1">
+  <span>Show more</span>
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+  </svg>
+</button>
 <button type="button"
         id="clear-country"
         class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">
   ×
 </button>
   </div>
-
 </div>
 
-
-  <!-- Фильтр по городам -->
-  <div class="filter-section-city">
-    <span class="filter-label">Search with city</span>
-    <div class="city-filter flex gap-2 flex-wrap">
-      {% for city in cities %}
+<!-- Фильтр по городам -->
+<div class="filter-section-city">
+  <span class="filter-label">Search with city</span>
+  <div class="city-filter flex gap-2 flex-wrap" id="city-container">
+    {% for city in cities %}
       <button type="button"
               class="city block px-2 py-1 border rounded {% if city in selected_city %}active{% endif %}"
               data-type="city"
               data-value="{{ city }}">
         {{ city }}
       </button>
-      {% endfor %}
+    {% endfor %}
+<button id="load-more-cities"  class="text-sm text-blue-600 hover:underline flex items-center gap-1">
+  <span>Show more</span>
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+  </svg>
+</button>
 <button type="button"
         id="clear-city"
         class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">
   ×
 </button>
-    </div>
   </div>
+</div>
 
-  <!-- Фильтр по категориям -->
-  <div class="filter-section-categories">
-    <span class="filter-label">Search with category</span>
-    <div class="category-filter flex gap-2 flex-wrap">
-      {% for category in categories %}
+<!-- Фильтр по категориям -->
+<div class="filter-section-categories">
+  <span class="filter-label">Search with category</span>
+  <div class="category-filter flex gap-2 flex-wrap" id="category-container">
+    {% for category in categories %}
       <button type="button"
               class="category block px-2 py-1 border rounded {% if category.slug == selected_category %}active{% endif %}"
               data-type="category"
               data-value="{{ category.slug }}">
         {{ category.title }}
       </button>
-      {% endfor %}
+    {% endfor %}
+      <button id="load-more-categories"  class="text-sm text-blue-600 hover:underline flex items-center gap-1">
+  <span>Show more</span>
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+  </svg>
+</button>
 <button type="button"
         id="clear-category"
         class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">
   ×
 </button>
-    </div>
   </div>
+</div>
 
 
 

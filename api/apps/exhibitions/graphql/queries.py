@@ -1,10 +1,15 @@
 import logging
+from datetime import datetime
 
+import asyncpg
+import dateparser
 import strawberry
+from fastapi import Depends
 
 from api.apps.exhibitions.graphql.services import ExhibitionServiceGraphQL
-from api.apps.exhibitions.graphql.types import Exhibition
+from api.apps.exhibitions.graphql.types import Exhibition, ExhibitionDetail
 from api.apps.exhibitions.services import ExhibitionService
+from strawberry.types import Info
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +25,18 @@ class Query:
         return results
 
     @strawberry.field
-    async def get_by_slug(self, slug: str) -> Exhibition:
-        data = await ExhibitionServiceGraphQL.get_by_slug(slug)
-        return Exhibition.from_dict(data['exhibition'])
+    async def get_by_slug(self, info: Info, slug: str) -> ExhibitionDetail:
+        pool: asyncpg.pool.Pool = info.context["pool"]
+
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow("SELECT * FROM exhibition e left join exhibition_detail e_d on e.id = e_d.id left join exhibition_geo e_g on e.id = e_g.id WHERE slug = $1 ", slug)
+
+        if not row:
+            raise Exception("Not found")
+        data = dict(row)
+
+        logger.error(data)
+        return ExhibitionDetail.from_dict(data)
 
     @strawberry.field
     async def get_by_category(self, slug: str) -> list[Exhibition]:

@@ -1,94 +1,183 @@
-const selected = {
-  country: [],
-  city: [],
-  category: null,
-};
+document.addEventListener('DOMContentLoaded', () => {
+  // --- Инициализация выбранных фильтров из URL ---
+  const selected = {
+    country: [],
+    city: [],
+    category: null,
+  };
 
-const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window.location.search);
+  selected.country = params.getAll('country');
+  selected.city = params.getAll('city');
+  selected.category = params.get('category');
 
-// Инициализация из URL
-selected.country = params.getAll('country');
-selected.city = params.getAll('city');
-selected.category = params.get('category');
+  // --- Функция обновления активных классов кнопок ---
+  function updateButtonStates() {
+    document.querySelectorAll('button[data-type="country"]').forEach(btn => {
+      btn.classList.toggle('active', selected.country.includes(btn.dataset.value));
+    });
+    document.querySelectorAll('button[data-type="city"]').forEach(btn => {
+      btn.classList.toggle('active', selected.city.includes(btn.dataset.value));
+    });
+    document.querySelectorAll('button[data-type="category"]').forEach(btn => {
+      btn.classList.toggle('active', selected.category === btn.dataset.value);
+    });
+  }
 
-// Установка active-классов
-function updateButtonStates() {
-  document.querySelectorAll('button[data-type="country"]').forEach(btn => {
-    btn.classList.toggle('active', selected.country.includes(btn.dataset.value));
-  });
+  // --- Обновление URL и перезагрузка страницы с новыми параметрами ---
+  function applyFilters() {
+    const url = new URL(window.location.href);
+    const sp = url.searchParams;
 
-  document.querySelectorAll('button[data-type="city"]').forEach(btn => {
-    btn.classList.toggle('active', selected.city.includes(btn.dataset.value));
-  });
+    sp.delete("country");
+    sp.delete("city");
+    sp.delete("category");
+    sp.delete("offset"); // сброс пагинации
 
-  document.querySelectorAll('button[data-type="category"]').forEach(btn => {
-    btn.classList.toggle('active', selected.category === btn.dataset.value);
-  });
-}
+    selected.country.forEach(c => sp.append("country", c));
+    selected.city.forEach(c => sp.append("city", c));
+    if (selected.category) sp.set("category", selected.category);
 
-// ✅ Обновить URL и перезагрузить (фильтр меняется → offset сбрасывается)
-function applyFilters() {
-  const url = new URL(window.location.href);
-  const sp = url.searchParams;
+    const from = document.getElementById("from_date")?.value;
+    const until = document.getElementById("until_date")?.value;
+    if (from) sp.set("from_date", from);
+    if (until) sp.set("until_date", until);
 
-  sp.delete("country");
-  sp.delete("city");
-  sp.delete("category");
-  sp.delete("offset"); // сброс пагинации
+    window.location.href = `${url.pathname}?${sp.toString()}`;
+  }
 
-  selected.country.forEach(c => sp.append("country", c));
-  selected.city.forEach(c => sp.append("city", c));
-  if (selected.category) sp.set("category", selected.category);
+  // --- Обработчики кнопок фильтров ---
+  document.querySelectorAll('button[data-type]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const type = btn.dataset.type;
+      const value = btn.dataset.value;
 
-  // Добавляем from_date и until_date, если заданы
-  const from = document.getElementById("from_date")?.value;
-  const until = document.getElementById("until_date")?.value;
-
-  if (from) sp.set("from_date", from);
-  if (until) sp.set("until_date", until);
-
-  window.location.href = `${url.pathname}?${sp.toString()}`;
-}
-
-// Обработчики кнопок-фильтров
-document.querySelectorAll('button[data-type]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const type = btn.dataset.type;
-    const value = btn.dataset.value;
-
-    if (type === 'category') {
-      selected.category = selected.category === value ? null : value;
-    } else {
-      const idx = selected[type].indexOf(value);
-      if (idx >= 0) {
-        selected[type].splice(idx, 1);
+      if (type === 'category') {
+        selected.category = selected.category === value ? null : value;
       } else {
-        selected[type].push(value);
+        const idx = selected[type].indexOf(value);
+        if (idx >= 0) {
+          selected[type].splice(idx, 1);
+        } else {
+          selected[type].push(value);
+        }
       }
+
+      applyFilters();
+    });
+  });
+
+  // --- Очистка конкретного параметра фильтра ---
+  function clearParam(param) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(param);
+    url.searchParams.delete('offset');
+    window.location.href = url.toString();
+  }
+
+  document.getElementById("clear-category")?.addEventListener("click", () => clearParam('category'));
+  document.getElementById("clear-city")?.addEventListener("click", () => clearParam('city'));
+  document.getElementById("clear-country")?.addEventListener("click", () => clearParam('country'));
+
+  // --- Логика показа кнопок с "Show more" ---
+  const batchSize = 20;
+
+  // Страны
+  const allCountryButtons = Array.from(document.querySelectorAll('button[data-type="country"]'));
+  const loadMoreCountryBtn = document.getElementById('load-more-countries');
+  const activeCountries = new Set(selected.country);
+  let countryPool = [];
+
+  allCountryButtons.forEach(btn => btn.style.display = 'none');
+  allCountryButtons.forEach(btn => {
+    if (activeCountries.has(btn.dataset.value)) {
+      btn.style.display = 'inline-block';
+      btn.dataset.forceVisible = 'true';
+    } else {
+      countryPool.push(btn);
     }
-
-    applyFilters(); // при клике сразу обновляем URL
   });
-});
 
-// Очистка конкретного фильтра
-function clearParam(param) {
-  const url = new URL(window.location.href);
-  url.searchParams.delete(param);
-  url.searchParams.delete('offset');
-  window.location.href = url.toString();
-}
+  function showNextBatchCountries() {
+    const nextBatch = countryPool.splice(0, batchSize);
+    nextBatch.forEach(btn => btn.style.display = 'inline-block');
 
-document.getElementById("clear-category")?.addEventListener("click", () => clearParam('category'));
-document.getElementById("clear-city")?.addEventListener("click", () => clearParam('city'));
-document.getElementById("clear-country")?.addEventListener("click", () => clearParam('country'));
+    if (countryPool.length === 0) {
+      loadMoreCountryBtn.style.display = 'none';
+    }
+  }
 
-// Подсветка активных кнопок при загрузке
-window.addEventListener('DOMContentLoaded', updateButtonStates);
+  showNextBatchCountries();
 
-// Удаление пустых инпутов при сабмите
-document.getElementById('filter-form')?.addEventListener('submit', function () {
-  this.querySelectorAll('input').forEach(input => {
-    if (!input.value.trim()) input.remove();
+  loadMoreCountryBtn?.addEventListener('click', e => {
+    e.preventDefault();
+    showNextBatchCountries();
   });
+
+  // Города
+  const allCityButtons = Array.from(document.querySelectorAll('button[data-type="city"]'));
+  const loadMoreCityBtn = document.getElementById('load-more-cities');
+  const activeCities = new Set(selected.city);
+  let cityPool = [];
+
+  allCityButtons.forEach(btn => btn.style.display = 'none');
+  allCityButtons.forEach(btn => {
+    if (activeCities.has(btn.dataset.value)) {
+      btn.style.display = 'inline-block';
+      btn.dataset.forceVisible = 'true';
+    } else {
+      cityPool.push(btn);
+    }
+  });
+
+  function showNextBatchCities() {
+    const nextBatch = cityPool.splice(0, batchSize);
+    nextBatch.forEach(btn => btn.style.display = 'inline-block');
+
+    if (cityPool.length === 0) {
+      loadMoreCityBtn.style.display = 'none';
+    }
+  }
+
+  showNextBatchCities();
+
+  loadMoreCityBtn?.addEventListener('click', e => {
+    e.preventDefault();
+    showNextBatchCities();
+  });
+
+  // Категории
+  const allCategoryButtons = Array.from(document.querySelectorAll('button[data-type="category"]'));
+  const loadMoreCategoryBtn = document.getElementById('load-more-categories');
+  const activeCategory = selected.category;
+  let categoryPool = [];
+
+  allCategoryButtons.forEach(btn => btn.style.display = 'none');
+  allCategoryButtons.forEach(btn => {
+    if (activeCategory === btn.dataset.value) {
+      btn.style.display = 'inline-block';
+      btn.dataset.forceVisible = 'true';
+    } else {
+      categoryPool.push(btn);
+    }
+  });
+
+  function showNextBatchCategories() {
+    const nextBatch = categoryPool.splice(0, batchSize);
+    nextBatch.forEach(btn => btn.style.display = 'inline-block');
+
+    if (categoryPool.length === 0) {
+      loadMoreCategoryBtn.style.display = 'none';
+    }
+  }
+
+  showNextBatchCategories();
+
+  loadMoreCategoryBtn?.addEventListener('click', e => {
+    e.preventDefault();
+    showNextBatchCategories();
+  });
+
+  // --- Подсвечиваем активные кнопки (после инициализации показа) ---
+  updateButtonStates();
 });

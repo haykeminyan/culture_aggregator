@@ -1,5 +1,7 @@
 from datetime import datetime
+from typing import Optional
 
+import dateparser
 import strawberry
 
 
@@ -34,11 +36,25 @@ class ExhibitionCategory:
 
 @strawberry.type
 class ExhibitionDetail:
+    title: str
+    slug: str
     description: str
+    start_date: Optional[datetime]
+    end_date: Optional[datetime]
+    latitude: float
+    longitude: float
+
+
 
     @classmethod
     def from_dict(cls, data: dict) -> 'ExhibitionDetail':
-        return cls(description=data['description'])
+        return cls(title=data['title'],
+                   slug=data['slug'],
+                   start_date=data['start_date'],
+                   end_date=data['start_date'],
+                   latitude=data['latitude'],
+                   longitude=data['longitude'],
+                   description=data['description'])
 
 
 @strawberry.type
@@ -52,7 +68,7 @@ class Exhibition:
     id: str
     category: ExhibitionCategory
     geo: ExhibitionGeo
-    details: ExhibitionDetail
+    detail: ExhibitionDetail
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Exhibition':
@@ -66,7 +82,7 @@ class Exhibition:
             is_active=data['is_active'],
             category=ExhibitionCategory.from_dict(data['category']),
             geo=ExhibitionGeo.from_dict(data['geo']),
-            details=ExhibitionDetail.from_dict(data['details']),
+            detail=ExhibitionDetail.from_dict(data['detail']),
         )
 
 

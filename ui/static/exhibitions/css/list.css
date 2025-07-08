@@ -236,6 +236,7 @@ body {
   font-weight: 500;
   text-transform: capitalize;
   color: var(--categories-tags-text);
+  display: none;
 }
 
 .country:hover {

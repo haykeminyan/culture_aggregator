@@ -1,7 +1,9 @@
 import logging
 import os
+import socket
 from datetime import datetime
 
+import asyncpg
 import pytz
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -37,6 +39,7 @@ from api.apps.exhibitions.models import (
     ExhibitionTagLink,
 )
 from api.apps.users.models import AdminUser, Sessions
+from contextlib import asynccontextmanager
 
 # Logging setup
 logging.basicConfig(level=logging.INFO)
@@ -45,7 +48,31 @@ logger = logging.getLogger(__name__)
 # Load env variables
 load_dotenv()
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    raw_dsn = os.getenv("DATABASE_URL")
+    if not raw_dsn:
+        raise RuntimeError("DATABASE_URL environment variable not set")
+
+    asyncpg_dsn = raw_dsn.replace("+asyncpg", "")
+
+    # Try resolving the host before pool creation to catch issues early
+    try:
+        host = asyncpg_dsn.split("@")[1].split("/")[0].split(":")[0]
+        socket.gethostbyname(host)
+    except Exception as e:
+        print(f"Cannot resolve host '{host}': {e}")
+        raise  # optionally re-raise to fail startup
+
+    app.state.pool = await asyncpg.create_pool(dsn=asyncpg_dsn)
+    try:
+        yield
+    finally:
+        await app.state.pool.close()
+
+
 # App
+# app = FastAPI(docs_url=None, redoc_url=None, lifespan=lifespan)
 app = FastAPI(docs_url=None, redoc_url=None)
 
 # -------------------- Config --------------------
@@ -155,12 +182,14 @@ app.include_router(exhibition_router_view, prefix='/exhibitions')
 app.include_router(exhibition_router_api)
 app.include_router(admin_router_api, prefix='/admin_api')
 
+def get_context(request: Request):
+    return {"pool": request.app.state.pool}
 # GraphQL
 graphql_app = GraphQLRouter(
     schema,
     subscription_protocols=[GRAPHQL_TRANSPORT_WS_PROTOCOL],
     graphiql=True,  # Set to False in production
+context_getter=get_context,
 )
 app.include_router(graphql_app, prefix='/graphql')
 
-# ------------------------------------------------
