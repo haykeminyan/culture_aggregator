@@ -119,6 +119,7 @@ async def exhibition_create(
     end_date: datetime = Form(default=datetime.now(pytz.UTC)),
     detail: str = Form(),
     location: str = Form(),
+        email: str = Form(),
     latitude: float = Form(),
     longitude: float = Form(),
     country: str = Form(),
@@ -151,6 +152,7 @@ async def exhibition_create(
         currency,
         organizer_name,
         website,
+        email,
         youtube,
         instagram,
         linkedin,
@@ -244,3 +246,7 @@ async def exhibition_delete(
 ):
     await AdminService.delete_exhibition(exhibition_slug)
     return RedirectResponse('/custom_admin/exhibitions/', status_code=303)
+
+
+
+

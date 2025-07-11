@@ -23,3 +23,4 @@ aiohttp==3.12.13
 tqdm==4.67.1
 fake-agent==0.1.4
 chardet==5.2.0
+mdformat==0.7.22

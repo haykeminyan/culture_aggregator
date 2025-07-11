@@ -1,5 +1,6 @@
 piccolo --diagnose
 
+piccolo app new my_app --register
 piccolo migrations new exhibitions --auto
 piccolo migrations forwards exhibitions
 

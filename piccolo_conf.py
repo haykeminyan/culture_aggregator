@@ -6,7 +6,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 load_dotenv()
-
 DB = PostgresEngine(
     config={
         "database": os.getenv("POSTGRES_DB", "culture_aggregator"),
@@ -16,11 +15,11 @@ DB = PostgresEngine(
         "port": int(os.getenv("POSTGRES_PORT", 5432)),
     }
 )
-
 APP_REGISTRY = AppRegistry(
     apps=[
-        'api.apps.users.piccolo_app',
-        'piccolo_api.session_auth.piccolo_app',
-        'api.apps.exhibitions.piccolo_app',
-    ],
+        "api.apps.users.piccolo_app",
+        "piccolo_api.session_auth.piccolo_app",
+        "api.apps.exhibitions.piccolo_app",
+        "api.apps.discounts.piccolo_app",
+    ]
 )
