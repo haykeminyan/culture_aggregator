@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
   selected.city = params.getAll('city');
   selected.category = params.get('category');
 
-  // --- Функция обновления активных классов кнопок ---
   function updateButtonStates() {
     document.querySelectorAll('button[data-type="country"]').forEach(btn => {
       btn.classList.toggle('active', selected.country.includes(btn.dataset.value));
@@ -24,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Обновление URL и перезагрузка страницы с новыми параметрами ---
   function applyFilters() {
     const url = new URL(window.location.href);
     const sp = url.searchParams;
@@ -43,10 +41,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (from) sp.set("from_date", from);
     if (until) sp.set("until_date", until);
 
+    const search = document.getElementById("search")?.value?.trim();
+    if (search) {
+      sp.set("search", search);
+    } else {
+      sp.delete("search");
+    }
+
     window.location.href = `${url.pathname}?${sp.toString()}`;
   }
 
-  // --- Обработчики кнопок фильтров ---
   document.querySelectorAll('button[data-type]').forEach(btn => {
     btn.addEventListener('click', () => {
       const type = btn.dataset.type;
@@ -67,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --- Очистка конкретного параметра фильтра ---
   function clearParam(param) {
     const url = new URL(window.location.href);
     url.searchParams.delete(param);

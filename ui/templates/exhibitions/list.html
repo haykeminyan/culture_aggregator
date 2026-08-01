@@ -1,190 +1,162 @@
 {% extends "exhibitions/base.html" %}
 {% block content %}
     <div x-data="{ category: '', search: '' }" class="p-4">
-<form id="filter-form" method="GET" action="{{ request.url.path }}" class="flex flex-col gap-4">
-  <input type="hidden" name="limit" value="{{ limit }}">
-  <input type="hidden" name="offset" value="{{ offset }}">
-  <input type="text"
-         name="search"
-         value="{{ search }}"
-         placeholder="Search exhibitions..."
-         class="w-full border rounded px-4 py-2 shadow-sm" />
-  <!-- Даты -->
-  <div class="filter-section-dates flex gap-4 items-center">
-    <label for="from_date">From:</label>
-    <input type="date"
-           id="from_date"
-           name="from_date"
-           value="{{ from_date or '' }}"
-           class="border px-2 py-1 rounded" />
+        <form id="filter-form" method="GET" action="{{ request.url.path }}" class="flex flex-col gap-4">
+            <input type="hidden" name="limit" value="{{ limit }}">
+            <input type="hidden" name="offset" value="{{ offset }}">
+            <input type="text"
+                   id="search"
+                   name="search"
+                   value="{{ search }}"
+                   placeholder="Search exhibitions..."
+                   class="w-full border rounded px-4 py-2 shadow-sm" />
 
-    <label for="until_date">Until:</label>
-    <input type="date"
-           id="until_date"
-           name="until_date"
-           value="{{ until_date or '' }}"
-           class="border px-2 py-1 rounded" />
-  </div>
-<!-- Фильтр по странам -->
-<div class="filter-section-country">
-  <span class="filter-label">Search with country</span>
-  <div class="country-filter flex gap-2 flex-wrap items-center" id="country-container">
-    {% for country in countries %}
-      <button type="button"
-              class="country block px-2 py-1 border rounded {% if country in selected_country %}active{% endif %}"
-              data-type="country"
-              data-value="{{ country }}">
-        {{ country }}
-      </button>
-    {% endfor %}
+            <!-- Даты -->
+            <div class="filter-section-dates flex gap-4 items-center">
+                <label for="from_date">From:</label>
+                <input type="date"
+                       id="from_date"
+                       name="from_date"
+                       value="{{ from_date or '' }}"
+                       class="border px-2 py-1 rounded" />
 
-<button id="load-more-countries"  class="text-sm text-blue-600 hover:underline flex items-center gap-1">
-  <span>Show more</span>
-  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-  </svg>
-</button>
-<button type="button"
-        id="clear-country"
-        class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">
-  ×
-</button>
-  </div>
-</div>
+                <label for="until_date">Until:</label>
+                <input type="date"
+                       id="until_date"
+                       name="until_date"
+                       value="{{ until_date or '' }}"
+                       class="border px-2 py-1 rounded" />
+            </div>
 
-<!-- Фильтр по городам -->
-<div class="filter-section-city">
-  <span class="filter-label">Search with city</span>
-  <div class="city-filter flex gap-2 flex-wrap" id="city-container">
-    {% for city in cities %}
-      <button type="button"
-              class="city block px-2 py-1 border rounded {% if city in selected_city %}active{% endif %}"
-              data-type="city"
-              data-value="{{ city }}">
-        {{ city }}
-      </button>
-    {% endfor %}
-<button id="load-more-cities"  class="text-sm text-blue-600 hover:underline flex items-center gap-1">
-  <span>Show more</span>
-  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-  </svg>
-</button>
-<button type="button"
-        id="clear-city"
-        class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">
-  ×
-</button>
-  </div>
-</div>
-
-<!-- Фильтр по категориям -->
-<div class="filter-section-categories">
-  <span class="filter-label">Search with category</span>
-  <div class="category-filter flex gap-2 flex-wrap" id="category-container">
-    {% for category in categories %}
-      <button type="button"
-              class="category block px-2 py-1 border rounded {% if category.slug == selected_category %}active{% endif %}"
-              data-type="category"
-              data-value="{{ category.slug }}">
-        {{ category.title }}
-      </button>
-    {% endfor %}
-      <button id="load-more-categories"  class="text-sm text-blue-600 hover:underline flex items-center gap-1">
-  <span>Show more</span>
-  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-  </svg>
-</button>
-<button type="button"
-        id="clear-category"
-        class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">
-  ×
-</button>
-  </div>
-</div>
-
-
-
-  <!-- Hidden inputs -->
-  <div id="hidden-filters"></div>
-
-<div class="flex items-center mt-2 space-x-1 filter-btn">
-
-  <a href="{{ request.url.path }}"
-     class="px-3 py-2 bg-gray-200 text-red-600 rounded shadow hover:bg-gray-300">
-    Reset all filters
-  </a>
-</div>
-
-
-</form>
-
-
-    <!-- Server-side rendered exhibitions list -->
-    <!-- CHARITY LIST -->
-    <div class="exhibition-list">
-        {% if exhibitions %}
-            {% for exhibition in exhibitions %}
-                <div class="exhibition-card">
-                    <div class="exhibition-content">
-                        <div class="exhibition-gallery swiper w-full max-w-xl">
-                            <div class="swiper-wrapper">
-                                {% if exhibition.images %}
-                                    {% for image in exhibition.images %}
-                                        <div class="swiper-slide">
-                                            <img src="/static/{{ image }}"
-                                                 class="w-full h-100 object-cover rounded image" />
-                                        </div>
-                                    {% endfor %}
-                                {% else %}
-                                    <div class="swiper-slide">
-                                        <img src="/static/exhibitions/exhibition_pictures/default_image.png"
-                                             class="w-full h-64 object-cover rounded" />
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <!-- Навигация -->
-                            <div class="swiper-button-prev"></div>
-                            <div class="swiper-button-next"></div>
-                            <div class="swiper-pagination"></div>
-                        </div>
-                        <a href='/exhibition/{{ exhibition.slug }}'>
-                            <h3 class="exhibition-title">{{ exhibition.title }}</h3>
-                            <span class="tag-location">{{ exhibition.location }}</span>
-                            <span class="tag-city">{{ exhibition.city }}</span>
-                            <span class="tag-country">{{ exhibition.country }}</span>
-                            <p class="exhibition-short-description">{{ exhibition.short_description }}</p>
-                            <br />
-                            <div class="charity-contact">
-                                {% if exhibition.website %}
-                                    <p class="flex items-center">
-                                        🌐 <a href="{{ exhibition.website }}"
-    target="_blank"
-    class="text-blue-600 hover:underline ml-1">Website</a>
-                                    </p>
-                                {% endif %}
-                                <!-- 📆 Dates & Countdown -->
-                                {% if exhibition.start_date %}
-                                    <div class="dates">
-                                        <p>
-                                            🕒 From <strong>{{ exhibition.start_date.strftime('%d-%m-%Y') }}</strong> to <strong>{{ exhibition.end_date.strftime('%d-%m-%Y') }}</strong>
-                                        </p>
-                                        <div id="countdown-timer" data-end="{{ end_date }}"></div>
-                                    </div>
-                                {% else %}
-                                    <p>
-                                        The <strong style="white-space: nowrap;">start</strong> and <strong style="white-space: nowrap;">end</strong> dates are not known.
-                                    </p>
-                                {% endif %}
-                            </div>
-                        </a>
-                    </div>
+            <!-- Фильтр по странам -->
+            <div class="filter-section-country">
+                <span class="filter-label">Search with country</span>
+                <div class="country-filter flex gap-2 flex-wrap items-center" id="country-container">
+                    {% for country in countries %}
+                        <button type="button"
+                                class="country block px-2 py-1 border rounded {% if country in selected_country %}active{% endif %}"
+                                data-type="country"
+                                data-value="{{ country }}">
+                            {{ country }}
+                        </button>
+                    {% endfor %}
+                    <button id="load-more-countries" class="text-sm text-blue-600 hover:underline flex items-center gap-1">
+                        <span>Show more</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <button type="button" id="clear-country" class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">×</button>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>No exhibitions found.</p>
-        {% endif %}
+            </div>
+
+            <!-- Фильтр по городам -->
+            <div class="filter-section-city">
+                <span class="filter-label">Search with city</span>
+                <div class="city-filter flex gap-2 flex-wrap" id="city-container">
+                    {% for city in cities %}
+                        <button type="button"
+                                class="city block px-2 py-1 border rounded {% if city in selected_city %}active{% endif %}"
+                                data-type="city"
+                                data-value="{{ city }}">
+                            {{ city }}
+                        </button>
+                    {% endfor %}
+                    <button id="load-more-cities" class="text-sm text-blue-600 hover:underline flex items-center gap-1">
+                        <span>Show more</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <button type="button" id="clear-city" class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">×</button>
+                </div>
+            </div>
+
+            <!-- Фильтр по категориям -->
+            <div class="filter-section-categories">
+                <span class="filter-label">Search with category</span>
+                <div class="category-filter flex gap-2 flex-wrap" id="category-container">
+                    {% for category in categories %}
+                        <button type="button"
+                                class="category block px-2 py-1 border rounded {% if category.slug == selected_category %}active{% endif %}"
+                                data-type="category"
+                                data-value="{{ category.slug }}">
+                            {{ category.title }}
+                        </button>
+                    {% endfor %}
+                    <button id="load-more-categories" class="text-sm text-blue-600 hover:underline flex items-center gap-1">
+                        <span>Show more</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <button type="button" id="clear-category" class="remove-btn ml-2 text-red-600 text-xl leading-none px-2 py-1 border rounded">×</button>
+                </div>
+            </div>
+
+            <!-- Hidden inputs -->
+            <div id="hidden-filters"></div>
+
+            <div class="flex items-center mt-2 space-x-1 filter-btn">
+                <a href="{{ request.url.path }}" class="px-3 py-2 bg-gray-200 text-red-600 rounded shadow hover:bg-gray-300">
+                    Reset all filters
+                </a>
+            </div>
+        </form>
+
+        <!-- Server-side rendered exhibitions list -->
+        <div class="exhibition-list">
+            {% if exhibitions %}
+                {% for exhibition in exhibitions %}
+                    <div class="exhibition-card">
+                        <div class="exhibition-content">
+                            <div class="exhibition-gallery swiper w-full max-w-xl">
+                                <div class="swiper-wrapper">
+                                    {% if exhibition.images %}
+                                        {% for image in exhibition.images %}
+                                            <div class="swiper-slide">
+                                                <img src="/static/{{ image }}" class="w-full h-100 object-cover rounded image" />
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="swiper-slide">
+                                            <img src="/static/exhibitions/exhibition_pictures/default_image.png" class="w-full h-64 object-cover rounded" />
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="swiper-button-prev"></div>
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-pagination"></div>
+                            </div>
+                            <a href='/exhibition/{{ exhibition.slug }}'>
+                                <span class="tag-country">{{ exhibition.country }}</span>
+                                <h3 class="exhibition-title">{{ exhibition.title }}</h3>
+                                <span class="tag-location">{{ exhibition.location }}</span>
+                                <span class="tag-city">{{ exhibition.city }}</span>
+                                <p class="exhibition-short-description">{{ exhibition.short_description }}</p>
+                                <div class="charity-contact">
+                                    {% if exhibition.start_date %}
+                                        <div class="dates">
+                                            <p>🕒 From <strong>{{ exhibition.start_date.strftime('%d-%m-%Y') }}</strong> to <strong>{{ exhibition.end_date.strftime('%d-%m-%Y') }}</strong></p>
+                                            <div id="countdown-timer" data-end="{{ end_date }}"></div>
+                                        </div>
+                                    {% else %}
+                                        <p>The <strong style="white-space: nowrap;">start</strong> and <strong style="white-space: nowrap;">end</strong> dates are not known.</p>
+                                    {% endif %}
+                                    {% if exhibition.website %}
+                                        <p class="flex items-center">
+                                            🌐 <a href="{{ exhibition.website }}" target="_blank" class="text-blue-600 hover:underline ml-1">Website</a>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No exhibitions found.</p>
+            {% endif %}
+        </div>
+        {% include "exhibitions/pagination.html" %}
     </div>
-    {% include "exhibitions/pagination.html" %}
 {% endblock %}

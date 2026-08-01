@@ -1,83 +1,65 @@
 {% extends "exhibitions/base.html" %}
 {% block content %}
     <script src="/static/exhibitions/js/countdown.js"></script>
+
     <div class="overlay-text">
         <h1 class="exhibition-title-details" id="title">{{ title }}</h1>
     </div>
-    <div class="exhibition-gallery swiper w-full max-w-xl">
+
+    <div class="exhibition-gallery swiper w-full max-w-xl" style="margin:24px 32px 0;">
         <div class="swiper-wrapper">
             {% if images %}
                 {% for image in images %}
                     <div class="swiper-slide">
                         <div class="w-full h-100 object-cover rounded image">
-                            <img src="/static/{{ image }}"
-                                 class="object-contain w-full h-full rounded" />
+                            <img src="/static/{{ image }}" class="object-contain w-full h-full rounded" />
                         </div>
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="aspect-[4/3] w-full">
-                    <img src="/static/exhibitions/img/default_image.png"
+                <div class="swiper-slide">
+                    <div class="aspect-[4/3] w-full">
+                        <img src="/static/exhibitions/img/default_image.png" class="object-contain w-full h-full rounded" />
                     </div>
-                {% endif %}
-            </div>
-            <!-- Навигация -->
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-pagination"></div>
-        </div>
-        <!-- 🗺️ Geolocation + Info -->
-        <section class="details-section md:grid-cols-3 gap-8">
-            <!-- Main Content -->
-            <div class="col-span-2">
-                <!-- 🏷️ Category -->
-                <!-- 📆 Dates & Countdown -->
-                <div class="dates">
-                    <p>
-                        🕒 From <strong>{{ start_date.strftime('%d-%m-%Y') }}</strong> to <strong>{{ end_date.strftime('%d-%m-%Y') }}</strong>
-                    </p>
-                    <div id="countdown-timer" data-end="{{ end_date.strftime('%Y-%m-%d') }}"></div>
                 </div>
-                <!-- 📖 Description -->
-                <article>
-                    <p>{{ description|safe }}</p>
-                </article>
-                <!-- 📍 Location -->
-                <div id="map"
-                     data-lat="{{ latitude }}"
-                     data-lng="{{ longitude }}"
-                     style="height: 400px"></div>
+            {% endif %}
+        </div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <!-- 🗺️ Geolocation + Info -->
+    <section class="details-section">
+        <div class="col-span-2">
+            <div class="dates">
+                <p>🕒 From <strong>{{ start_date.strftime('%d-%m-%Y') }}</strong> to <strong>{{ end_date.strftime('%d-%m-%Y') }}</strong></p>
+                <div id="countdown-timer" data-end="{{ end_date.strftime('%Y-%m-%d') }}"></div>
             </div>
-            <!-- 🧩 Tags -->
+
+            <article>
+                <p>{{ description|safe }}</p>
+            </article>
+
+            <div id="map" data-lat="{{ latitude }}" data-lng="{{ longitude }}" style="height: 400px"></div>
+
             <div class="tags">
                 {% for tag in tags %}<span class="tag">{{ tag }}</span>{% endfor %}
             </div>
-            <!-- Sidebar -->
-            {% if organizer_name or price or instagram or linkedin or website %}
+        </div>
+
+        {% if organizer_name or price or instagram or linkedin or website %}
             <aside class="col-span-1 sticky top-4">
                 <div class="organizer-card">
-                    {% if  organizer_name %}<h3>Organizer: {{ organizer }}</h3>{% endif %}
+                    {% if organizer_name %}<h3>Organizer: {{ organizer }}</h3>{% endif %}
                     {% if price %}<p>🎟️ Price: {{ price }} {{ currency }}</p>{% endif %}
-                    <!-- 🔗 Social Links -->
                     <ul class="social-links">
-                        {% if instagram %}
-                            <li>
-                                <a href="{{ instagram }}">Instagram</a>
-                            </li>
-                        {% endif %}
-                        {% if linkedin %}
-                            <li>
-                                <a href="{{ linkedin }}">LinkedIn</a>
-                            </li>
-                        {% endif %}
-                        {% if website %}
-                            <li>
-                                <a href="{{ website }}">Website</a>
-                            </li>
-                        {% endif %}
+                        {% if instagram %}<li><a href="{{ instagram }}">Instagram</a></li>{% endif %}
+                        {% if linkedin %}<li><a href="{{ linkedin }}">LinkedIn</a></li>{% endif %}
+                        {% if website %}<li><a href="{{ website }}">Website</a></li>{% endif %}
                     </ul>
                 </div>
             </aside>
-            {%endif%}
-        </section>
-    {% endblock %}
+        {% endif %}
+    </section>
+{% endblock %}
