@@ -10,7 +10,7 @@ services:
       - "8002:8000"
     volumes:
       - .:/app
-    container_name: culture_aggregator
+    container_name: culture_aggregator_backend
     env_file:
       - .env
     environment:
@@ -23,7 +23,7 @@ services:
 
   postgres:
     image: postgres:17.5
-    container_name: postgres
+    container_name: culture_aggregator_database
     env_file:
       - .env
     volumes:
