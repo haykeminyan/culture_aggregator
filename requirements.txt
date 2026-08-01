@@ -3,7 +3,7 @@ uvicorn==0.34.2
 asyncpg==0.30.0
 SQLAlchemy==2.0.40
 piccolo==1.25.0
-piccolo-admin==1.10.0
+piccolo-admin==1.14.0
 itsdangerous==2.2.0
 Unidecode==1.4.0
 pytz==2025.2
