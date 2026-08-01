@@ -9,7 +9,7 @@ Unidecode==1.4.0
 pytz==2025.2
 Jinja2==3.1.6
 strawberry-graphql[fastapi]
-python-dotenv==1.1.0
+python-dotenv==1.2.2
 Markdown==3.8
 beautifulsoup4==4.13.4
 pandas==2.3.0
