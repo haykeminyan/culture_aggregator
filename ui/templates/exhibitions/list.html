@@ -12,21 +12,29 @@
                    class="w-full border rounded px-4 py-2 shadow-sm" />
 
             <!-- Даты -->
-            <div class="filter-section-dates flex gap-4 items-center">
-                <label for="from_date">From:</label>
-                <input type="date"
-                       id="from_date"
-                       name="from_date"
-                       value="{{ from_date or '' }}"
-                       class="border px-2 py-1 rounded" />
+<div class="filter-section-dates flex flex-wrap gap-4 items-center">
+    <div class="flex items-center gap-2 w-full sm:w-auto">
+        <label for="from_date">From:</label>
+        <input
+            type="date"
+            id="from_date"
+            name="from_date"
+            value="{{ from_date or '' }}"
+            class="border px-2 py-1 rounded w-full sm:w-auto"
+        />
+    </div>
 
-                <label for="until_date">Until:</label>
-                <input type="date"
-                       id="until_date"
-                       name="until_date"
-                       value="{{ until_date or '' }}"
-                       class="border px-2 py-1 rounded" />
-            </div>
+    <div class="flex items-center gap-2 w-full sm:w-auto">
+        <label for="until_date">Until:</label>
+        <input
+            type="date"
+            id="until_date"
+            name="until_date"
+            value="{{ until_date or '' }}"
+            class="border px-2 py-1 rounded w-full sm:w-auto"
+        />
+    </div>
+</div>
 
             <!-- Фильтр по странам -->
             <div class="filter-section-country">
@@ -111,6 +119,7 @@
                     <div class="exhibition-card">
                         <div class="exhibition-content">
                             <div class="exhibition-gallery swiper w-full max-w-xl">
+                                 <a href='/exhibition/{{ exhibition.slug }}'>
                                 <div class="swiper-wrapper">
                                     {% if exhibition.images %}
                                         {% for image in exhibition.images %}
@@ -128,7 +137,7 @@
                                 <div class="swiper-button-next"></div>
                                 <div class="swiper-pagination"></div>
                             </div>
-                            <a href='/exhibition/{{ exhibition.slug }}'>
+
                                 <span class="tag-country">{{ exhibition.country }}</span>
                                 <h3 class="exhibition-title">{{ exhibition.title }}</h3>
                                 <span class="tag-location">{{ exhibition.location }}</span>
