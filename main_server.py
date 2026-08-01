@@ -184,12 +184,12 @@ app.include_router(admin_router_api, prefix='/admin_api')
 
 def get_context(request: Request):
     return {"pool": request.app.state.pool}
-# GraphQL
-graphql_app = GraphQLRouter(
-    schema,
-    subscription_protocols=[GRAPHQL_TRANSPORT_WS_PROTOCOL],
-    graphiql=True,  # Set to False in production
-context_getter=get_context,
-)
-app.include_router(graphql_app, prefix='/graphql')
-
+# # GraphQL
+# graphql_app = GraphQLRouter(
+#     schema,
+#     subscription_protocols=[GRAPHQL_TRANSPORT_WS_PROTOCOL],
+#     graphiql=True,  # Set to False in production
+# context_getter=get_context,
+# )
+# app.include_router(graphql_app, prefix='/graphql')
+#
