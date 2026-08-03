@@ -37,8 +37,9 @@ router = APIRouter(prefix='/custom_admin', dependencies=[Depends(auth_dependency
 @router.get('/', include_in_schema=False)
 async def admin_index(request: Request):
     return templates.TemplateResponse(
-        'admin/index.html',
-        {
+        request=request,
+        name='admin/index.html',
+        context={
             'request': request,
             'now': datetime.now(pytz.UTC),
         }
@@ -77,8 +78,9 @@ async def exhibition_list(request: Request,     limit: int = Query(4),
     paginated_exhibitions = await query.limit(limit).offset(offset)
 
     return templates.TemplateResponse(
-        'admin/exhibition_list.html',
-        {
+        request=request,
+        name='admin/exhibition_list.html',
+        context={
             'request': request,
             'exhibitions': paginated_exhibitions,
             'limit': limit,
@@ -97,8 +99,9 @@ async def exhibition_form_create(request: Request):
         Exhibition.category,
     )
     return templates.TemplateResponse(
-        'admin/exhibition_create.html',
-        {
+        request=request,
+        name='admin/exhibition_create.html',
+        context={
             'request': request,
             'exhibition': exhibition,
             'now': datetime.now(pytz.UTC),
@@ -109,6 +112,7 @@ async def exhibition_form_create(request: Request):
 
 @router.post('/exhibition/create/')
 async def exhibition_create(
+request: Request,
     title: str = Form(),
     slug: str = Form(),
     images: Optional[list[UploadFile]] = File(default=None, include_in_schema=False),
@@ -178,8 +182,9 @@ async def exhibition_form(request: Request, exhibition_slug: str):
         .first()
     )
     return templates.TemplateResponse(
-        'admin/exhibition_update.html',
-        {
+        request=request,
+        name='admin/exhibition_update.html',
+        context={
             'request': request,
             'exhibition': exhibition,
         },

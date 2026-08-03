@@ -63,18 +63,18 @@ async def get_all_html(
         **ExhibitionService.get_pagination_context(limit, offset, total),
     }
 
-    return templates.TemplateResponse('exhibitions/list.html', context)
+    return templates.TemplateResponse(request=request, name='exhibitions/list.html', context=context)
 
 
 @router.delete('/exhibitions/{slug}', response_class=HTMLResponse, include_in_schema=False)
 async def delete_html(request: Request, slug: str):
     context = await ExhibitionService.delete(slug)
     context['request'] = request
-    return templates.TemplateResponse('exhibitions/body.html', context)
+    return templates.TemplateResponse(request=request, name='exhibitions/body.html', context=context)
 
 
 @router.get('/exhibition/{slug}', response_class=HTMLResponse, include_in_schema=False)
 async def get_by_slug_html(request: Request, slug: str, pool: asyncpg.pool.Pool = Depends(get_db_pool)):
     context = await ExhibitionService.get_by_slug(slug, pool)
     context['request'] = request
-    return templates.TemplateResponse('exhibitions/detail.html', context)
+    return templates.TemplateResponse(request=request, name='exhibitions/detail.html', context=context)
