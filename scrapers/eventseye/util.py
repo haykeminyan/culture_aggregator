@@ -7,16 +7,15 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-PICTURES_DIR = BASE_DIR / "ui" / "static" / "exhibitions" / "exhibition_pictures"
+UPLOAD_DIR = '../../ui/static/exhibitions/exhibition_pictures'
 
 def parsed_photo(url: str):
     response = requests.get(url)
     unique_name = f'{uuid.uuid4().hex}.jpg'
-    filepath = PICTURES_DIR / unique_name
-    filepath.parent.mkdir(parents=True, exist_ok=True)
+    filepath = os.path.join(UPLOAD_DIR, unique_name)
     with open(filepath, 'wb') as f:
         f.write(response.content)
-    return str(filepath)
+    return unique_name
 
 def parse_date_range(text):
     text = text.strip()
