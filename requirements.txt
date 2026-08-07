@@ -18,7 +18,7 @@ lxml==6.1.1
 transformers==5.14.1
 python-slugify==8.0.4
 torch==2.13.0
-dateparser==1.4.1
+dateparser==1.4.2
 aiohttp==3.14.3
 tqdm==4.70.0
 fake-agent==0.1.4
