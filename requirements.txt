@@ -1,7 +1,7 @@
 fastapi==0.141.1
 uvicorn==0.52.1
 asyncpg==0.31.0
-SQLAlchemy==2.0.51
+SQLAlchemy==2.0.52
 piccolo==1.36.0
 piccolo-admin==1.14.0
 itsdangerous==2.2.0
