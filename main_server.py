@@ -193,3 +193,66 @@ def get_context(request: Request):
 # )
 # app.include_router(graphql_app, prefix='/graphql')
 #
+
+
+from fastapi.responses import Response
+from piccolo.query import Query
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+async def sitemap():
+    base_url = "https://travelculturehub.com"
+
+    exhibitions = await Exhibition.select(
+        Exhibition.slug,
+        Exhibition.updated_at,
+    ).where(
+        Exhibition.is_active == True,
+    )
+
+    categories = await ExhibitionCategory.select(
+        ExhibitionCategory.slug,
+    )
+
+    urls = []
+
+    # Home
+    urls.append(
+        f"""
+        <url>
+            <loc>{base_url}/</loc>
+        </url>
+        """
+    )
+
+    # Exhibitions
+    for exhibition in exhibitions:
+        urls.append(
+            f"""
+            <url>
+                <loc>{base_url}/exhibitions/{exhibition["slug"]}</loc>
+                <lastmod>{exhibition["updated_at"].date().isoformat()}</lastmod>
+            </url>
+            """
+        )
+
+    # Categories
+    for category in categories:
+        urls.append(
+            f"""
+            <url>
+                <loc>{base_url}/categories/{category["slug"]}</loc>
+            </url>
+            """
+        )
+
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{"".join(urls)}
+</urlset>
+"""
+
+    return Response(
+        content=xml,
+        media_type="application/xml",
+    )
