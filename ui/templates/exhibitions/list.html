@@ -6,7 +6,7 @@
 {% block content %}
 {% set qp = request.query_params %}
 {% set ns = namespace(slides=[]) %}
-{% for e in exhibitions %}{% if e.images and ns.slides|length < 5 %}{% set ns.slides = ns.slides + [e] %}{% endif %}{% endfor %}
+{% for e in exhibitions %}{% if ns.slides|length < 5 %}{% set ns.slides = ns.slides + [e] %}{% endif %}{% endfor %}
 
 <form id="filter-form" method="GET" action="{{ request.url.path }}#results">
   <input type="hidden" name="limit" value="{{ limit }}">
@@ -54,7 +54,8 @@
           <div class="khoran__window" data-slideshow>
             {% for e in ns.slides %}
             <div class="slide{% if loop.first %} is-active{% endif %}">
-              <img src="/static/{{ e.images[0] }}" alt=""{% if not loop.first %} loading="lazy"{% endif %} decoding="async">
+              {% set mono = namespace(v="") %}{% for w in (e.title or "").split() %}{% if mono.v|length < 2 and w[:1].isalpha() and (w|length > 2 or not mono.v) and w|lower|trim(":,.-") not in ["the","and","for","des","der","die","das","les","del","von","and","with","from"] %}{% set mono.v = mono.v ~ w[:1]|upper %}{% endif %}{% endfor %}{% set tone = ((e.title or "")|length * 7 + ("ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(mono.v[:1]) + 1) * 3 + ("ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(mono.v[1:2]) + 1 if mono.v|length > 1 else 0)) % 6 %}
+<div class="plate plate--{{ tone }}"{% if (e.images[0] if e.images else "") %} data-photo="/static/{{ (e.images[0] if e.images else "") }}"{% endif %}><svg class="plate__rosette" aria-hidden="true"><use href="#i-rosette"/></svg><span class="plate__mono" aria-hidden="true"><b>{{ mono.v[:1] or "·" }}</b>{% if mono.v|length > 1 %}<i>{{ mono.v[1:2] }}</i>{% endif %}</span>{% if e.start_date %}<span class="plate__year">{{ e.start_date.year }}</span>{% endif %}</div>
               <a class="slide__cap" href="/exhibition/{{ e.slug }}"><b>{{ e.title }}</b>{% if e.city or e.country %}<span>{{ e.city or '' }}{% if e.city and e.country %}, {% endif %}{{ e.country or '' }}</span>{% endif %}</a>
             </div>
             {% endfor %}
@@ -163,17 +164,9 @@
     {% set d_end = e.end_date.strftime('%Y-%m-%d') if e.end_date else '' %}
     <li class="ex-card" data-reveal style="--i:{{ loop.index0 % 4 }}">
       <div class="ex-card__frame">
-        <div class="ex-card__media swiper" data-vt-art>
-          <div class="swiper-wrapper">
-            {% if e.images %}
-              {% for image in e.images %}
-              <div class="swiper-slide"><a href="/exhibition/{{ e.slug }}" tabindex="-1" aria-hidden="true"><img src="/static/{{ image }}" alt="" width="360" height="480"{% if card_i > 2 or not loop.first %} loading="lazy"{% endif %} decoding="async"></a></div>
-              {% endfor %}
-            {% else %}
-              <div class="swiper-slide"><a href="/exhibition/{{ e.slug }}" tabindex="-1" aria-hidden="true"><img src="/static/exhibitions/exhibition_pictures/default_image.png" alt="" width="360" height="480" loading="lazy"></a></div>
-            {% endif %}
-          </div>
-          {% if e.images and e.images|length > 1 %}<div class="swiper-pagination"></div>{% endif %}
+        <div class="ex-card__media" data-vt-art>
+          {% set mono = namespace(v="") %}{% for w in (e.title or "").split() %}{% if mono.v|length < 2 and w[:1].isalpha() and (w|length > 2 or not mono.v) and w|lower|trim(":,.-") not in ["the","and","for","des","der","die","das","les","del","von","and","with","from"] %}{% set mono.v = mono.v ~ w[:1]|upper %}{% endif %}{% endfor %}{% set tone = ((e.title or "")|length * 7 + ("ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(mono.v[:1]) + 1) * 3 + ("ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(mono.v[1:2]) + 1 if mono.v|length > 1 else 0)) % 6 %}
+<div class="plate plate--{{ tone }}"{% if (e.images[0] if e.images else "") %} data-photo="/static/{{ (e.images[0] if e.images else "") }}"{% endif %}><svg class="plate__rosette" aria-hidden="true"><use href="#i-rosette"/></svg><span class="plate__mono" aria-hidden="true"><b>{{ mono.v[:1] or "·" }}</b>{% if mono.v|length > 1 %}<i>{{ mono.v[1:2] }}</i>{% endif %}</span>{% if e.start_date %}<span class="plate__year">{{ e.start_date.year }}</span>{% endif %}</div>
         </div>
         <span class="ex-card__status" data-status data-start="{{ d_start }}" data-end="{{ d_end }}"></span>
       </div>

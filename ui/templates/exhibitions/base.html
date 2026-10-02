@@ -37,11 +37,11 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400..700&family=Noto+Serif+Armenian:wght@500&display=swap" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         {% block legacy_css %}
-            {# Tailwind stays for pages that still use its classes (e.g. discounts). list/detail switch it off. #}
+            {# for pages that still use the old markup (e.g. discounts); list/detail replace this block #}
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         {% endblock %}
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/list.css') }}" />
@@ -52,8 +52,6 @@
         {% endblock %}
         <script src="https://unpkg.com/htmx.org@2.0" defer></script>
         <script src="https://unpkg.com/alpinejs" defer></script>
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
     </head>
     <body>
         <a class="skip" href="#main">Skip to content</a>
@@ -101,6 +99,8 @@
             <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
             <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+            <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
         {% endblock %}
         {% block scripts %}
             <script src="/static/exhibitions/js/swiper.js" defer></script>
@@ -160,6 +160,29 @@
               k.addEventListener("pointermove", function (e) { if (lastX !== null) s += (e.clientX - lastX) * 0.035; lastX = e.clientX; wake(); });
               k.addEventListener("pointerdown", function (e) { if (e.pointerType !== "mouse") { s += 10; wake(); } });
             });
+
+            /* plates: a real photo replaces the generated plate only if it is genuinely large.
+               Logos and thin banners (most of the feed) never get stretched. */
+            var MIN_W = 800, MIN_H = 500;
+            var tryPhoto = function (plate) {
+              var img = new Image();
+              img.decoding = "async";
+              img.onload = function () {
+                var w = img.naturalWidth, h = img.naturalHeight, r = w / h;
+                if (w < MIN_W || h < MIN_H || r < 0.55 || r > 2.2) return;
+                img.className = "plate__photo"; img.alt = "";
+                plate.appendChild(img);
+                requestAnimationFrame(function () { plate.classList.add("has-photo"); });
+              };
+              img.src = plate.dataset.photo;
+            };
+            var plates = d.querySelectorAll(".plate[data-photo]");
+            if ("IntersectionObserver" in window) {
+              var pio = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) { if (e.isIntersecting) { pio.unobserve(e.target); tryPhoto(e.target); } });
+              }, { rootMargin: "300px 0px" });
+              plates.forEach(function (p) { pio.observe(p); });
+            } else plates.forEach(tryPhoto);
 
             d.querySelectorAll("[data-slideshow]").forEach(function (box) {
               var slides = box.querySelectorAll(".slide"); if (slides.length < 2 || reduce) return;
