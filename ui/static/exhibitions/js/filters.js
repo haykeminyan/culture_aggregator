@@ -1,3 +1,6 @@
+/* Country / city / category chips (list page).
+   Unchanged logic; visible chips now take their display from CSS (chips are inline-flex),
+   and a missing "Show more" button no longer throws. */
 document.addEventListener('DOMContentLoaded', () => {
   // --- Инициализация выбранных фильтров из URL ---
   const selected = {
@@ -94,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
   allCountryButtons.forEach(btn => btn.style.display = 'none');
   allCountryButtons.forEach(btn => {
     if (activeCountries.has(btn.dataset.value)) {
-      btn.style.display = 'inline-block';
+      btn.style.display = '';
       btn.dataset.forceVisible = 'true';
     } else {
       countryPool.push(btn);
@@ -103,10 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showNextBatchCountries() {
     const nextBatch = countryPool.splice(0, batchSize);
-    nextBatch.forEach(btn => btn.style.display = 'inline-block');
+    nextBatch.forEach(btn => btn.style.display = '');
 
     if (countryPool.length === 0) {
-      loadMoreCountryBtn.style.display = 'none';
+      if (loadMoreCountryBtn) loadMoreCountryBtn.style.display = 'none';
     }
   }
 
@@ -126,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
   allCityButtons.forEach(btn => btn.style.display = 'none');
   allCityButtons.forEach(btn => {
     if (activeCities.has(btn.dataset.value)) {
-      btn.style.display = 'inline-block';
+      btn.style.display = '';
       btn.dataset.forceVisible = 'true';
     } else {
       cityPool.push(btn);
@@ -135,10 +138,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showNextBatchCities() {
     const nextBatch = cityPool.splice(0, batchSize);
-    nextBatch.forEach(btn => btn.style.display = 'inline-block');
+    nextBatch.forEach(btn => btn.style.display = '');
 
     if (cityPool.length === 0) {
-      loadMoreCityBtn.style.display = 'none';
+      if (loadMoreCityBtn) loadMoreCityBtn.style.display = 'none';
     }
   }
 
@@ -158,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
   allCategoryButtons.forEach(btn => btn.style.display = 'none');
   allCategoryButtons.forEach(btn => {
     if (activeCategory === btn.dataset.value) {
-      btn.style.display = 'inline-block';
+      btn.style.display = '';
       btn.dataset.forceVisible = 'true';
     } else {
       categoryPool.push(btn);
@@ -167,10 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showNextBatchCategories() {
     const nextBatch = categoryPool.splice(0, batchSize);
-    nextBatch.forEach(btn => btn.style.display = 'inline-block');
+    nextBatch.forEach(btn => btn.style.display = '');
 
     if (categoryPool.length === 0) {
-      loadMoreCategoryBtn.style.display = 'none';
+      if (loadMoreCategoryBtn) loadMoreCategoryBtn.style.display = 'none';
     }
   }
 

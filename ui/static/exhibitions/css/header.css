@@ -1,69 +1,54 @@
+/* ==========================================================================
+   TRAVEL CULTURE HUB — header
+   Glassy lapis bar with a gold hairline that catches the light.
+   ========================================================================== */
+
 .header{
-  background:var(--ink);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 32px;
-  border-bottom:3px solid var(--amber);
-  position:sticky;
-  top:0;
-  z-index:50;
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; gap:1.5rem;
+  min-height:var(--header-h);
+  padding:.6rem max(1.25rem, calc((100% - var(--wrap)) / 2));
+  background:var(--lapis-deep);
+  background:color-mix(in srgb, var(--lapis-deep) 88%, transparent);
+  -webkit-backdrop-filter:saturate(150%) blur(12px); backdrop-filter:saturate(150%) blur(12px);
+  color:var(--on-lapis);
+  transition:box-shadow .3s ease, min-height .3s var(--ease);
 }
+.header::after{   /* gold hairline with a travelling glint */
+  content:""; position:absolute; left:0; right:0; bottom:0; height:1px;
+  background:linear-gradient(90deg, rgba(201,162,74,.15), rgba(201,162,74,.6) 20%, rgba(232,211,160,1) 50%, rgba(201,162,74,.6) 80%, rgba(201,162,74,.15)) 0 0 / 200% 100%;
+  animation:glint 9s linear infinite;
+}
+@keyframes glint{to{background-position:-200% 0;}}
+.header.is-scrolled{box-shadow:0 14px 34px -22px rgba(0,0,0,.7);}
 
-.top-left-logo{
-  height:34px;
-  filter:brightness(0) invert(1);
-}
+.brand{display:inline-flex; align-items:center; gap:.65rem; color:var(--on-lapis); text-decoration:none; flex:none;}
+.brand__mark{width:30px; height:38px; color:var(--gold);}
+.brand__mark .k-rosette-mini{transform-box:fill-box; transform-origin:center;}
+.brand:hover .brand__mark .k-rosette-mini{animation:k-spin 2.6s linear infinite;}
+.brand__name{font:600 1.35rem/1 var(--display); letter-spacing:-.005em;}
+.brand__name em{font-style:italic; color:var(--gold-pale);}
 
-.nav{
-  display:flex;
-  align-items:center;
-  gap:28px;
+.nav{display:flex; align-items:center; gap:.35rem; margin-left:auto;}
+.nav a{
+  position:relative; display:inline-flex; align-items:center; gap:.45rem;
+  padding:.55rem .9rem; border-radius:999px;
+  color:var(--on-lapis-muted); font:500 .95rem/1 var(--sans); text-decoration:none; white-space:nowrap;
+  transition:color .2s, background-color .2s;
 }
-.nav a{ text-decoration:none; }
-.nav h1{
-  font-family:var(--display);
-  font-size:15px !important;
-  font-weight:600 !important;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-  color:#F2F0E7 !important;
-  margin:0 !important;
-  padding:6px 4px;
-  border-bottom:2px solid transparent;
-  transition:border-color .15s ease;
-}
-.nav a:hover h1{ border-color:var(--amber); }
+.nav a:hover{color:#fff; background:rgba(243,235,218,.06);}
+.nav a[aria-current="page"]{color:var(--lapis-deep); background:var(--gold);}
+.nav .icon{font-size:1.05rem;}
+.nav__out{color:var(--gold-pale) !important; border:1px solid rgba(201,162,74,.35);}
+.nav__out:hover{border-color:var(--gold);}
+.nav__out .icon:last-child{font-size:.8rem;}
 
-.dropdown-container{ position:relative; }
-.dropdown-content{
-  background:var(--ink-soft);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:4px;
-  padding:10px 14px;
+@media (max-width:720px){
+  .header{gap:.75rem; padding:.55rem 1rem;}
+  .brand__name{font-size:1.15rem;}
+  .nav a{padding:.5rem .65rem; font-size:.88rem;}
+  .nav__out span{display:none;}
 }
-.service-item .title-line{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.service-item .plus{
-  color:var(--amber);
-  font-family:var(--mono);
-  font-weight:600;
-}
-.service-title a{ text-decoration:none; }
-.service-title h4{
-  font-family:var(--mono);
-  font-size:12px;
-  letter-spacing:.05em;
-  text-transform:uppercase;
-  color:#F2F0E7;
-  margin:0;
-}
-.service-title h4:hover{ color:var(--amber); }
-
-@media (max-width:640px){
-  .header{ flex-direction:column; align-items:flex-start; gap:10px; padding:14px 18px; }
-  .nav{ gap:16px; }
+@media (max-width:420px){
+  .brand__name{display:none;}
 }

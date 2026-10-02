@@ -2,71 +2,237 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Exhibitions</title>
-        <!-- CSS -->
-        <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
-        <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-        <link rel="stylesheet"
-              href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-        {% block stylesheets %}
-            <link rel="stylesheet"
-                  href="{{ url_for('static', path='exhibitions/css/list.css') }}" />
-            <link rel="stylesheet"
-                  href="{{ url_for('static', path='exhibitions/css/header.css') }}" />
-            <link rel="stylesheet"
-                  href="{{ url_for('static', path='exhibitions/css/details.css') }}" />
-            <link rel="stylesheet"
-                  href="{{ url_for('static', path='exhibitions/css/footer.css') }}" />
-                <link rel="icon"
-              type="image/x-icon"
-              href="{{ url_for('static', path='favicon/favicon.ico') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta name="theme-color" content="#111B3C" />
+        <title>{% block title %}Exhibitions · Travel Culture Hub{% endblock %}</title>
+        {% block meta %}
+        <meta name="description" content="Exhibitions around the world in one place: dates, venues, prices and live countdowns." />
         {% endblock %}
-        <!-- JS Libraries in head if needed with defer -->
+        <script>
+          /* render-critical: motion classes + smooth card-to-page transitions */
+          (function () {
+            var root = document.documentElement;
+            root.classList.add("js");
+            try { if (sessionStorage.getItem("tch-seen")) root.classList.add("seen"); sessionStorage.setItem("tch-seen", "1"); } catch (e) {}
+            var NAME = "ex-art";
+            function clear() { var m = document.querySelectorAll("[data-vt-art]"); for (var i = 0; i < m.length; i++) m[i].style.viewTransitionName = ""; }
+            function find(url) {
+              var p; try { p = new URL(url, location.href).pathname; } catch (e) { return null; }
+              var links = document.querySelectorAll(".ex-card__link");
+              for (var i = 0; i < links.length; i++) if (links[i].pathname === p) return links[i].closest(".ex-card").querySelector("[data-vt-art]");
+              return null;
+            }
+            addEventListener("pageswap", function (e) {
+              if (!e.viewTransition || !e.activation || !e.activation.entry) return;
+              clear(); var m = find(e.activation.entry.url); if (m) m.style.viewTransitionName = NAME;
+            });
+            addEventListener("pagereveal", function (e) {
+              clear();
+              if (!e.viewTransition || !window.navigation || !navigation.activation || !navigation.activation.from) return;
+              var m = find(navigation.activation.from.url); if (!m) return;
+              m.style.viewTransitionName = NAME; e.viewTransition.finished.then(clear, clear);  /* aborted transitions are fine */
+            });
+          })();
+        </script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400..700&family=Noto+Serif+Armenian:wght@500&display=swap" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        {% block legacy_css %}
+            {# Tailwind stays for pages that still use its classes (e.g. discounts). list/detail switch it off. #}
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+        {% endblock %}
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/list.css') }}" />
+            <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/header.css') }}" />
+            <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/details.css') }}" />
+            <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/footer.css') }}" />
+            <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='favicon/favicon.ico') }}">
+        {% endblock %}
         <script src="https://unpkg.com/htmx.org@2.0" defer></script>
         <script src="https://unpkg.com/alpinejs" defer></script>
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
     </head>
-    <body class="min-h-screen flex flex-col">
-        <!-- HEADER -->
-        <div class="header">
-            <div class="dropdown-container">
-                <div class="dropdown-content" id="dropdownMenu">
-                    <div class="service-item">
-                        <div class="title-line">
-                            <span class="plus">+</span>
-                            <span class="service-title">
-                                <a href="https://baregorc.com" class="filter-link">
-                                    <h4>Charity Organization</h4>
-                                </a>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="nav">
-                <a href="/"><h1>🎨 Exhibitions</h1></a>
-                <a href="/discounts"><h1>🔥 Discounts</h1></a>
-            </div>
-        </div>
+    <body>
+        <a class="skip" href="#main">Skip to content</a>
+        <svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+      <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></symbol>
+      <symbol id="i-frame" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M7 21V12a5 5 0 0 1 10 0v9"/></symbol>
+      <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8" r="1.5"/></symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></symbol>
+      <symbol id="i-out" viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></symbol>
+      <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"/></symbol>
+      <symbol id="i-rosette" viewBox="-50 -50 100 100"><g stroke-width="3"><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(0)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(45)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(90)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(135)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(180)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(225)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(270)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(315)"/><circle r="47"/></g></symbol>
+    </defs>
+  </svg>
+        {% set path = request.url.path %}
+        <header class="header" data-header>
+            <a class="brand" href="/" aria-label="Travel Culture Hub, home">
+                <svg class="brand__mark" viewBox="0 0 40 52" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 50V24A13 13 0 0 1 33 24V50"/><path d="M3 50H37"/><path d="M12 50V25A8 8 0 0 1 28 25V50"/></g>
+            <g transform="translate(20 8) scale(.13)"><g class="k-rosette-mini"><g fill="none" stroke="currentColor" stroke-width="9"><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(0)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(45)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(90)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(135)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(180)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(225)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(270)"/><path d="M0 0A22 22 0 0 1 0-44A29 29 0 0 0 0 0Z" transform="rotate(315)"/></g></g></g>
+          </svg>
+                <span class="brand__name">Travel <em>Culture</em> Hub</span>
+            </a>
+            <nav class="nav" aria-label="Main">
+                <a href="/"{% if path == '/' or path.startswith('/exhibition') %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-frame"/></svg>Exhibitions</a>
+                <a class="nav__out" href="https://baregorc.com" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg><span>Armenian charities</span><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a>
+            </nav>
+        </header>
 
-        <main class="flex-grow p-8">
+        <main id="main" class="{% block main_class %}site-main site-main--padded{% endblock %}">
             {% block content %}{% endblock %}
         </main>
 
         {% include "exhibitions/footer.html" %}
 
-        <!-- JQuery и Bootstrap -->
-        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-        <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-        {% block scripts %}
-            <script src="/static/exhibitions/js/swiper.js"></script>
-            <script src="/static/exhibitions/js/map.js"></script>
-            <script src="/static/exhibitions/js/filters.js"></script>
+        <div class="toast" role="status" aria-live="polite" data-toast hidden></div>
+
+        {% block legacy_js %}
+            {# kept for pages that may still rely on them; list/detail switch them off #}
+            <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+            <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
         {% endblock %}
+        {% block scripts %}
+            <script src="/static/exhibitions/js/swiper.js" defer></script>
+            <script src="/static/exhibitions/js/map.js" defer></script>
+            <script src="/static/exhibitions/js/filters.js" defer></script>
+            <script src="/static/exhibitions/js/countdown.js" defer></script>
+        {% endblock %}
+        <script>
+          /* motion: header state, reveal on scroll, parallax, rolling rosette, hero slideshow,
+             card spotlight, chip rails, copy link, add-to-calendar, clean filter submits */
+          (function () {
+            "use strict";
+            var d = document;
+            var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+            var fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+            var header = d.querySelector("[data-header]");
+            if (header) {
+              var onScroll = function () { header.classList.toggle("is-scrolled", scrollY > 8); };
+              addEventListener("scroll", onScroll, { passive: true }); onScroll();
+            }
+
+            var reveals = d.querySelectorAll("[data-reveal]");
+            if ("IntersectionObserver" in window && !reduce) {
+              var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
+              }, { rootMargin: "0px 0px -6% 0px", threshold: 0.1 });
+              reveals.forEach(function (el) { io.observe(el); });
+            } else reveals.forEach(function (el) { el.classList.add("is-in"); });
+
+            if (fine && !reduce) d.querySelectorAll("[data-parallax]").forEach(function (zone) {
+              var raf = 0, ev = null;
+              zone.addEventListener("pointermove", function (e) {
+                ev = e; if (raf) return;
+                raf = requestAnimationFrame(function () {
+                  raf = 0; var r = zone.getBoundingClientRect();
+                  zone.style.setProperty("--px", (((ev.clientX - r.left) / r.width) - 0.5) * 2);
+                  zone.style.setProperty("--py", (((ev.clientY - r.top) / r.height) - 0.5) * 2);
+                });
+              });
+              zone.addEventListener("pointerleave", function () { zone.style.setProperty("--px", 0); zone.style.setProperty("--py", 0); });
+            });
+
+            /* the rosette on top of the khoran rolls while you hover the arch; sideways moves push it */
+            if (!reduce) d.querySelectorAll(".khoran").forEach(function (k) {
+              var g = k.querySelector("[data-roll]"); if (!g) return;
+              var a = 0, s = 0, over = false, lastX = null, raf = 0;
+              var frame = function () {
+                s = over ? s + (0.9 - s) * 0.04 : s * 0.955;
+                s = Math.max(-16, Math.min(16, s));
+                a = (a + s) % 360; g.setAttribute("transform", "rotate(" + a.toFixed(2) + ")");
+                raf = (over || Math.abs(s) > 0.01) ? requestAnimationFrame(frame) : 0;
+              };
+              var wake = function () { if (!raf) raf = requestAnimationFrame(frame); };
+              k.addEventListener("pointerenter", function () { over = true; wake(); });
+              k.addEventListener("pointerleave", function () { over = false; lastX = null; wake(); });
+              k.addEventListener("pointermove", function (e) { if (lastX !== null) s += (e.clientX - lastX) * 0.035; lastX = e.clientX; wake(); });
+              k.addEventListener("pointerdown", function (e) { if (e.pointerType !== "mouse") { s += 10; wake(); } });
+            });
+
+            d.querySelectorAll("[data-slideshow]").forEach(function (box) {
+              var slides = box.querySelectorAll(".slide"); if (slides.length < 2 || reduce) return;
+              var i = 0;
+              setInterval(function () {
+                if (d.hidden) return;
+                slides[i].classList.remove("is-active"); i = (i + 1) % slides.length; slides[i].classList.add("is-active");
+              }, 5200);
+            });
+
+            if (fine && !reduce) d.addEventListener("pointermove", function (e) {
+              var c = e.target.closest && e.target.closest(".ex-card"); if (!c) return;
+              var r = c.getBoundingClientRect();
+              c.style.setProperty("--mx", (e.clientX - r.left) + "px"); c.style.setProperty("--my", (e.clientY - r.top) + "px");
+            }, { passive: true });
+
+            d.querySelectorAll("[data-rail]").forEach(function (rail) {
+              var list = rail.querySelector(".chips"); if (!list) return;
+              var update = function () {
+                var max = list.scrollWidth - list.clientWidth;
+                rail.classList.toggle("is-overflowing", max > 4);
+                rail.classList.toggle("is-scrolled", list.scrollLeft > 4);
+                rail.classList.toggle("is-end", list.scrollLeft >= max - 4);
+              };
+              var by = function (dir) { list.scrollBy({ left: dir * list.clientWidth * 0.8, behavior: reduce ? "auto" : "smooth" }); };
+              var prev = rail.querySelector("[data-prev]"), next = rail.querySelector("[data-next]");
+              if (prev) prev.addEventListener("click", function () { by(-1); });
+              if (next) next.addEventListener("click", function () { by(1); });
+              list.addEventListener("scroll", update, { passive: true });
+              addEventListener("resize", update);
+              list.addEventListener("click", function () { setTimeout(update, 50); });  /* "Show more" adds chips */
+              var active = list.querySelector(".active");
+              if (active) list.scrollLeft = active.offsetLeft - list.offsetLeft - (list.clientWidth - active.offsetWidth) / 2;
+              update();
+            });
+
+            var toastEl = d.querySelector("[data-toast]"), toastTimer = 0;
+            var toast = function (msg) {
+              if (!toastEl) return;
+              toastEl.textContent = msg; toastEl.hidden = false;
+              requestAnimationFrame(function () { toastEl.classList.add("is-on"); });
+              clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove("is-on"); }, 1800);
+            };
+            d.addEventListener("click", function (e) {
+              var copy = e.target.closest("[data-copy]");
+              if (copy) {
+                navigator.clipboard.writeText(copy.dataset.copy).then(function () { toast("Link copied"); }, function () { toast("Couldn't copy the link"); });
+                return;
+              }
+              var ics = e.target.closest("[data-ics]");
+              if (ics) {
+                var day = function (s, add) { var p = s.split("-"); var dt = new Date(+p[0], p[1] - 1, +p[2] + (add || 0)); return dt.getFullYear() + String(dt.getMonth() + 1).padStart(2, "0") + String(dt.getDate()).padStart(2, "0"); };
+                var esc = function (s) { return String(s).replace(/([,;\\])/g, "\\$1").replace(/\n/g, " "); };
+                var end = ics.dataset.end || ics.dataset.start;
+                var body = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Travel Culture Hub//Exhibitions//EN", "BEGIN:VEVENT",
+                  "UID:" + Date.now() + "@travelculturehub.com",
+                  "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z",
+                  "DTSTART;VALUE=DATE:" + day(ics.dataset.start), "DTEND;VALUE=DATE:" + day(end, 1),
+                  "SUMMARY:" + esc(ics.dataset.title), "URL:" + ics.dataset.url, "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+                var a = d.createElement("a");
+                a.href = URL.createObjectURL(new Blob([body], { type: "text/calendar" }));
+                a.download = (ics.dataset.title || "exhibition").replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "-").toLowerCase() + ".ics";
+                d.body.appendChild(a); a.click(); a.remove();
+                toast("Added to your downloads");
+              }
+            });
+
+            /* filter form: never send empty fields (an empty date makes the server reject the request) */
+            var form = d.getElementById("filter-form");
+            if (form) form.addEventListener("submit", function () {
+              form.querySelectorAll("input[name]").forEach(function (i) { if (i.value === "") i.disabled = true; });
+            });
+          })();
+        </script>
     </body>
 </html>

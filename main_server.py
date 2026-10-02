@@ -210,18 +210,6 @@ async def sitemap():
         Exhibition.is_active == True,
     )
 
-    countries = await ExhibitionGeo.select(
-        ExhibitionGeo.country,
-    )
-
-    cities = await ExhibitionGeo.select(
-        ExhibitionGeo.city,
-    )
-
-    categories = await ExhibitionCategory.select(
-        ExhibitionCategory.slug,
-    )
-
     urls = []
 
     # Home
@@ -240,34 +228,6 @@ async def sitemap():
             <url>
                 <loc>{base_url}/exhibition/{exhibition["slug"]}</loc>
                 <lastmod>{exhibition["updated_at"].date().isoformat()}</lastmod>
-            </url>
-            """
-        )
-
-    # countries
-    for country in countries:
-        urls.append(
-            f"""
-            <url>
-                <loc>{base_url}?country={country["country"]}</loc>
-            </url>
-            """
-        )
-
-    for city in cities:
-        urls.append(
-            f"""
-            <url>
-                <loc>{base_url}?city={city["city"]}</loc>
-            </url>
-            """
-        )
-
-    for category in categories:
-        urls.append(
-            f"""
-            <url>
-                <loc>{base_url}?category={category["slug"]}</loc>
             </url>
             """
         )
