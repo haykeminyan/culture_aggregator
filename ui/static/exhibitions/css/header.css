@@ -52,3 +52,37 @@
 @media (max-width:420px){
   .brand__name{display:none;}
 }
+
+/* ---------- night-mode switch ---------- */
+.theme-switch{position:relative; flex:none; display:inline-block; width:54px; height:30px; cursor:pointer;}
+.theme-switch input{position:absolute; opacity:0; width:0; height:0;}
+.theme-switch__track{
+  position:absolute; inset:0; border-radius:999px;
+  background:rgba(243,235,218,.07); border:1px solid rgba(201,162,74,.35);
+  transition:border-color .2s, background-color .3s;
+}
+.theme-switch__track::before{   /* the gold knob */
+  content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--gold-pale), var(--gold) 60%, var(--gold-deep));
+  box-shadow:0 3px 10px -2px rgba(0,0,0,.6);
+  transition:transform .45s var(--ease);
+}
+.theme-switch__sun,.theme-switch__moon{position:absolute; top:50%; width:13px; height:13px; translate:0 -50%; z-index:1; transition:color .3s, transform .45s var(--ease);}
+.theme-switch__sun{left:7.5px; color:var(--lapis-deep);}
+.theme-switch__moon{right:7.5px; color:var(--on-lapis-muted);}
+.theme-switch:hover .theme-switch__track{border-color:var(--gold);}
+.theme-switch input:focus-visible + .theme-switch__track{outline:2px solid var(--gold); outline-offset:3px;}
+.theme-switch input:checked + .theme-switch__track::before{transform:translateX(24px);}
+.theme-switch input:checked + .theme-switch__track .theme-switch__sun{color:var(--on-lapis-muted); transform:rotate(-90deg);}
+.theme-switch input:checked + .theme-switch__track .theme-switch__moon{color:var(--lapis-deep); transform:rotate(-20deg);}
+
+/* phones: inactive nav items show their icon only, so everything fits */
+@media (max-width:480px){
+  .nav a:not([aria-current]) .nav__label{display:none;}
+  .nav{gap:.2rem;}
+}
+
+/* the reveal circle when switching themes: no cross-fade, the new theme grows from the switch */
+html.theme-switching::view-transition-old(root),
+html.theme-switching::view-transition-new(root){animation:none; mix-blend-mode:normal;}
+html.theme-switching .exd-hero__art .khoran__window{view-transition-name:none;}

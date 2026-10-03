@@ -218,7 +218,7 @@ button,input{font:inherit;}
 .search .icon{position:absolute; left:1.15rem; top:50%; translate:0 -50%; color:var(--muted); font-size:1.15rem; pointer-events:none;}
 .search input{
   width:100%; appearance:none; border:1px solid rgba(201,162,74,.5); border-radius:999px;
-  padding:1.05rem 7.4rem 1.05rem 3.1rem; background:var(--card); color:var(--ink); font-size:1.05rem;
+  padding:1.05rem 7.4rem 1.05rem 3.1rem; background:#FFFCF6; color:#1E1A16; font-size:1.05rem;
   box-shadow:0 20px 44px -24px rgba(0,0,0,.75); transition:border-color .2s, box-shadow .2s;
 }
 .search input::placeholder{color:#8C8378;}
@@ -343,7 +343,7 @@ button,input{font:inherit;}
 .ex-card__media::after{   /* gallery light sweep */
   content:""; position:absolute; inset:-20% -60%; z-index:5; pointer-events:none;
   background:linear-gradient(105deg, transparent 40%, rgba(255,246,220,.42) 50%, transparent 60%);
-  transform:translateX(-70%); 
+  transform:translateX(-70%);
 }
 
 .ex-card__status{
@@ -482,3 +482,54 @@ a.pager__step:hover{border-color:var(--ink);}
 .site-main--padded .pagination a,.site-main--padded .pagination span{border-radius:999px; min-width:2.4rem; text-align:center;}
 .site-main--padded .pagination .bg-gray-200{background:var(--lapis) !important; color:var(--gold-pale);}
 @media (max-width:720px){ .site-main--padded .exhibition-content{grid-template-columns:minmax(0,1fr);} .site-main--padded .exhibition-gallery{height:220px;} }
+
+
+/* ==========================================================================
+   NIGHT MODE — html.dark-mode (picked before first paint, switched in the header)
+   A night gallery: lapis-black walls, gold still catches the light.
+   ========================================================================== */
+:root.dark-mode{
+  color-scheme:dark;
+  --vellum:#0B1124;
+  --vellum-deep:#131B35;
+  --card:#141D3A;
+  --ink:#EFE6D4;
+  --muted:#A3ABC4;
+  --line:rgba(232,211,160,.14);
+}
+:root.dark-mode .lapis-ground{
+  background:
+    radial-gradient(ellipse 60% 70% at 72% 40%, rgba(201,162,74,.18), transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23C9A24A' stroke-opacity='.08' stroke-width='1'%3E%3Cpath d='M28 16l4 8 8 4-8 4-4 8-4-8-8-4 8-4z'/%3E%3Cpath d='M28 20l2.5 5.5L36 28l-5.5 2.5L28 36l-2.5-5.5L20 28l5.5-2.5z'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(160deg, #16224A 0%, #070C1C 78%);
+}
+:root.dark-mode .desk__card{border-color:rgba(201,162,74,.22); box-shadow:0 1px 0 var(--line), 0 30px 60px -34px rgba(0,0,0,.85);}
+:root.dark-mode .desk__label,
+:root.dark-mode .ticket__dates,
+:root.dark-mode .site-main--padded .filter-label,
+:root.dark-mode .site-main--padded .dates p{color:var(--gold-pale);}
+:root.dark-mode .ticket__dates .icon{color:var(--gold);}
+:root.dark-mode .ex-card__venue{color:#A9B8E6;}
+:root.dark-mode .ticket__left,
+:root.dark-mode .remove-btn,
+:root.dark-mode .site-main--padded #countdown-timer,
+:root.dark-mode .site-main--padded .filter-btn a{color:#EE8A7C;}
+:root.dark-mode .remove-btn:hover{border-color:#EE8A7C; background:rgba(238,138,124,.08);}
+:root.dark-mode .chip.active,
+:root.dark-mode .pager__num.is-current,
+:root.dark-mode .site-main--padded .country.active,
+:root.dark-mode .site-main--padded .city.active,
+:root.dark-mode .site-main--padded .category.active{background:var(--gold); border-color:var(--gold); color:var(--lapis-deep);}
+:root.dark-mode .site-main--padded .pagination .bg-gray-200{background:var(--gold) !important; color:var(--lapis-deep);}
+:root.dark-mode .btn--ink{background:var(--gold); color:var(--lapis-deep);}
+:root.dark-mode .btn--ink:hover{background:var(--gold-pale);}
+:root.dark-mode .btn--line:hover{border-color:var(--gold-pale);}
+:root.dark-mode .chip:hover{border-color:var(--gold-pale);}
+:root.dark-mode .ex-card{border-color:rgba(201,162,74,.16);}
+:root.dark-mode .ex-card::after{box-shadow:0 34px 60px -30px rgba(0,0,0,.9);}
+:root.dark-mode .ex-card::before{background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%), rgba(201,162,74,.12), transparent 70%);}
+:root.dark-mode .ticket{border-color:rgba(201,162,74,.3);}
+:root.dark-mode .ticket::before,:root.dark-mode .ticket::after{border-color:rgba(201,162,74,.3);}
+:root.dark-mode .rail__arrow{box-shadow:0 10px 22px -10px rgba(0,0,0,.8);}
+:root.dark-mode .plate--3{filter:brightness(.93) saturate(.95);}   /* the vellum plate doesn't glare at night */
+:root.dark-mode .site-main--padded .exhibition-card:hover{box-shadow:0 30px 56px -30px rgba(0,0,0,.85);}
