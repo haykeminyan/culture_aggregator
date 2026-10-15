@@ -7,7 +7,19 @@
         <title>{% block title %}Exhibitions · Travel Culture Hub{% endblock %}</title>
         {% block meta %}
         <meta name="description" content="Exhibitions around the world in one place: dates, venues, prices and live countdowns." />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Exhibitions · Travel Culture Hub" />
+        <meta property="og:description" content="Exhibitions around the world in one place: dates, venues, prices and live countdowns." />
         {% endblock %}
+        {# one address per page for search engines, whatever host, path alias or tracking params served it #}
+        {% set canonical_url %}{% block canonical %}{{ site_url }}{{ request.url.path }}{% endblock %}{% endset %}
+        {% if canonical_url|trim %}
+        <link rel="canonical" href="{{ canonical_url|trim }}" />
+        <meta property="og:url" content="{{ canonical_url|trim }}" />
+        {% endif %}
+        <meta property="og:site_name" content="Travel Culture Hub" />
+        <meta name="twitter:card" content="summary_large_image" />
+        {% block robots %}<meta name="robots" content="index, follow, max-image-preview:large" />{% endblock %}
         <script>
           /* render-critical: motion classes + smooth card-to-page transitions */
           (function () {

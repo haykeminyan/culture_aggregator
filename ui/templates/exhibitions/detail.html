@@ -5,24 +5,33 @@
 {% block title %}{{ title }} · Travel Culture Hub{% endblock %}
 {% set d_start = start_date.strftime('%Y-%m-%d') if start_date else '' %}
 {% set d_end = end_date.strftime('%Y-%m-%d') if end_date else '' %}
+{% block canonical %}{{ site_url }}/exhibition/{{ slug }}{% endblock %}
 {% block meta %}
-        {% set summary = (description or '')|striptags|replace('\n', ' ')|truncate(160) %}
+        {% set page_url = site_url ~ "/exhibition/" ~ slug %}
+        {% set place = [city, country]|select|join(", ") %}
+        {% set summary = (description or '')|striptags|replace('\n', ' ')|trim|truncate(160) %}
+        {% if not summary %}{% set summary = title ~ (" in " ~ place if place else "") ~ (", " ~ start_date.strftime('%d %b %Y') if start_date else "") ~ ": dates, venue and tickets." %}{% endif %}
+        {% set image_url = site_url ~ "/static/" ~ images[0] if images else "" %}
         <meta name="description" content="{{ summary }}" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="{{ title }}" />
         <meta property="og:description" content="{{ summary }}" />
-        <meta property="og:url" content="{{ request.url }}" />
-        {% if images %}<meta property="og:image" content="{{ request.base_url }}static/{{ images[0] }}" />{% endif %}
-        <link rel="canonical" href="{{ request.url.replace(query='') }}" />
-        {% set ld = {"@context": "https://schema.org", "@type": "ExhibitionEvent", "name": title, "url": request.url|string, "description": summary} %}
+        {% if image_url %}<meta property="og:image" content="{{ image_url }}" />{% endif %}
+        {% set ld = {"@context": "https://schema.org", "@type": "ExhibitionEvent", "name": title, "url": page_url, "description": summary,
+                     "eventStatus": "https://schema.org/EventScheduled",
+                     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode"} %}
         {% if d_start %}{% set _ = ld.update({"startDate": d_start}) %}{% endif %}
         {% if d_end %}{% set _ = ld.update({"endDate": d_end}) %}{% endif %}
-        {% if images %}{% set _ = ld.update({"image": [request.base_url|string ~ "static/" ~ images[0]]}) %}{% endif %}
-        {% if latitude and longitude %}{% set _ = ld.update({"location": {"@type": "Place", "name": title, "geo": {"@type": "GeoCoordinates", "latitude": latitude|float, "longitude": longitude|float}}}) %}{% endif %}
+        {% if image_url %}{% set _ = ld.update({"image": [image_url]}) %}{% endif %}
+        {% set loc = {"@type": "Place", "name": location or place or title} %}
+        {% if place or location %}{% set _ = loc.update({"address": {"@type": "PostalAddress", "streetAddress": location or "", "addressLocality": city or "", "addressCountry": country or ""}}) %}{% endif %}
+        {% if latitude and longitude %}{% set _ = loc.update({"geo": {"@type": "GeoCoordinates", "latitude": latitude|float, "longitude": longitude|float}}) %}{% endif %}
+        {% set _ = ld.update({"location": loc}) %}
         {% if organizer_name %}{% set _ = ld.update({"organizer": {"@type": "Organization", "name": organizer_name, "url": website or ""}}) %}{% endif %}
-        {% if price is not none %}{% set _ = ld.update({"offers": {"@type": "Offer", "price": price|string, "priceCurrency": currency or "", "url": website or request.url|string}}) %}{% endif %}
+        {% if price is not none %}{% set _ = ld.update({"offers": {"@type": "Offer", "price": price|string, "priceCurrency": currency or "", "url": website or page_url}}) %}{% endif %}
         <script type="application/ld+json">{{ ld|tojson }}</script>
 {% endblock %}
+{% block robots %}<meta name="robots" content="{{ 'index' if is_active is none or is_active else 'noindex' }}, follow, max-image-preview:large" />{% endblock %}
 {% block content %}
 <section class="exd-hero lapis-ground" data-parallax aria-labelledby="title">
     <div class="dust" aria-hidden="true">

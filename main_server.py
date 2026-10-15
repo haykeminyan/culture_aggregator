@@ -26,6 +26,7 @@ from api.apps.admin.api import router as admin_router_api
 from api.apps.admin.views import router as custom_admin_router_api
 from api.apps.exhibitions.api import router as exhibition_router_api
 from api.apps.exhibitions.views import router as exhibition_router_view
+from api.apps.exhibitions.seo import router as seo_router
 from api.apps.exhibitions.graphql.schema import schema
 from api.apps.exhibitions.models import (
     Exhibition,
@@ -175,6 +176,7 @@ admin = create_admin(
 app.mount('/admin/', admin)
 
 # REST Routers
+app.include_router(seo_router)
 app.include_router(custom_admin_router_api)
 app.include_router(exhibition_router_view)
 app.include_router(exhibition_router_view, prefix='/categories')
@@ -193,52 +195,3 @@ def get_context(request: Request):
 # )
 # app.include_router(graphql_app, prefix='/graphql')
 #
-
-
-from fastapi.responses import Response
-from piccolo.query import Query
-
-
-@app.get("/sitemap.xml", include_in_schema=False)
-async def sitemap():
-    base_url = "https://travelculturehub.com"
-
-    exhibitions = await Exhibition.select(
-        Exhibition.slug,
-        Exhibition.updated_at,
-    ).where(
-        Exhibition.is_active == True,
-    )
-
-    urls = []
-
-    # Home
-    urls.append(
-        f"""
-        <url>
-            <loc>{base_url}/</loc>
-        </url>
-        """
-    )
-
-    # Exhibitions
-    for exhibition in exhibitions:
-        urls.append(
-            f"""
-            <url>
-                <loc>{base_url}/exhibition/{exhibition["slug"]}</loc>
-                <lastmod>{exhibition["updated_at"].date().isoformat()}</lastmod>
-            </url>
-            """
-        )
-
-    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{"".join(urls)}
-</urlset>
-"""
-
-    return Response(
-        content=xml,
-        media_type="application/xml",
-    )
