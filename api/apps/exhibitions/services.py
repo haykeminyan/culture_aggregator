@@ -102,11 +102,11 @@ class ExhibitionService:
         async with pool.acquire() as conn:
             query = """
                 SELECT 
-                    e.title, e.start_date, e.end_date, 
+                    e.title, e.slug, e.start_date, e.end_date, e.is_active,
                     c.website, c.email, c.youtube, c.linkedin, c.tiktok, c.instagram,
                     d.description,
                     m.images,
-                    g.latitude, g.longitude,
+                    g.latitude, g.longitude, g.location, g.city, g.country,
                     o.name as organizer_name,
                     p.price, p.currency
                 FROM exhibition e

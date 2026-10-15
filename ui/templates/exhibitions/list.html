@@ -2,7 +2,23 @@
 {% block legacy_css %}{% endblock %}
 {% block legacy_js %}{% endblock %}
 {% block main_class %}site-main{% endblock %}
-{% block title %}{% if search %}{{ search }} · {% endif %}Exhibitions · Travel Culture Hub{% endblock %}
+{% set cat_title = (categories|selectattr('slug', 'equalto', selected_category)|map(attribute='title')|first) if selected_category else none %}
+{% set page_no = (offset // limit + 1) if limit and limit > 0 else 1 %}
+{# filtered/searched views are endless permutations of the same cards: let crawlers follow them, not index them #}
+{% set narrowed = search or selected_country or selected_city or request.query_params.get('from_date') or request.query_params.get('until_date') or (selected_category and not cat_title) %}
+{% block title %}{% if search %}{{ search }} · {% endif %}{% if cat_title %}{{ cat_title }} {% endif %}Exhibitions{% if page_no > 1 %} · Page {{ page_no }}{% endif %} · Travel Culture Hub{% endblock %}
+{% block meta %}
+        {% set summary = (cat_title ~ " exhibitions" if cat_title else "Exhibitions") ~ " around the world in one place: dates, venues, prices and live countdowns." %}
+        <meta name="description" content="{{ summary }}" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="{{ cat_title ~ ' ' if cat_title }}Exhibitions · Travel Culture Hub" />
+        <meta property="og:description" content="{{ summary }}" />
+        {% if not narrowed and page_no == 1 and not cat_title %}
+        <script type="application/ld+json">{{ {"@context": "https://schema.org", "@type": "WebSite", "name": "Travel Culture Hub", "url": site_url ~ "/"}|tojson }}</script>
+        {% endif %}
+{% endblock %}
+{% block canonical %}{% if not narrowed %}{{ site_url }}/{% if cat_title or page_no > 1 %}?{% endif %}{% if cat_title %}category={{ selected_category|urlencode }}{% endif %}{% if page_no > 1 %}{{ '&amp;'|safe if cat_title }}limit={{ limit }}&amp;offset={{ offset }}{% endif %}{% endif %}{% endblock %}
+{% block robots %}<meta name="robots" content="{{ 'noindex' if narrowed else 'index' }}, follow, max-image-preview:large" />{% endblock %}
 {% block content %}
 {% set qp = request.query_params %}
 {% set ns = namespace(slides=[]) %}
