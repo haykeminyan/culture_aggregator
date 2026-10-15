@@ -20,6 +20,14 @@ def slugify(text: str) -> str:
     return re.sub(r'[-\s]+', '-', text).strip('-')
 
 
+def clean_email(value: str | None) -> str:
+    """Bare address from a stored contact: drops a 'mailto:' prefix and any '?subject=...' part."""
+    if not value:
+        return ''
+    value = re.sub(r'^\s*mailto:', '', value, flags=re.IGNORECASE)
+    return value.split('?', 1)[0].strip()
+
+
 def log_duration(label):
     def decorator(func):
         async def wrapper(*args, **kwargs):

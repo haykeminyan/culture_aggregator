@@ -10,7 +10,7 @@ from dateutil.parser import parse
 from api.apps.exhibitions.models import Exhibition, ExhibitionCategory, ExhibitionGeo
 from markdown import markdown
 
-from api.apps.exhibitions.utils import log_duration
+from api.apps.exhibitions.utils import clean_email, log_duration
 from db import get_pool
 import time
 
@@ -124,6 +124,7 @@ class ExhibitionService:
             raise HTTPException(status_code=404, detail="Exhibition not found")
         exhibition_dict = dict(row)
         exhibition_dict['description'] = markdown(exhibition_dict['description'])
+        exhibition_dict['email'] = clean_email(exhibition_dict['email'])
         await ExhibitionService.format_dates(context=exhibition_dict)
         return exhibition_dict
 
