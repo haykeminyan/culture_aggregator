@@ -117,7 +117,10 @@
     {% if tags %}<ul class="tags" role="list">{% for tag in tags %}<li class="tag">{{ tag }}</li>{% endfor %}</ul>{% endif %}
     {% if latitude and longitude %}
     <section class="exd-map" data-reveal aria-labelledby="where-title">
-      <h2 id="where-title">Where</h2>
+      <div class="exd-map__head">
+        <h2 id="where-title">Where</h2>
+        <a class="exd-map__open" href="https://www.google.com/maps/search/?api=1&amp;query={{ latitude }},{{ longitude }}" target="_blank" rel="noopener">Open in maps<svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a>
+      </div>
       <div id="map" data-lat="{{ latitude }}" data-lng="{{ longitude }}"></div>
     </section>
     {% endif %}
@@ -137,7 +140,7 @@
       {% if linkedin %}<li><a href="{{ linkedin }}" target="_blank" rel="noopener"><span>LinkedIn</span><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a></li>{% endif %}
       {% if youtube %}<li><a href="{{ youtube }}" target="_blank" rel="noopener"><span>YouTube</span><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a></li>{% endif %}
       {% if tiktok %}<li><a href="{{ tiktok }}" target="_blank" rel="noopener"><span>TikTok</span><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a></li>{% endif %}
-      {% if email %}<li><a href="mailto:{{ email }}"><span>{{ email }}</span><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg></a></li>{% endif %}
+      {% if email %}<li><a href="mailto:{{ email }}" title="Email {{ email }}"><span class="links__email">{{ email }}</span><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg></a></li>{% endif %}
     </ul>
   </aside>
   {% endif %}

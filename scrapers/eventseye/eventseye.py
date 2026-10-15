@@ -305,6 +305,7 @@ async def parse_event_page(event_link: str, session: ClientSession) -> dict | No
 
             website = venue.select_one(".ev-web")["href"] if venue and venue.select_one(".ev-web") else ""
             email = venue.select_one(".ev-mail")["href"] if venue and venue.select_one(".ev-mail") else ""
+            email = re.sub(r"^mailto:", "", email, flags=re.IGNORECASE).split("?", 1)[0].strip()
             org_el = soup.select_one(".orgs .orglink")
             organization = org_el.get("title") if org_el else ""
 
