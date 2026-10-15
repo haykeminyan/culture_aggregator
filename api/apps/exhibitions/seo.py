@@ -28,7 +28,13 @@ async def robots_txt():
     return PlainTextResponse(ROBOTS_TXT, headers={'Cache-Control': 'public, max-age=86400'})
 
 
-def _url(loc: str, lastmod=None, changefreq: str = None, priority: str = None) -> str:
+def _image_url(path: str) -> str:
+    if path.startswith(('http://', 'https://')):
+        return path
+    return f'{SITE_URL}/static/{path.lstrip("/")}'
+
+
+def _url(loc: str, lastmod=None, changefreq: str = None, priority: str = None, images=()) -> str:
     parts = [f'<loc>{escape(loc)}</loc>']
     if lastmod:
         parts.append(f'<lastmod>{lastmod.isoformat(timespec="seconds")}</lastmod>')
@@ -36,6 +42,8 @@ def _url(loc: str, lastmod=None, changefreq: str = None, priority: str = None) -
         parts.append(f'<changefreq>{changefreq}</changefreq>')
     if priority:
         parts.append(f'<priority>{priority}</priority>')
+    for image in images:
+        parts.append(f'<image:image><image:loc>{escape(_image_url(image))}</image:loc></image:image>')
     return f'  <url>{"".join(parts)}</url>'
 
 
@@ -44,15 +52,16 @@ async def sitemap_xml(pool: asyncpg.pool.Pool = Depends(get_db_pool)):
     async with pool.acquire() as conn:
         exhibitions = await conn.fetch(
             """
-            SELECT slug, updated_at, end_date
-            FROM exhibition
-            WHERE is_active = TRUE AND slug IS NOT NULL AND slug <> ''
-            ORDER BY start_date DESC
+            SELECT e.slug, COALESCE(e.updated_at, e.created_at) AS updated_at, m.images
+            FROM exhibition e
+            LEFT JOIN exhibition_media m ON e.media = m.id
+            WHERE e.is_active = TRUE AND e.slug IS NOT NULL AND e.slug <> ''
+            ORDER BY e.start_date DESC
             """
         )
         categories = await conn.fetch(
             """
-            SELECT c.slug, MAX(e.updated_at) AS updated_at
+            SELECT c.slug, MAX(COALESCE(e.updated_at, e.created_at)) AS updated_at
             FROM exhibition_category c
             JOIN exhibition e ON e.category = c.id AND e.is_active = TRUE
             WHERE c.slug IS NOT NULL AND c.slug <> ''
@@ -68,13 +77,17 @@ async def sitemap_xml(pool: asyncpg.pool.Pool = Depends(get_db_pool)):
         for c in categories
     ]
     urls += [
-        _url(f'{SITE_URL}/exhibition/{e["slug"]}', e['updated_at'], 'weekly', '0.8')
+        _url(
+            f'{SITE_URL}/exhibition/{e["slug"]}', e['updated_at'], 'weekly', '0.8',
+            [i for i in (e['images'] or []) if i and 'default_image' not in i],
+        )
         for e in exhibitions
     ]
 
     xml = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+        ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n'
         + '\n'.join(urls)
         + '\n</urlset>\n'
     )
