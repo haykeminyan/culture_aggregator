@@ -49,6 +49,7 @@ class ScraperConfig:
     max_retries: int = 3
     backoff_base: float = 1.5            # секунд, множится на 2**попытка
     politeness_delay: float = 0.15       # небольшая пауза между запросами, чтобы не долбить сайт
+    max_pages_per_section: int = 60      # предохранитель от бесконечной пагинации
     output_csv: str = "eventseye_export.csv"
     log_file: str = "logs/scraper.log"
 
@@ -171,14 +172,14 @@ async def fetch(url: str, session: ClientSession) -> tuple[str, str | None]:
 # Сбор ссылок
 # ---------------------------------------------------------------------------
 
-async def extract_main_info(session: ClientSession, url: str) -> tuple[list[str], list[int]]:
+async def extract_main_info(session: ClientSession, url: str) -> list[str]:
+    """Ссылки на месячные разделы (d1_trade-shows_<month>_<n>.html) с главной."""
     main_links: list[str] = []
-    pages_per_link: list[int] = []
 
     _, content = await fetch(url, session)
     if not content:
         log.error("Не удалось загрузить главную страницу %s", url)
-        return main_links, pages_per_link
+        return main_links
 
     soup = BeautifulSoup(content, "lxml")
     for group in soup.select(".zm-group"):
@@ -186,45 +187,60 @@ async def extract_main_info(session: ClientSession, url: str) -> tuple[list[str]
             for link in month_block.select("a"):
                 href = link.get("href")
                 if href:
-                    main_links.append(f"https://www.eventseye.com/fairs/{href}")
-            counts = re.findall(r"[A-Za-z]{3}\s+(\d+)", month_block.text.strip())
-            pages_per_link.extend(int(c) // 48 for c in counts)
+                    full = href if href.startswith("http") else f"https://www.eventseye.com/fairs/{href}"
+                    if full not in main_links:
+                        main_links.append(full)
 
-    log.info("Найдено %d ссылок на разделы, %d счётчиков страниц", len(main_links), len(pages_per_link))
-    return main_links, pages_per_link
-
-
-def extracting_all_main_pages(main_links: list[str], pages_per_link: list[int]) -> list[str]:
-    """Раньше здесь был баг: список мутировался прямо во время zip-итерации по нему же.
-    Теперь строим отдельный список результатов."""
-    all_pages = list(main_links)
-    for link, page_count in zip(main_links, pages_per_link):
-        for page_num in range(1, page_count + 1):
-            all_pages.append(link.replace(".html", f"_{page_num}.html"))
-    return all_pages
+    log.info("Найдено %d ссылок на месячные разделы", len(main_links))
+    return main_links
 
 
-async def extract_single_page(session: ClientSession, url: str) -> list[str]:
-    _, content = await fetch(url, session)
-    result: list[str] = []
-    if not content:
-        return result
-
+def _event_links_from_listing(content: str) -> list[str]:
     soup = BeautifulSoup(content, "lxml")
+    result: list[str] = []
     for block in soup.select(".tradeshows"):
         for a in block.select("a"):
             href = a.get("href", "")
             if "f-" in href:
-                result.append(f"https://www.eventseye.com/fairs/{href}")
+                result.append(href if href.startswith("http") else f"https://www.eventseye.com/fairs/{href}")
+    return result
+
+
+async def extract_month_section(session: ClientSession, url: str) -> list[str]:
+    """Обходим все страницы раздела: <name>.html, <name>_1.html, <name>_2.html ...
+    пока страница не вернёт ни одной новой ссылки.
+
+    Раньше число страниц считалось из счётчика на главной (count // 48) и
+    склеивалось с ссылками через zip — при 50 ивентах на страницу и любом
+    расхождении текста счётчика это теряло хвосты разделов."""
+    result: list[str] = []
+    seen: set[str] = set()
+    for page_num in range(0, CONFIG.max_pages_per_section):
+        page_url = url if page_num == 0 else url.replace(".html", f"_{page_num}.html")
+        _, content = await fetch(page_url, session)
+        if not content:
+            break
+        new_links = [link for link in _event_links_from_listing(content) if link not in seen]
+        if not new_links:
+            break
+        seen.update(new_links)
+        result.extend(new_links)
+    log.debug("%s: %d ивентов", url, len(result))
     return result
 
 
 async def extract_all_pages(session: ClientSession, main_links: list[str]) -> list[str]:
-    tasks = [extract_single_page(session, url) for url in main_links]
+    tasks = [extract_month_section(session, url) for url in main_links]
     results = await tqdm_asyncio.gather(*tasks, desc="Собираю ссылки на ивенты")
-    all_pages = [page for sublist in results for page in sublist]
-    log.info("Собрано %d ссылок на страницы ивентов", len(all_pages))
-    return all_pages
+    total = sum(len(r) for r in results)
+
+    # Ежегодные выставки попадают в разделы нескольких месяцев/лет (окно ~2 года),
+    # но ссылка на страницу ивента одна и та же (f-<name>-<id>-1.html) и всегда
+    # показывает ближайшую редакцию. Без дедупликации каждый такой ивент парсился
+    # дважды, а второй раз молча отбрасывался как дубль slug.
+    unique = list(dict.fromkeys(link for sublist in results for link in sublist))
+    log.info("Собрано %d ссылок на ивенты, уникальных %d", total, len(unique))
+    return unique
 
 
 # ---------------------------------------------------------------------------
@@ -318,7 +334,12 @@ async def parse_event_page(event_link: str, session: ClientSession) -> dict | No
                 "tiktok": "",
             }
 
-            await AdminService.create_exhibition(**data)
+            response = await AdminService.create_exhibition(**data)
+            if getattr(response, "status_code", 200) >= 400:
+                # create_exhibition не бросает исключение, а возвращает 400 (например, дубль slug)
+                log.warning("Не сохранено %s (%s): %s", title, event_link,
+                            getattr(response, "body", b"").decode("utf-8", "replace"))
+                return None
             log.info("OK: %s", title)
             return data
         except Exception:
@@ -386,15 +407,10 @@ async def main():
     connector = aiohttp.TCPConnector(limit=CONFIG.fetch_concurrency)
     async with aiohttp.ClientSession(connector=connector) as session:
         all_main_links: list[str] = []
-        all_page_counts: list[int] = []
-
         for url in CONFIG.urls:
-            links, counts = await extract_main_info(session, url)
-            all_main_links.extend(links)
-            all_page_counts.extend(counts)
+            all_main_links.extend(await extract_main_info(session, url))
 
-        all_main_pages = extracting_all_main_pages(all_main_links, all_page_counts)
-        all_event_pages = await extract_all_pages(session, all_main_pages)
+        all_event_pages = await extract_all_pages(session, all_main_links)
         await parsing(all_event_pages, session)
 
     log.info("Весь прогон занял %.1f минут", (time.perf_counter() - t0) / 60)

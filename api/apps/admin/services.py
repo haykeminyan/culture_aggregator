@@ -152,7 +152,7 @@ class AdminService:
                         saved_paths.append(relative_path)
                     except AttributeError:
                         pass
-        else:
+        elif images:
             saved_paths = [f'exhibitions/exhibition_pictures/{images[0]}']
 
         # 2. Если нет изображений — используем дефолтное
