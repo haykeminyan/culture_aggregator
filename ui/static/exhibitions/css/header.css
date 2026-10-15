@@ -44,7 +44,7 @@
 .nav__out .icon:last-child{font-size:.8rem;}
 
 @media (max-width:720px){
-  .header{gap:.75rem; padding:.55rem 1rem;}
+  .header{gap:.75rem; padding:.55rem max(1rem, env(safe-area-inset-right, 0px)) .55rem max(1rem, env(safe-area-inset-left, 0px));}
   .brand__name{font-size:1.15rem;}
   .nav a{padding:.5rem .65rem; font-size:.88rem;}
   .nav__out span{display:none;}
