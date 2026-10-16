@@ -22,5 +22,5 @@ dateparser==1.4.2
 aiohttp==3.14.3
 tqdm==4.70.0
 fake-agent==0.1.4
-chardet==7.5.1
+chardet==7.6.0
 mdformat==1.0.0
