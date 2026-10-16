@@ -1,0 +1,15 @@
+# Keep the build context small: none of this is needed inside the image.
+.git
+.github
+.env
+.env.*
+**/__pycache__
+**/*.pyc
+.venv
+venv
+.idea
+.vscode
+.pytest_cache
+.mypy_cache
+docs
+nginx
