@@ -148,7 +148,8 @@
             <button type="button" class="rail__arrow rail__arrow--prev" data-prev aria-label="Scroll back"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg></button>
             <div class="chips category-filter" id="category-container" role="group" aria-label="Category">
               {% for category in categories %}
-              <button type="button" class="chip category{% if category.slug == selected_category %} active{% endif %}" data-type="category" data-value="{{ category.slug }}">{{ category.title }}</button>
+              {# a real link so search engines can reach each category page; filters.js still handles clicks #}
+              <a class="chip category{% if category.slug == selected_category %} active{% endif %}" href="/?category={{ category.slug|urlencode }}" data-type="category" data-value="{{ category.slug }}"{% if category.slug == selected_category %} aria-current="page"{% endif %}>{{ category.title }}</a>
               {% endfor %}
               <button type="button" id="load-more-categories" class="chip chip--more">Show more</button>
             </div>
