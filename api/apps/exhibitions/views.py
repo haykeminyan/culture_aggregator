@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse
 
 from api.apps.exhibitions.schemas import ExhibitionCreate
 from api.apps.exhibitions.services import ExhibitionService, get_db_pool
+from api.apps.exhibitions.utils import real_images
 from api.core.templates import templates
 from asyncio import gather
 
@@ -44,6 +45,9 @@ async def get_all_html(
         limit=limit,
     )
 
+    for e in exhibitions:
+        e['images'] = real_images(e.get('images'))
+
     categories, countries, cities = await gather(
         service.get_categories(pool=pool),
         service.get_countries(pool=pool),
@@ -76,5 +80,6 @@ async def delete_html(request: Request, slug: str):
 @router.get('/exhibition/{slug}', response_class=HTMLResponse, include_in_schema=False)
 async def get_by_slug_html(request: Request, slug: str, pool: asyncpg.pool.Pool = Depends(get_db_pool)):
     context = await ExhibitionService.get_by_slug(slug, pool)
+    context['images'] = real_images(context.get('images'))
     context['request'] = request
     return templates.TemplateResponse(request=request, name='exhibitions/detail.html', context=context)

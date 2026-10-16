@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('button[data-type="city"]').forEach(btn => {
       btn.classList.toggle('active', selected.city.includes(btn.dataset.value));
     });
-    document.querySelectorAll('button[data-type="category"]').forEach(btn => {
+    document.querySelectorAll('[data-type="category"]').forEach(btn => {
       btn.classList.toggle('active', selected.category === btn.dataset.value);
     });
   }
@@ -54,8 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = `${url.pathname}?${sp.toString()}`;
   }
 
-  document.querySelectorAll('button[data-type]').forEach(btn => {
-    btn.addEventListener('click', () => {
+  // category chips are <a href> links (crawlable); the rest are buttons
+  document.querySelectorAll('[data-type]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
       const type = btn.dataset.type;
       const value = btn.dataset.value;
 
@@ -153,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Категории
-  const allCategoryButtons = Array.from(document.querySelectorAll('button[data-type="category"]'));
+  const allCategoryButtons = Array.from(document.querySelectorAll('[data-type="category"]'));
   const loadMoreCategoryBtn = document.getElementById('load-more-categories');
   const activeCategory = selected.category;
   let categoryPool = [];

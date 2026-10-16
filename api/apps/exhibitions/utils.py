@@ -28,6 +28,15 @@ def clean_email(value: str | None) -> str:
     return value.split('?', 1)[0].strip()
 
 
+# the admin form stores this 1.8 MB placeholder when no picture is uploaded;
+# pages draw their own placeholder, so it is never worth downloading
+PLACEHOLDER_IMAGE = 'default_image.png'
+
+
+def real_images(images: list[str] | None) -> list[str]:
+    return [i for i in (images or []) if i and not i.endswith(PLACEHOLDER_IMAGE)]
+
+
 def log_duration(label):
     def decorator(func):
         async def wrapper(*args, **kwargs):
