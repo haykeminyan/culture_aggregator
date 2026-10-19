@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import PlainTextResponse, Response
 
 from api.apps.exhibitions.services import get_db_pool
+from api.apps.exhibitions.utils import real_images
 from api.core.templates import SITE_URL
 
 router = APIRouter(tags=['SEO'])
@@ -79,7 +80,7 @@ async def sitemap_xml(pool: asyncpg.pool.Pool = Depends(get_db_pool)):
     urls += [
         _url(
             f'{SITE_URL}/exhibition/{e["slug"]}', e['updated_at'], 'weekly', '0.8',
-            [i for i in (e['images'] or []) if i and 'default_image' not in i],
+            real_images(e['images']),
         )
         for e in exhibitions
     ]

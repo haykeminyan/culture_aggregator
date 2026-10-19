@@ -60,11 +60,11 @@
             <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         {% endblock %}
         {% block stylesheets %}
-            <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/list.css') }}" />
-            <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/header.css') }}" />
-            <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/details.css') }}" />
-            <link rel="stylesheet" href="{{ url_for('static', path='exhibitions/css/footer.css') }}" />
-            <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='favicon/favicon.ico') }}">
+            <link rel="stylesheet" href="{{ asset('exhibitions/css/list.css') }}" />
+            <link rel="stylesheet" href="{{ asset('exhibitions/css/header.css') }}" />
+            <link rel="stylesheet" href="{{ asset('exhibitions/css/details.css') }}" />
+            <link rel="stylesheet" href="{{ asset('exhibitions/css/footer.css') }}" />
+            <link rel="icon" type="image/x-icon" href="{{ asset('favicon/favicon.ico') }}">
         {% endblock %}
     </head>
     <body>
@@ -126,10 +126,10 @@
             <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
         {% endblock %}
         {% block scripts %}
-            <script src="/static/exhibitions/js/swiper.js" defer></script>
-            <script src="/static/exhibitions/js/map.js" defer></script>
-            <script src="/static/exhibitions/js/filters.js" defer></script>
-            <script src="/static/exhibitions/js/countdown.js" defer></script>
+            <script src="{{ asset('exhibitions/js/swiper.js') }}" defer></script>
+            <script src="{{ asset('exhibitions/js/map.js') }}" defer></script>
+            <script src="{{ asset('exhibitions/js/filters.js') }}" defer></script>
+            <script src="{{ asset('exhibitions/js/countdown.js') }}" defer></script>
         {% endblock %}
         <script>
           /* motion: header state, reveal on scroll, parallax, rolling rosette, hero slideshow,
