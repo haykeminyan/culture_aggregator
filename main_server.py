@@ -13,7 +13,7 @@ from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from piccolo.utils.sync import run_sync
 from piccolo_admin.endpoints import create_admin
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import HTMLResponse, RedirectResponse
+from starlette.responses import HTMLResponse, RedirectResponse, FileResponse, PlainTextResponse
 from starlette.status import HTTP_302_FOUND
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request as StarletteRequest
@@ -116,6 +116,10 @@ app.add_middleware(
 
 
 # ------------------- Routes ---------------------
+
+@app.get("/1f2ece1e14a14d89af2b09aedd9dacca.txt", include_in_schema=False)
+async def index_now():
+    return PlainTextResponse("1f2ece1e14a14d89af2b09aedd9dacca")
 
 def user_is_authenticated(request: Request):
     session_id = request.cookies.get('id')
