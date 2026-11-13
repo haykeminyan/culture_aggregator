@@ -1,0 +1,55 @@
+python3 - <<'PY'
+import json
+import subprocess
+from urllib.parse import urlsplit
+from xml.etree import ElementTree as ET
+
+host = "travelculturehub.com"
+key = "1f2ece1e14a14d89af2b09aedd9dacca"
+base = f"https://{host}"
+key_url = f"{base}/{key}.txt"
+
+def fetch(url):
+    return subprocess.check_output(["curl", "-fsSL", "--max-time", "30", url])
+
+if fetch(key_url).decode().strip() != key:
+    raise SystemExit("The live verification file does not match the key.")
+
+pending = [f"{base}/sitemap.xml"]
+visited = set()
+urls = {}
+while pending:
+    sitemap_url = pending.pop()
+    if sitemap_url in visited:
+        continue
+    visited.add(sitemap_url)
+    root = ET.fromstring(fetch(sitemap_url))
+    pending.extend(node.text.strip() for node in root.findall("{*}sitemap/{*}loc"))
+    for node in root.findall("{*}url/{*}loc"):
+        url = node.text.strip()
+        if urlsplit(url).hostname != host:
+            raise SystemExit(f"Unexpected host in sitemap URL: {url}")
+        urls[url] = None
+
+pages = list(urls)
+if not pages:
+    raise SystemExit("No page URLs found in the sitemap.")
+
+print(f"Submitting {len(pages):,} URLs to IndexNow", flush=True)
+for start in range(0, len(pages), 10_000):
+    payload = {
+        "host": host,
+        "key": key,
+        "keyLocation": key_url,
+        "urlList": pages[start:start + 10_000],
+    }
+    subprocess.run(
+        ["curl", "--fail-with-body", "--silent", "--show-error",
+         "--max-time", "60", "--json", "@-",
+         "--write-out", "\nHTTP %{http_code}\n",
+         "https://api.indexnow.org/IndexNow"],
+        input=json.dumps(payload),
+        text=True,
+        check=True,
+    )
+PY
