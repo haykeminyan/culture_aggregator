@@ -115,9 +115,9 @@ app.add_middleware(
 
 # ------------------- Routes ---------------------
 
-@app.get("/1f2ece1e14a14d89af2b09aedd9dacca.txt", include_in_schema=False)
+@app.get("/a2f7ebc47c53482da727edc6d01d2531.txt", include_in_schema=False)
 async def index_now():
-    return PlainTextResponse("1f2ece1e14a14d89af2b09aedd9dacca")
+    return PlainTextResponse("a2f7ebc47c53482da727edc6d01d2531")
 
 def user_is_authenticated(request: Request):
     session_id = request.cookies.get('id')

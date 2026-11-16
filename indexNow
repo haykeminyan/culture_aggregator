@@ -4,8 +4,8 @@ import subprocess
 from urllib.parse import urlsplit
 from xml.etree import ElementTree as ET
 
-host = "travelculturehub.com"
-key = "1f2ece1e14a14d89af2b09aedd9dacca"
+host = "exhibitions.baregorc.com"
+key = "a2f7ebc47c53482da727edc6d01d2531"
 base = f"https://{host}"
 key_url = f"{base}/{key}.txt"
 
