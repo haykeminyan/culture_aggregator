@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 
 # The one address search engines should index: canonical links, og:url and the
 # sitemap all point here, whichever host or path variant served the page.
-SITE_URL = os.getenv('SITE_URL', 'https://travelculturehub.com').rstrip('/')
+SITE_URL = os.getenv('SITE_URL', 'https://exhibtions.baregorc.com').rstrip('/')
 STATIC_ROOT = 'ui/static'
 
 

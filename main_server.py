@@ -81,10 +81,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "super-secret")
 ALLOWED_ORIGINS = [
     'http://127.0.0.1:8002',
     'http://localhost:8002',
-    'https://travelculturehub.com',
-    'https://www.travelculturehub.com',
-    'https://travelculture.baregorc.com',
-    'https://www.travelculture.baregorc.com'
+    'https://exhibtions.baregorc.com',
+    'https://www.exhibtions.baregorc.com'
 ]
 STATIC_DIR = "/app/ui/static"
 # ------------------------------------------------
@@ -170,10 +168,8 @@ admin = create_admin(
     allowed_hosts=[
         "localhost",
         "127.0.0.1",
-        "travelculturehub.com",
-        "www.travelculturehub.com",
-        "travelculture.baregorc.com",
-        "www.travelculture.baregorc.com",
+        'exhibtions.baregorc.com',
+        'www.exhibtions.baregorc.com'
     ],
 )
 
