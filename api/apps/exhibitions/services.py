@@ -129,6 +129,27 @@ class ExhibitionService:
         return exhibition_dict
 
     @staticmethod
+    async def get_related(slug: str, pool: asyncpg.pool.Pool, limit: int = 6):
+        """Upcoming exhibitions in the same category, linked from the detail page so
+        Googlebot can walk from one exhibition to the next instead of paging the home list."""
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                """
+                SELECT e.slug, e.title, e.start_date, e.end_date, g.city, g.country,
+                       c.title AS category_title, c.slug AS category_slug
+                FROM exhibition src
+                JOIN exhibition e ON e.category = src.category AND e.id <> src.id
+                LEFT JOIN exhibition_geo g ON e.geo = g.id
+                LEFT JOIN exhibition_category c ON e.category = c.id
+                WHERE src.slug = $1 AND e.is_active = TRUE AND e.end_date >= NOW()
+                ORDER BY e.start_date ASC
+                LIMIT $2
+                """,
+                slug, limit,
+            )
+        return [dict(r) for r in rows]
+
+    @staticmethod
     @log_duration("get_categories")
     async def get_categories(pool: asyncpg.pool.Pool):
         async with pool.acquire() as conn:

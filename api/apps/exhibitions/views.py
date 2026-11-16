@@ -27,7 +27,7 @@ async def get_all_html(
     category: Optional[str] = Query(None),
     from_date: datetime = Query(None),
     until_date: datetime = Query(None),
-    limit: int = Query(4),
+    limit: int = Query(12, ge=1, le=60),
     offset: int = Query(0),
 ):
     service = ExhibitionService(limit, offset, search)
@@ -79,7 +79,11 @@ async def delete_html(request: Request, slug: str):
 
 @router.get('/exhibition/{slug}', response_class=HTMLResponse, include_in_schema=False)
 async def get_by_slug_html(request: Request, slug: str, pool: asyncpg.pool.Pool = Depends(get_db_pool)):
-    context = await ExhibitionService.get_by_slug(slug, pool)
+    context, related = await gather(
+        ExhibitionService.get_by_slug(slug, pool),
+        ExhibitionService.get_related(slug, pool),
+    )
     context['images'] = real_images(context.get('images'))
+    context['related'] = related
     context['request'] = request
     return templates.TemplateResponse(request=request, name='exhibitions/detail.html', context=context)
