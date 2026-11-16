@@ -145,4 +145,15 @@
   </aside>
   {% endif %}
 </div>
+{% if related %}
+<section class="wrap related" aria-labelledby="related-title">
+  <h2 id="related-title">More {{ related[0].category_title or '' }} exhibitions</h2>
+  <ul class="related__list" role="list">
+    {% for r in related %}
+    <li><a href="/exhibition/{{ r.slug }}"><b>{{ r.title }}</b><span>{{ [r.city, r.country]|select|join(", ") }}{% if r.start_date %}{{ " · " if r.city or r.country }}{{ r.start_date.strftime('%d %b %Y') }}{% endif %}</span></a></li>
+    {% endfor %}
+  </ul>
+  {% if related[0].category_slug %}<a class="related__all" href="/?category={{ related[0].category_slug|urlencode }}">All {{ related[0].category_title }} exhibitions</a>{% endif %}
+</section>
+{% endif %}
 {% endblock %}
