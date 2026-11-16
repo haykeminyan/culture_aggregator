@@ -291,7 +291,7 @@
                 var esc = function (s) { return String(s).replace(/([,;\\])/g, "\\$1").replace(/\n/g, " "); };
                 var end = ics.dataset.end || ics.dataset.start;
                 var body = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Travel Culture Hub//Exhibitions//EN", "BEGIN:VEVENT",
-                  "UID:" + Date.now() + "@exhibtions.baregorc.com",
+                  "UID:" + Date.now() + "@exhibitions.baregorc.com",
                   "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z",
                   "DTSTART;VALUE=DATE:" + day(ics.dataset.start), "DTEND;VALUE=DATE:" + day(end, 1),
                   "SUMMARY:" + esc(ics.dataset.title), "URL:" + ics.dataset.url, "END:VEVENT", "END:VCALENDAR"].join("\r\n");
