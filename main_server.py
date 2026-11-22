@@ -27,6 +27,7 @@ from api.apps.admin.views import router as custom_admin_router_api
 from api.apps.exhibitions.api import router as exhibition_router_api
 from api.apps.exhibitions.views import router as exhibition_router_view
 from api.apps.exhibitions.seo import router as seo_router
+from api.core.i18n import LanguageMiddleware
 from api.apps.exhibitions.graphql.schema import schema
 from api.apps.exhibitions.models import (
     Exhibition,
@@ -108,6 +109,8 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+# outermost: strips /<lang> before anything routes on the path
+app.add_middleware(LanguageMiddleware)
 # Optional: Enable if you use forms
 
 # ------------------------------------------------

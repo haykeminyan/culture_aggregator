@@ -22,22 +22,30 @@
     return { key: start ? "live" : "none" };
   }
   function days(from, to) { return Math.ceil((to - from) / 86400000); }
-  function plural(n, word) { return n + " " + word + (n === 1 ? "" : "s"); }
+
+  /* wording comes from window.I18N (base.html); numbers and plurals from Intl in the page language */
+  var LANG = window.LANG || document.documentElement.lang || "en";
+  function T(key) { return (window.I18N && window.I18N[key]) || key; }
+  var rel, dur;
+  try { rel = new Intl.RelativeTimeFormat(LANG, { numeric: "auto" }); } catch (e) { rel = new Intl.RelativeTimeFormat("en", { numeric: "auto" }); }
+  try { dur = new Intl.NumberFormat(LANG, { style: "unit", unit: "day", unitDisplay: "long" }); } catch (e) { dur = new Intl.NumberFormat("en", { style: "unit", unit: "day", unitDisplay: "long" }); }
+  function opensIn(n) { return n <= 1 ? T("Opens tomorrow") : T("Opens {when}").replace("{when}", rel.format(n, "day")); }
+  function left(n) { return T("{time} left").replace("{time}", dur.format(n)); }
 
   function paintCard(now) {
     document.querySelectorAll("[data-status]").forEach(function (el) {
       var p = phase(el, now), text = "";
       el.classList.remove("is-live", "is-soon", "is-ended");
-      if (p.key === "soon") { var n = days(now, p.target); text = n <= 1 ? "Opens tomorrow" : "Opens in " + plural(n, "day"); el.classList.add("is-soon"); }
-      else if (p.key === "live") { text = "Now on"; el.classList.add("is-live"); }
-      else if (p.key === "ended") { text = "Ended"; el.classList.add("is-ended"); }
+      if (p.key === "soon") { var n = days(now, p.target); text = opensIn(n); el.classList.add("is-soon"); }
+      else if (p.key === "live") { text = T("Now on"); el.classList.add("is-live"); }
+      else if (p.key === "ended") { text = T("Ended"); el.classList.add("is-ended"); }
       el.innerHTML = text ? '<i class="status-dot" aria-hidden="true"></i>' + text : "";
     });
     document.querySelectorAll("[data-countdown]").forEach(function (el) {
       var p = phase(el, now), text = "";
-      if (p.key === "soon") { var n = days(now, p.target); text = n <= 1 ? "Opens tomorrow" : "Opens in " + plural(n, "day"); }
-      else if (p.key === "live" && p.target) { var left = days(now, p.target); text = left <= 1 ? "Last day" : plural(left, "day") + " left"; }
-      else if (p.key === "ended") text = "Ended";
+      if (p.key === "soon") { var n = days(now, p.target); text = opensIn(n); }
+      else if (p.key === "live" && p.target) { var left_ = days(now, p.target); text = left_ <= 1 ? T("Last day") : left(left_); }
+      else if (p.key === "ended") text = T("Ended");
       el.textContent = text;
     });
   }
@@ -56,10 +64,10 @@
     }
     if (p.key === "ended" || !p.target) {
       el.classList.add("is-ended");
-      if (label) label.textContent = p.key === "ended" ? "This exhibition has ended" : "";
+      if (label) label.textContent = p.key === "ended" ? T("This exhibition has ended") : "";
       return false;
     }
-    if (label) label.textContent = p.key === "soon" ? "Opens in" : "Closes in";
+    if (label) label.textContent = p.key === "soon" ? T("Opens in") : T("Closes in");
     var rest = Math.max(0, p.target - now);
     var v = { d: Math.floor(rest / 864e5), h: Math.floor(rest / 36e5) % 24, m: Math.floor(rest / 6e4) % 60, s: Math.floor(rest / 1e3) % 60 };
     units.forEach(function (u) {

@@ -5,12 +5,12 @@
 {% block title %}{{ title }} · Travel Culture Hub{% endblock %}
 {% set d_start = start_date.strftime('%Y-%m-%d') if start_date else '' %}
 {% set d_end = end_date.strftime('%Y-%m-%d') if end_date else '' %}
-{% block canonical %}{{ site_url }}/exhibition/{{ slug }}{% endblock %}
+{% block canonical %}{{ site_url }}{{ lurl('/exhibition/' ~ slug) }}{% endblock %}
 {% block meta %}
-        {% set page_url = site_url ~ "/exhibition/" ~ slug %}
-        {% set place = [city, country]|select|join(", ") %}
+        {% set page_url = site_url ~ lurl('/exhibition/' ~ slug) %}
+        {% set place = [city, country_name(country)]|select|join(", ") %}
         {% set summary = (description or '')|striptags|replace('\n', ' ')|trim|truncate(160) %}
-        {% if not summary %}{% set summary = title ~ (" in " ~ place if place else "") ~ (", " ~ start_date.strftime('%d %b %Y') if start_date else "") ~ ": dates, venue and tickets." %}{% endif %}
+        {% if not summary %}{% set summary = _('{title}: dates, venue and tickets.', title=title ~ (" · " ~ place if place else "") ~ (" · " ~ fdate(start_date) if start_date else "")) %}{% endif %}
         {% set image_url = site_url ~ "/static/" ~ images[0] if images else "" %}
         <meta name="description" content="{{ summary }}" />
         <meta property="og:type" content="website" />
@@ -56,30 +56,30 @@
     </div>
   <div class="wrap exd-hero__grid">
     <div class="exd-hero__copy">
-      <a class="back rise" href="/"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>All exhibitions</a>
+      <a class="back rise" href="{{ lurl('/') }}"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>{{ _('All exhibitions') }}</a>
       <h1 class="exd-title rise" id="title" style="--d:1">{{ title }}</h1>
       {% if start_date %}
       <div class="exd-ticket rise" style="--d:2">
-        <div><small>Opens</small><time datetime="{{ d_start }}">{{ start_date.strftime('%d %b %Y') }}</time></div>
+        <div><small>{{ _('Opens') }}</small><time datetime="{{ d_start }}">{{ fdate(start_date) }}</time></div>
         <span class="exd-ticket__arrow" aria-hidden="true"></span>
-        <div><small>Closes</small><time datetime="{{ d_end }}">{{ end_date.strftime('%d %b %Y') if end_date else '—' }}</time></div>
+        <div><small>{{ _('Closes') }}</small><time datetime="{{ d_end }}">{{ fdate(end_date) if end_date else '—' }}</time></div>
       </div>
       <div class="flip rise" style="--d:3" id="countdown-timer" data-start="{{ d_start }}" data-end="{{ d_end }}" aria-live="off">
         <p class="flip__label" data-flip-label>&nbsp;</p>
         <div class="flip__units">
-          <div class="flip__unit"><span class="flip__num" data-u="d">–</span><small>days</small></div>
-          <div class="flip__unit"><span class="flip__num" data-u="h">–</span><small>hours</small></div>
-          <div class="flip__unit"><span class="flip__num" data-u="m">–</span><small>minutes</small></div>
-          <div class="flip__unit"><span class="flip__num" data-u="s">–</span><small>seconds</small></div>
+          <div class="flip__unit"><span class="flip__num" data-u="d">–</span><small>{{ _('days') }}</small></div>
+          <div class="flip__unit"><span class="flip__num" data-u="h">–</span><small>{{ _('hours') }}</small></div>
+          <div class="flip__unit"><span class="flip__num" data-u="m">–</span><small>{{ _('minutes') }}</small></div>
+          <div class="flip__unit"><span class="flip__num" data-u="s">–</span><small>{{ _('seconds') }}</small></div>
         </div>
       </div>
       {% else %}
-      <p class="exd-ticket exd-ticket--tba rise" style="--d:2">Dates to be announced</p>
+      <p class="exd-ticket exd-ticket--tba rise" style="--d:2">{{ _('Dates to be announced') }}</p>
       {% endif %}
       <div class="exd-actions rise" style="--d:4">
-        {% if website %}<a class="btn btn--gold" href="{{ website }}" target="_blank" rel="noopener">Visit website<svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a>{% endif %}
-        {% if start_date %}<button type="button" class="btn btn--ghost" data-ics data-title="{{ title }}" data-start="{{ d_start }}" data-end="{{ d_end }}" data-url="{{ request.url }}"><svg class="icon" aria-hidden="true"><use href="#i-cal"/></svg>Add to calendar</button>{% endif %}
-        <button type="button" class="btn btn--ghost" data-copy="{{ request.url }}"><svg class="icon" aria-hidden="true"><use href="#i-link"/></svg>Copy link</button>
+        {% if website %}<a class="btn btn--gold" href="{{ website }}" target="_blank" rel="noopener">{{ _('Visit website') }}<svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a>{% endif %}
+        {% if start_date %}<button type="button" class="btn btn--ghost" data-ics data-title="{{ title }}" data-start="{{ d_start }}" data-end="{{ d_end }}" data-url="{{ request.url }}"><svg class="icon" aria-hidden="true"><use href="#i-cal"/></svg>{{ _('Add to calendar') }}</button>{% endif %}
+        <button type="button" class="btn btn--ghost" data-copy="{{ request.url }}"><svg class="icon" aria-hidden="true"><use href="#i-link"/></svg>{{ _('Copy link') }}</button>
       </div>
     </div>
     <div class="exd-hero__art">
@@ -118,8 +118,8 @@
     {% if latitude and longitude %}
     <section class="exd-map" data-reveal aria-labelledby="where-title">
       <div class="exd-map__head">
-        <h2 id="where-title">Where</h2>
-        <a class="exd-map__open" href="https://www.google.com/maps/search/?api=1&amp;query={{ latitude }},{{ longitude }}" target="_blank" rel="noopener">Open in maps<svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a>
+        <h2 id="where-title">{{ _('Where') }}</h2>
+        <a class="exd-map__open" href="https://www.google.com/maps/search/?api=1&amp;query={{ latitude }},{{ longitude }}" target="_blank" rel="noopener">{{ _('Open in maps') }}<svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a>
       </div>
       <div id="map" data-lat="{{ latitude }}" data-lng="{{ longitude }}"></div>
     </section>
@@ -128,32 +128,32 @@
 
   {% if organizer_name or price is not none or website or instagram or linkedin or youtube or tiktok or email or images %}
   <aside class="visit" data-reveal aria-labelledby="visit-title">
-    <h2 id="visit-title">Plan your visit</h2>
+    <h2 id="visit-title">{{ _('Plan your visit') }}</h2>
     {% if images %}<figure class="visit__logo"><img src="/static/{{ images[0] }}" alt="{{ title }}" loading="lazy" decoding="async"></figure>{% endif %}
     {% if price is not none %}
-    <p class="visit__price"><small>Admission</small><b>{% if price == 0 %}Free{% else %}{{ price }} {{ currency or '' }}{% endif %}</b></p>
+    <p class="visit__price"><small>{{ _('Admission') }}</small><b>{% if price == 0 %}{{ _('Free') }}{% else %}{{ price }} {{ currency or '' }}{% endif %}</b></p>
     {% endif %}
-    {% if organizer_name %}<dl><div class="visit__row"><dt>Organizer</dt><dd>{{ organizer_name }}</dd></div></dl>{% endif %}
+    {% if organizer_name %}<dl><div class="visit__row"><dt>{{ _('Organizer') }}</dt><dd>{{ organizer_name }}</dd></div></dl>{% endif %}
     <ul class="links" role="list">
-      {% if website %}<li><a href="{{ website }}" target="_blank" rel="noopener"><span>Website</span><svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg></a></li>{% endif %}
+      {% if website %}<li><a href="{{ website }}" target="_blank" rel="noopener"><span>{{ _('Website') }}</span><svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg></a></li>{% endif %}
       {% if instagram %}<li><a href="{{ instagram }}" target="_blank" rel="noopener"><span>Instagram</span><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a></li>{% endif %}
       {% if linkedin %}<li><a href="{{ linkedin }}" target="_blank" rel="noopener"><span>LinkedIn</span><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a></li>{% endif %}
       {% if youtube %}<li><a href="{{ youtube }}" target="_blank" rel="noopener"><span>YouTube</span><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a></li>{% endif %}
       {% if tiktok %}<li><a href="{{ tiktok }}" target="_blank" rel="noopener"><span>TikTok</span><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></a></li>{% endif %}
-      {% if email %}<li><a href="mailto:{{ email }}" title="Email {{ email }}"><span class="links__email">{{ email }}</span><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg></a></li>{% endif %}
+      {% if email %}<li><a href="mailto:{{ email }}" title="{{ _('Email {address}', address=email) }}"><span class="links__email">{{ email }}</span><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg></a></li>{% endif %}
     </ul>
   </aside>
   {% endif %}
 </div>
 {% if related %}
 <section class="wrap related" aria-labelledby="related-title">
-  <h2 id="related-title">More {{ related[0].category_title or '' }} exhibitions</h2>
+  <h2 id="related-title">{{ _('More {category} exhibitions', category=related[0].category_title or '') }}</h2>
   <ul class="related__list" role="list">
     {% for r in related %}
-    <li><a href="/exhibition/{{ r.slug }}"><b>{{ r.title }}</b><span>{{ [r.city, r.country]|select|join(", ") }}{% if r.start_date %}{{ " · " if r.city or r.country }}{{ r.start_date.strftime('%d %b %Y') }}{% endif %}</span></a></li>
+    <li><a href="{{ lurl('/exhibition/' ~ r.slug) }}"><b>{{ r.title }}</b><span>{{ [r.city, country_name(r.country)]|select|join(", ") }}{% if r.start_date %}{{ " · " if r.city or r.country }}{{ fdate(r.start_date) }}{% endif %}</span></a></li>
     {% endfor %}
   </ul>
-  {% if related[0].category_slug %}<a class="related__all" href="/?category={{ related[0].category_slug|urlencode }}">All {{ related[0].category_title }} exhibitions</a>{% endif %}
+  {% if related[0].category_slug %}<a class="related__all" href="{{ lurl('/') }}?category={{ related[0].category_slug|urlencode }}">{{ _('All {category} exhibitions', category=related[0].category_title) }}</a>{% endif %}
 </section>
 {% endif %}
 {% endblock %}
