@@ -1,11 +1,12 @@
 """Exhibition text (titles, categories, descriptions) in the visitor's language.
 
-Translated once through the Google Cloud Translation API (v2, `GOOGLE_TRANSLATE_API_KEY`)
-the first time someone opens a page in that language, then served from the
-`text_translation` table forever. A monthly character budget
-(`GOOGLE_TRANSLATE_MONTHLY_CHARS`, default 500,000 = Google's free tier) stops new
-translations once spent; untranslated text simply shows in English until the
-next month. Without a key, Google's free keyless web endpoint is used instead."""
+Translated once, the first time someone opens a page in that language, then served
+from the `text_translation` table forever. Engines, first one configured wins:
+Azure Translator (`AZURE_TRANSLATOR_KEY`, `AZURE_TRANSLATOR_REGION`), the Google
+Cloud Translation API (`GOOGLE_TRANSLATE_API_KEY`), else Google's keyless web
+endpoint. A monthly character budget (`TRANSLATE_MONTHLY_CHARS`; defaults to the free
+tier: 2,000,000 with Azure, 500,000 otherwise) stops new translations once spent;
+untranslated text shows in English until the next month."""
 import asyncio
 import hashlib
 import re
@@ -21,7 +22,15 @@ from api.core.i18n import DEFAULT_LANG
 logger = logging.getLogger(__name__)
 
 API_URL = 'https://translation.googleapis.com/language/translate/v2'
-MONTHLY_CHARS = int(os.getenv('GOOGLE_TRANSLATE_MONTHLY_CHARS', '500000'))
+AZURE_URL = 'https://api.cognitive.microsofttranslator.com/translate'
+# free tiers: Azure F0 = 2,000,000 characters a month, Google = 500,000
+MONTHLY_CHARS = int(
+    os.getenv('TRANSLATE_MONTHLY_CHARS')
+    or os.getenv('GOOGLE_TRANSLATE_MONTHLY_CHARS')
+    or ('2000000' if os.getenv('AZURE_TRANSLATOR_KEY', '').strip() else '500000')
+)
+# Our language codes -> Azure's; Azure has no Occitan, so Aranés goes through Google
+AZURE_CODES = {'pt': 'pt-pt', 'pt-br': 'pt', 'ary': 'ar', 'mwl': 'pt-pt', 'oc-aranes': None}
 BATCH = 100  # the v2 API takes at most 128 strings per request
 
 # Our language codes -> Google's
@@ -113,8 +122,36 @@ _paused_until = 0.0
 PAUSE = 15 * 60  # after a throttle, leave the keyless endpoint alone for a while
 
 
+async def _azure(texts: list[str], lang: str, html: bool) -> list[str]:
+    headers = {'Ocp-Apim-Subscription-Key': os.getenv('AZURE_TRANSLATOR_KEY', '').strip()}
+    region = os.getenv('AZURE_TRANSLATOR_REGION', '').strip()
+    if region:
+        headers['Ocp-Apim-Subscription-Region'] = region
+    params = {'api-version': '3.0', 'from': 'en', 'to': AZURE_CODES.get(lang, lang),
+              'textType': 'html' if html else 'plain'}
+    out = []
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=20)) as session:
+        # at most 1000 strings and 50,000 characters per request
+        batch, size = [], 0
+        for text in texts + [None]:
+            if text is None or len(batch) == 100 or size + len(text) > 45_000:
+                if batch:
+                    async with session.post(AZURE_URL, params=params, headers=headers,
+                                            json=[{'Text': t} for t in batch]) as r:
+                        if r.status != 200:
+                            raise RuntimeError(f'Azure Translator answered {r.status}: {await r.text()}')
+                        out += [item['translations'][0]['text'] for item in await r.json()]
+                batch, size = [], 0
+            if text is not None:
+                batch.append(text)
+                size += len(text)
+    return out
+
+
 async def _google(texts: list[str], lang: str, html: bool) -> list[str]:
     global _paused_until
+    if os.getenv('AZURE_TRANSLATOR_KEY', '').strip() and AZURE_CODES.get(lang, lang):
+        return await _azure(texts, lang, html)
     if not _key():
         if time.monotonic() < _paused_until:
             raise RuntimeError('keyless translation paused after throttling')
