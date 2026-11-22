@@ -9,6 +9,8 @@ from fastapi.responses import HTMLResponse
 from api.apps.exhibitions.schemas import ExhibitionCreate
 from api.apps.exhibitions.services import ExhibitionService, get_db_pool
 from api.apps.exhibitions.utils import real_images
+from api.core.i18n import request_lang
+from api.core.machine_translate import translate_fields
 from api.core.templates import templates
 from asyncio import gather
 
@@ -54,6 +56,12 @@ async def get_all_html(
         service.get_cities(pool=pool),
     )
 
+    lang = request_lang(request)
+    await gather(
+        translate_fields(pool, lang, exhibitions, ('title', 'short_description', 'category_title')),
+        translate_fields(pool, lang, categories, ('title',)),
+    )
+
     context = {
         'request': request,
         'exhibitions': exhibitions,
@@ -84,6 +92,12 @@ async def get_by_slug_html(request: Request, slug: str, pool: asyncpg.pool.Pool 
         ExhibitionService.get_related(slug, pool),
     )
     context['images'] = real_images(context.get('images'))
+    lang = request_lang(request)
+    await gather(
+        translate_fields(pool, lang, [context], ('title',)),
+        translate_fields(pool, lang, [context], ('description',), html=True),
+        translate_fields(pool, lang, related, ('title', 'category_title')),
+    )
     context['related'] = related
     context['request'] = request
     return templates.TemplateResponse(request=request, name='exhibitions/detail.html', context=context)
