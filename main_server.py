@@ -28,6 +28,8 @@ from api.apps.exhibitions.api import router as exhibition_router_api
 from api.apps.exhibitions.views import router as exhibition_router_view
 from api.apps.exhibitions.seo import router as seo_router
 from api.core.i18n import LanguageMiddleware
+from api.core.translation_seed import start_seed_loader
+from db import get_pool
 from api.apps.exhibitions.graphql.schema import schema
 from api.apps.exhibitions.models import (
     Exhibition,
@@ -76,6 +78,12 @@ async def lifespan(app: FastAPI):
 # App
 # app = FastAPI(docs_url=None, redoc_url=None, lifespan=lifespan)
 app = FastAPI(docs_url=None, redoc_url=None)
+
+
+@app.on_event('startup')
+async def load_translations():
+    # pre-made title and category translations, loaded once per seed file
+    app.state.seed_task = start_seed_loader(get_pool)
 
 # -------------------- Config --------------------
 SECRET_KEY = os.environ.get("SECRET_KEY", "super-secret")
