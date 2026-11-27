@@ -18,7 +18,7 @@
         <script type="application/ld+json">{{ {"@context": "https://schema.org", "@type": "WebSite", "name": "Travel Culture Hub", "url": site_url ~ lurl('/'), "inLanguage": HREFLANG[current_lang()]}|tojson }}</script>
         {% endif %}
 {% endblock %}
-{% block canonical %}{% if not narrowed %}{{ site_url }}{{ lurl('/') }}{% if cat_title or page_no > 1 %}?{% endif %}{% if cat_title %}category={{ selected_category|urlencode }}{% endif %}{% if page_no > 1 %}{{ '&amp;'|safe if cat_title }}limit={{ limit }}&amp;offset={{ offset }}{% endif %}{% endif %}{% endblock %}
+{% block canonical %}{% if not narrowed %}{{ site_url }}{{ lurl('/') }}{% if cat_title or page_no > 1 %}?{% endif %}{% if cat_title %}category={{ selected_category|urlencode }}{% endif %}{% if page_no > 1 %}{{ '&amp;'|safe if cat_title }}page={{ page_no }}{% endif %}{% endif %}{% endblock %}
 {% block robots %}<meta name="robots" content="{{ 'noindex' if narrowed else 'index' }}, follow, max-image-preview:large" />{% endblock %}
 {% block content %}
 {% set qp = request.query_params %}
@@ -26,8 +26,6 @@
 {% for e in exhibitions %}{% if ns.slides|length < 5 %}{% set ns.slides = ns.slides + [e] %}{% endif %}{% endfor %}
 
 <form id="filter-form" method="GET" action="{{ lurl(request.url.path) }}#results">
-  <input type="hidden" name="limit" value="{{ limit }}">
-  <input type="hidden" name="offset" value="0">
   {% for c in selected_country %}<input type="hidden" name="country" value="{{ c }}">{% endfor %}
   {% for c in selected_city %}<input type="hidden" name="city" value="{{ c }}">{% endfor %}
   {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}

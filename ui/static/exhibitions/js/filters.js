@@ -33,7 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     sp.delete("country");
     sp.delete("city");
     sp.delete("category");
-    sp.delete("offset"); // сброс пагинации
+    sp.delete("page"); // сброс пагинации
+    sp.delete("offset");
+    sp.delete("limit");
 
     selected.country.forEach(c => sp.append("country", c));
     selected.city.forEach(c => sp.append("city", c));
@@ -79,7 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function clearParam(param) {
     const url = new URL(window.location.href);
     url.searchParams.delete(param);
+    url.searchParams.delete('page');
     url.searchParams.delete('offset');
+    url.searchParams.delete('limit');
     window.location.href = url.toString();
   }
 
