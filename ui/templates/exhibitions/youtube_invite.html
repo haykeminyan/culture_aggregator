@@ -1,0 +1,55 @@
+{# The Baregorc YouTube channel card, as on baregorc.com but with a pomegranate in place of Ararat.
+   Shown in the languages baregorc.com shows it in. #}
+{% if current_lang() in ['en', 'hy', 'pt', 'pt-br', 'ka', 'uk', 'gl', 'ary', 'mwl', 'es', 'ca', 'eu'] %}
+<link rel="stylesheet" href="{{ asset('exhibitions/css/youtube_invite.css') }}" />
+<script src="{{ asset('exhibitions/js/youtube_invite.js') }}" defer></script>
+<section class="bx-yt" aria-labelledby="bx-yt-title">
+  <div class="bx-yt__card">
+    <span class="bx-yt__moon" aria-hidden="true"></span>
+    <svg class="bx-yt__land" viewBox="0 0 1200 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+      <path class="bx-yt__far" d="M0 176C120 160 220 168 330 150C430 134 520 156 620 146C760 132 880 160 1000 150C1090 143 1150 152 1200 148V220H0Z"/>
+      <g transform="translate(800 0)">
+        <path class="bx-yt__leaf" d="M-8 92C-40 70 -78 72 -98 88C-76 104 -40 106 -8 92Z"/>
+        <path class="bx-yt__crown" d="M-26 96L-34 58L-14 76L0 50L14 76L34 58L26 96Z"/>
+        <circle class="bx-yt__fruit" cx="0" cy="168" r="82"/>
+        <path class="bx-yt__fruit-shade" d="M60 112A82 82 0 0 1 -20 248A96 96 0 0 0 60 112Z"/>
+        <path class="bx-yt__shine" d="M-56 140C-50 118 -34 102 -14 96"/>
+        <circle class="bx-yt__seed" cx="-14" cy="168" r="5"/><circle class="bx-yt__seed" cx="4" cy="180" r="5"/>
+        <circle class="bx-yt__seed" cx="22" cy="166" r="5"/><circle class="bx-yt__seed" cx="-4" cy="152" r="5"/>
+      </g>
+      <path class="bx-yt__near" d="M0 204C160 196 320 206 480 200C640 194 800 208 960 202C1060 198 1140 204 1200 202V220H0Z"/>
+    </svg>
+    <div class="bx-yt__body">
+      <p class="bx-yt__eyebrow"><svg class="bx-yt__logo" viewBox="0 0 28 20" aria-hidden="true" focusable="false"><rect width="28" height="20" rx="6"/><path d="M11 5.5v9l8-4.5z"/></svg>{{ _('Baregorc on YouTube') }}</p>
+      <h2 class="bx-yt__title" id="bx-yt-title">{{ _('The treasure of Armenian history, told in your language') }}</h2>
+      <p class="bx-yt__lede">{{ _('Short films about Armenian history and sights, the builders who raised them, remarkable men and women, and the old tales. Subscribe to see each new story first, and share the channel with someone who should know it.') }}</p>
+      <ul class="bx-yt__topics" role="list" aria-label="{{ _('Topics') }}">
+        <li>{{ _('History') }}</li>
+        <li>{{ _('Sights') }}</li>
+        <li>{{ _('Builders') }}</li>
+        <li>{{ _('Men and women') }}</li>
+        <li>{{ _('Tales') }}</li>
+      </ul>
+      <p class="bx-yt__in">{{ _('In these languages') }}</p>
+      <ul class="bx-yt__langs" role="list" aria-label="{{ _('Languages') }}">
+        <li lang="hy">Արեւմտահայերէն<span>{{ _('Western Armenian') }}</span></li>
+        <li lang="hy">Արևելահայերեն<span>{{ _('Eastern Armenian') }}</span></li>
+        <li lang="en">English<span>{{ _('Worldwide') }}</span></li>
+        <li lang="es">Español<span>{{ _('Spain') }}</span></li>
+        <li lang="es">Español<span>{{ _('Latin America') }}</span></li>
+        <li lang="pt">Português<span>{{ _('Portugal') }}</span></li>
+        <li lang="pt-BR">Português<span>{{ _('Brazil') }}</span></li>
+      </ul>
+      <div class="bx-yt__actions">
+        <a class="bx-yt__subscribe" href="https://www.youtube.com/@baregorc?sub_confirmation=1" target="_blank" rel="noopener">
+          <svg viewBox="0 0 28 20" aria-hidden="true" focusable="false"><rect width="28" height="20" rx="6"/><path d="M11 5.5v9l8-4.5z"/></svg>{{ _('Subscribe') }}
+        </a>
+        <button class="bx-yt__share" type="button" data-bx-yt-share data-url="https://www.youtube.com/@baregorc" data-title="{{ _('Baregorc | Stories Across Borders') }}" data-copied="{{ _('Link copied') }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8l7.4-4.4M8.3 13.2l7.4 4.4"/></svg><span>{{ _('Share the channel') }}</span>
+        </button>
+        <a class="bx-yt__handle" href="https://www.youtube.com/@baregorc" target="_blank" rel="noopener" dir="ltr">@baregorc</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
