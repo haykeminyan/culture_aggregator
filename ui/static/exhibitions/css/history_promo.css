@@ -1,0 +1,97 @@
+/* history.baregorc.com pop-up: Ararat in the corner, a card of four doors into Armenian history */
+.bx-hp {
+  --hp-sky-a: #F6C99B; --hp-sky-b: #9EC3E6; --hp-sun: #F3A64A;
+  --hp-ink: #16223B; --hp-card: #FBF8F1; --hp-muted: #5B6375; --hp-accent: #B5342A;
+  position: fixed; z-index: 39; right: 24px; bottom: 24px;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+  font-family: "Inter", "Noto Sans Armenian", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  pointer-events: none;
+}
+.bx-hp > * { pointer-events: auto; }
+:root.dark-mode .bx-hp { --hp-card: #16223B; --hp-ink: #F6EEE6; --hp-muted: #B9C0D0; --hp-accent: #E8A33D; }
+
+.bx-hp__launcher {
+  width: 58px; height: 58px; padding: 0; border: 2px solid #fff; border-radius: 50%; cursor: pointer;
+  background: linear-gradient(180deg, #9EC3E6 0%, #CFE1F1 62%, #8FAF6A 62%); overflow: hidden;
+  box-shadow: 0 8px 22px rgba(22, 34, 59, .28); transition: transform .2s ease, box-shadow .2s ease;
+}
+.bx-hp__launcher svg { display: block; width: 100%; height: 100%; }
+.bx-hp__launcher:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 12px 26px rgba(22, 34, 59, .32); }
+.bx-hp__launcher:focus-visible, .bx-hp__close:focus-visible, .bx-hp__dots button:focus-visible,
+.bx-hp__go:focus-visible, .bx-hp__slide:focus-visible { outline: 2px solid var(--hp-accent); outline-offset: 2px; }
+.bx-hp__l-sis { fill: #8C96AB; }
+.bx-hp__l-masis { fill: #6E7891; }
+.bx-hp__l-snow { fill: #fff; }
+.bx-hp__launcher[aria-expanded="true"] { transform: scale(.92); }
+.bx-hp__launcher.is-calling { animation: bx-hp-call 1.6s ease 2; }
+@keyframes bx-hp-call {
+  0%, 100% { box-shadow: 0 8px 22px rgba(22, 34, 59, .28), 0 0 0 0 rgba(232, 163, 61, .55); }
+  50% { box-shadow: 0 8px 22px rgba(22, 34, 59, .28), 0 0 0 12px rgba(232, 163, 61, 0); }
+}
+
+.bx-hp__card {
+  width: min(320px, calc(100vw - 32px)); overflow: hidden; border-radius: 20px;
+  background: var(--hp-card); color: var(--hp-ink);
+  box-shadow: 0 18px 44px rgba(22, 34, 59, .3), 0 0 0 1px rgba(22, 34, 59, .08);
+  transform-origin: 100% 100%; animation: bx-hp-in .38s cubic-bezier(.2, .9, .3, 1.2);
+}
+.bx-hp__card[hidden] { display: none; }
+.bx-hp__card.is-leaving { animation: bx-hp-out .2s ease forwards; }
+@keyframes bx-hp-in { from { opacity: 0; transform: translateY(14px) scale(.9); } }
+@keyframes bx-hp-out { to { opacity: 0; transform: translateY(10px) scale(.94); } }
+
+.bx-hp__scene { position: relative; height: 112px; background: linear-gradient(180deg, var(--hp-sky-b), var(--hp-sky-a)); transition: background .8s ease; }
+.bx-hp__scene svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bx-hp__sun { fill: var(--hp-sun); transition: fill .8s ease, transform .8s ease; }
+.bx-hp__far { fill: #A4B1C4; opacity: .7; }
+.bx-hp__sis { fill: #8C96AB; }
+.bx-hp__masis { fill: #6E7891; }
+.bx-hp__snow { fill: #FBFAF6; }
+.bx-hp__field { fill: #7F9E5A; }
+.bx-hp__water { fill: #6C93AE; }
+.bx-hp[data-sky="day"] { --hp-sky-a: #DDEBF6; --hp-sky-b: #79A9D6; --hp-sun: #F7D27A; }
+.bx-hp[data-sky="dusk"] { --hp-sky-a: #F2A27C; --hp-sky-b: #7D6C9E; --hp-sun: #E86B3D; }
+.bx-hp[data-sky="night"] { --hp-sky-a: #3B4A72; --hp-sky-b: #16223B; --hp-sun: #EDE6CF; }
+.bx-hp[data-sky="night"] .bx-hp__field { fill: #3E5136; }
+.bx-hp[data-sky="night"] .bx-hp__water { fill: #2F4660; }
+
+.bx-hp__close {
+  position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; padding: 6px;
+  border: 0; border-radius: 50%; background: rgba(255, 255, 255, .78); color: #16223B; cursor: pointer;
+}
+.bx-hp__close svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+
+.bx-hp__slides { display: grid; padding: 14px 18px 4px; }
+.bx-hp__slide { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 4px; color: inherit; text-decoration: none; }
+.bx-hp__slide[hidden] { display: none; }
+.bx-hp__slide.is-entering { animation: bx-hp-slide .45s ease; }
+@keyframes bx-hp-slide { from { opacity: 0; transform: translateX(14px); } }
+.bx-hp__site { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--hp-accent); }
+.bx-hp__title { font: 600 1.22rem/1.2 "Fraunces", "Noto Serif Armenian", Georgia, serif; }
+.bx-hp__text { font-size: .9rem; line-height: 1.4; color: var(--hp-muted); }
+
+.bx-hp__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 18px 16px; }
+.bx-hp__dots { display: flex; gap: 2px; }
+.bx-hp__dots button { width: 22px; height: 22px; padding: 7px; border: 0; background: none; cursor: pointer; }
+.bx-hp__dots button::before {
+  content: ""; display: block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--hp-muted); opacity: .35; transition: opacity .2s ease, transform .2s ease;
+}
+.bx-hp__dots button[aria-current="true"]::before { opacity: 1; background: var(--hp-accent); transform: scale(1.25); }
+.bx-hp__go {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px;
+  background: #16223B; color: #FBF8F1; font-size: .88rem; font-weight: 600; text-decoration: none;
+}
+:root.dark-mode .bx-hp__go { background: #E8A33D; color: #16223B; }
+.bx-hp__go svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.bx-hp__go:hover { filter: brightness(1.12); }
+
+@media (max-width: 600px) {
+  .bx-hp { right: 14px; bottom: 14px; }
+  .bx-hp__launcher { width: 52px; height: 52px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bx-hp__card, .bx-hp__card.is-leaving, .bx-hp__slide.is-entering, .bx-hp__launcher.is-calling { animation: none; }
+  .bx-hp__scene, .bx-hp__sun, .bx-hp__launcher { transition: none; }
+}
+@media print { .bx-hp { display: none; } }

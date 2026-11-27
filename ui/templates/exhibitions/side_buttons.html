@@ -1,0 +1,92 @@
+{# Corner buttons shared with baregorc.com: Donate (bottom left) and the history.baregorc.com card (bottom right). #}
+<link rel="stylesheet" href="{{ asset('exhibitions/css/history_promo.css') }}" />
+<script src="{{ asset('exhibitions/js/history_promo.js') }}" defer></script>
+{# baregorc.com offers Donate only in these languages, so this site does too #}
+{% set donate = current_lang() in ['en', 'hy', 'pt', 'pt-br', 'ka', 'uk', 'gl', 'ary', 'mwl', 'es', 'ca', 'eu'] %}
+{% if donate %}
+<link rel="stylesheet" href="{{ asset('exhibitions/css/donate.css') }}" />
+<script src="{{ asset('exhibitions/js/donate.js') }}" defer></script>
+{% endif %}
+{% set hp = [
+  ('history', 'dawn', _('History of Armenia'), _('A timeline from Urartu to today, on interactive maps.')),
+  ('old-maps', 'day', _('Old maps of Armenia'), _('Armenia on maps across the centuries, and the Matenadaran.')),
+  ('famous', 'dusk', _('Famous Armenians'), _('Scientists, artists and athletes the world knows.')),
+  ('stories', 'night', _('Armenian legends and stories'), _('Legends, stories and fairy tales for children.')),
+] %}
+<aside class="bx-hp" data-bx-hp aria-label="{{ _('History of Armenia') }}">
+  <div class="bx-hp__card" id="bx-hp-card" role="dialog" aria-labelledby="bx-hp-title-0" hidden>
+    <div class="bx-hp__scene" aria-hidden="true">
+      <svg viewBox="0 0 320 120" preserveAspectRatio="xMidYMax slice" focusable="false">
+        <circle class="bx-hp__sun" cx="238" cy="38" r="15"/>
+        <path class="bx-hp__far" d="M0 98 L44 86 L80 92 L122 80 L160 90 L206 84 L252 92 L292 82 L320 88 V120 H0Z"/>
+        <path class="bx-hp__sis" d="M38 104 L92 62 L104 70 L148 104Z"/>
+        <path class="bx-hp__snow" d="M80 71.5 L92 62 L104 70 L98 74 L92 69 L86 74Z"/>
+        <path class="bx-hp__masis" d="M100 110 L178 42 Q184 37 190 42 L206 54 L272 110Z"/>
+        <path class="bx-hp__snow" d="M160 58 L178 42 Q184 37 190 42 L206 54 L214 61 L203 64 L195 56 L186 66 L176 57 L168 64Z"/>
+        <path class="bx-hp__field" d="M0 104 Q80 98 160 104 T320 102 V120 H0Z"/>
+        <path class="bx-hp__water" d="M0 112 H320 V120 H0Z"/>
+      </svg>
+      <button type="button" class="bx-hp__close" data-bx-hp-close aria-label="{{ _('Close') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="bx-hp__slides" aria-live="polite">
+      {% for path, sky, title, text in hp %}
+      <a class="bx-hp__slide{% if loop.first %} is-current{% endif %}" href="https://history.baregorc.com/{{ path }}" target="_blank" rel="noopener" data-bx-hp-slide data-sky="{{ sky }}"{% if not loop.first %} hidden{% endif %}>
+        <span class="bx-hp__site">history.baregorc.com</span>
+        <span class="bx-hp__title" id="bx-hp-title-{{ loop.index0 }}">{{ title }}</span>
+        <span class="bx-hp__text">{{ text }}</span>
+      </a>
+      {% endfor %}
+    </div>
+    <div class="bx-hp__foot">
+      <div class="bx-hp__dots" role="group" aria-label="{{ _('History of Armenia') }}">
+        {% for path, sky, title, text in hp %}<button type="button" data-bx-hp-dot="{{ loop.index0 }}"{% if loop.first %} aria-current="true"{% endif %} aria-label="{{ title }}"></button>{% endfor %}
+      </div>
+      <a class="bx-hp__go" href="https://history.baregorc.com/history" target="_blank" rel="noopener" data-bx-hp-go>{{ _('Explore') }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+    </div>
+  </div>
+  <button type="button" class="bx-hp__launcher" data-bx-hp-toggle aria-controls="bx-hp-card" aria-expanded="false" aria-label="{{ _('Discover Armenian history') }}">
+    <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      <path class="bx-hp__l-sis" d="M4 36 L15 26 L19 29 L27 36Z"/>
+      <path class="bx-hp__l-masis" d="M14 38 L28 15 Q30 13 32 15 L44 38Z"/>
+      <path class="bx-hp__l-snow" d="M23.5 22.4 L28 15 Q30 13 32 15 L36.5 22.4 L33.5 23.5 L31 20.5 L29 23.5 L26.5 21Z"/>
+    </svg>
+  </button>
+</aside>
+
+{% if donate %}
+<aside class="bx-dn" data-bx-dn aria-label="{{ _('Support Baregorc') }}">
+  <div class="bx-dn__card" id="bx-dn-card" role="dialog" aria-labelledby="bx-dn-title" hidden>
+    <button type="button" class="bx-dn__close" data-bx-dn-close aria-label="{{ _('Close') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    {# the payment itself runs on baregorc.com, which sends the visitor on to Stripe #}
+    <form class="bx-dn-form" action="https://baregorc.com/donate/checkout/" method="post" data-bx-dn-form>
+      <input type="hidden" name="next" value="/">
+      <p class="bx-dn-form__kicker">baregorc.com</p>
+      <h2 class="bx-dn-form__title" id="bx-dn-title">{{ _('Support Baregorc') }}</h2>
+      <p class="bx-dn-form__text">{{ _('Baregorc is free, independent and has no ads. A small gift keeps it running and growing, in every language.') }}</p>
+      <fieldset class="bx-dn-form__amounts">
+        <legend class="bx-dn-form__legend">{{ _('Choose an amount') }}</legend>
+        {% for amount in [5, 10, 25, 50, 100] %}<label class="bx-dn-chip"><input type="radio" name="amount" value="{{ amount }}"{% if amount == 25 %} checked{% endif %}><span>${{ amount }}</span></label>
+        {% endfor %}<label class="bx-dn-chip bx-dn-chip--other"><input type="radio" name="amount" value="" data-bx-dn-other><span>{{ _('Other') }}</span></label>
+      </fieldset>
+      <label class="bx-dn-form__custom" data-bx-dn-custom hidden>
+        <span>{{ _('Amount in US dollars') }}</span>
+        <span class="bx-dn-form__input"><span aria-hidden="true">$</span><input type="number" name="custom" min="1" max="10000" step="1" inputmode="numeric" placeholder="20"></span>
+      </label>
+      <button type="submit" class="bx-dn-form__go">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20 C5 15 3 11 5.5 8.3 C7.4 6.3 10.4 6.8 12 9.2 C13.6 6.8 16.6 6.3 18.5 8.3 C21 11 19 15 12 20Z"/></svg>
+        <span>{{ _('Donate by card') }}</span>
+      </button>
+      <p class="bx-dn-form__note"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>{{ _('Secure card payment on Stripe.') }}</p>
+    </form>
+  </div>
+  <button type="button" class="bx-dn__launcher" data-bx-dn-toggle aria-controls="bx-dn-card" aria-expanded="false">
+    <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      <path class="bx-dn__crown" d="M19 10 L21 5 L24 9 L27 5 L29 10Z"/>
+      <circle class="bx-dn__fruit" cx="24" cy="27" r="16"/>
+      <path class="bx-dn__shine" d="M14 22 Q16 15 23 14"/>
+      <path class="bx-dn__heart" d="M24 34 C17 29 16 25 18.5 22.6 C20.4 20.8 23 21.6 24 23.6 C25 21.6 27.6 20.8 29.5 22.6 C32 25 31 29 24 34Z"/>
+    </svg>
+    <span class="bx-dn__label">{{ _('Donate') }}</span>
+  </button>
+</aside>
+{% endif %}
