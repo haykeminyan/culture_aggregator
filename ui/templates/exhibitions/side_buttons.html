@@ -57,9 +57,9 @@
 <aside class="bx-dn" data-bx-dn aria-label="{{ _('Support Baregorc') }}">
   <div class="bx-dn__card" id="bx-dn-card" role="dialog" aria-labelledby="bx-dn-title" hidden>
     <button type="button" class="bx-dn__close" data-bx-dn-close aria-label="{{ _('Close') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    {# the payment itself runs on baregorc.com, which sends the visitor on to Stripe #}
-    <form class="bx-dn-form" action="https://baregorc.com/donate/checkout/" method="post" data-bx-dn-form>
-      <input type="hidden" name="next" value="/">
+    {# /donate/checkout/ (api/apps/donations) opens a Stripe Checkout session with this site's keys #}
+    <form class="bx-dn-form" action="/donate/checkout/" method="post" data-bx-dn-form>
+      <input type="hidden" name="next" value="{{ lurl(request.url.path) }}">
       <p class="bx-dn-form__kicker">baregorc.com</p>
       <h2 class="bx-dn-form__title" id="bx-dn-title">{{ _('Support Baregorc') }}</h2>
       <p class="bx-dn-form__text">{{ _('Baregorc is free, independent and has no ads. A small gift keeps it running and growing, in every language.') }}</p>
@@ -89,4 +89,18 @@
     <span class="bx-dn__label">{{ _('Donate') }}</span>
   </button>
 </aside>
+{% if request.query_params.get('donated') %}
+<script>
+  /* back from Stripe: say thank you once, then drop ?donated=1 from the address */
+  addEventListener("DOMContentLoaded", function () {
+    var t = document.querySelector("[data-toast]");
+    if (t) {
+      t.textContent = {{ _('Thank you for supporting Baregorc!')|tojson }}; t.hidden = false;
+      requestAnimationFrame(function () { t.classList.add("is-on"); });
+      setTimeout(function () { t.classList.remove("is-on"); }, 6000);
+    }
+    var u = new URL(location.href); u.searchParams.delete("donated"); history.replaceState(null, "", u);
+  });
+</script>
+{% endif %}
 {% endif %}

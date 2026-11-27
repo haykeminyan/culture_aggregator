@@ -27,6 +27,7 @@ from api.apps.admin.views import router as custom_admin_router_api
 from api.apps.exhibitions.api import router as exhibition_router_api
 from api.apps.exhibitions.views import router as exhibition_router_view
 from api.apps.exhibitions.seo import router as seo_router
+from api.apps.donations.views import router as donations_router
 from api.core.i18n import LanguageMiddleware
 from api.core.translation_seed import start_seed_loader
 from db import get_pool
@@ -188,6 +189,7 @@ app.mount('/admin/', admin)
 
 # REST Routers
 app.include_router(seo_router)
+app.include_router(donations_router)
 app.include_router(custom_admin_router_api)
 app.include_router(exhibition_router_view)
 app.include_router(exhibition_router_view, prefix='/categories')

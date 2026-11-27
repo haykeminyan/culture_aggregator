@@ -1,0 +1,67 @@
+/* the Baregorc YouTube channel: a night-sky card with a pomegranate, topics, languages, subscribe and share
+   (same card as on baregorc.com, which draws Ararat instead) */
+.bx-yt { margin-block: clamp(2rem, 5vw, 3.5rem); }
+.bx-yt ul { margin: 0; }
+.bx-yt__card {
+  --yt-ink: #F6EEE6; --yt-muted: #C9CFDC; --yt-gold: #E8A33D; --yt-red: #C8372B;
+  position: relative; overflow: hidden; isolation: isolate;
+  border-radius: 24px; color: var(--yt-ink);
+  background: radial-gradient(120% 90% at 85% 0%, #3B4A72 0%, #1C2948 45%, #16223B 100%);
+  box-shadow: 0 22px 50px rgba(22, 34, 59, .22);
+}
+.bx-yt__land { position: absolute; inset: auto 0 0 0; width: 100%; height: 46%; z-index: -1; }
+.bx-yt__moon {
+  position: absolute; z-index: -1; top: clamp(1.2rem, 4vw, 2.4rem); inset-inline-end: clamp(1.2rem, 6vw, 4.5rem);
+  width: clamp(36px, 5vw, 56px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #FBF6E6, #E6DCC0); box-shadow: 0 0 40px 8px rgba(237, 230, 207, .18);
+}
+[dir="rtl"] .bx-yt__land { transform: scaleX(-1); }
+.bx-yt__far { fill: #2A3A60; }
+.bx-yt__fruit { fill: #6E2434; }
+.bx-yt__fruit-shade { fill: #561B29; }
+.bx-yt__crown { fill: #5A1D2A; }
+.bx-yt__shine { fill: none; stroke: #F3C9B8; stroke-width: 5; stroke-linecap: round; opacity: .55; }
+.bx-yt__seed { fill: #C8372B; opacity: .7; }
+.bx-yt__leaf { fill: #2F4A3E; }
+.bx-yt__near { fill: #22315A; }
+.bx-yt__body { padding: clamp(1.5rem, 4vw, 3rem); max-width: 44rem; padding-bottom: clamp(4.5rem, 10vw, 6.5rem); }
+.bx-yt__eyebrow {
+  display: inline-flex; align-items: center; gap: .55rem; margin: 0 0 .9rem;
+  color: var(--yt-gold); font-size: .8rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+}
+.bx-yt__logo { width: 22px; height: 16px; }
+.bx-yt__logo rect, .bx-yt__subscribe svg rect { fill: currentColor; }
+.bx-yt__logo path { fill: #16223B; }
+.bx-yt__title {
+  margin: 0 0 .8rem; font-family: var(--display, Georgia, serif); font-weight: 600;
+  font-size: clamp(1.5rem, 3.4vw, 2.3rem); line-height: 1.15; color: var(--yt-ink);
+}
+.bx-yt__lede { margin: 0 0 1.2rem; color: var(--yt-muted); line-height: 1.6; }
+.bx-yt__topics, .bx-yt__langs { display: flex; flex-wrap: wrap; gap: .45rem; margin: 0; padding: 0; list-style: none; }
+.bx-yt__topics li {
+  padding: .3rem .8rem; border-radius: 999px; font-size: .88rem;
+  border: 1px solid rgba(232, 163, 61, .45); color: var(--yt-ink); background: rgba(232, 163, 61, .08);
+}
+.bx-yt__in { margin: 1.1rem 0 .5rem; color: var(--yt-muted); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; }
+.bx-yt__langs li {
+  display: flex; flex-direction: column; padding: .45rem .8rem; border-radius: 12px; line-height: 1.25;
+  background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .12); font-weight: 600; font-size: .95rem;
+}
+.bx-yt__langs li span { font-weight: 400; font-size: .75rem; color: var(--yt-muted); }
+.bx-yt__actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; margin-top: 1.5rem; }
+.bx-yt__subscribe, .bx-yt__share {
+  display: inline-flex; align-items: center; gap: .55rem; min-height: 44px; padding: .6rem 1.2rem;
+  border-radius: 999px; font: inherit; font-weight: 600; text-decoration: none; cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.bx-yt__subscribe { background: var(--yt-red); color: #fff; border: 0; box-shadow: 0 8px 20px rgba(200, 55, 43, .35); }
+.bx-yt__subscribe svg { width: 22px; height: 16px; color: #fff; }
+.bx-yt__subscribe svg path { fill: var(--yt-red); }
+.bx-yt__subscribe:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(200, 55, 43, .45); }
+.bx-yt__share { background: transparent; color: var(--yt-ink); border: 1px solid rgba(246, 238, 230, .4); }
+.bx-yt__share svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.bx-yt__share:hover { background: rgba(255, 255, 255, .08); }
+.bx-yt__handle { color: var(--yt-gold); font-weight: 600; text-decoration: none; }
+.bx-yt__handle:hover { text-decoration: underline; }
+.bx-yt a:focus-visible, .bx-yt button:focus-visible { outline: 2px solid var(--yt-gold); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .bx-yt__subscribe, .bx-yt__share { transition: none; } }
