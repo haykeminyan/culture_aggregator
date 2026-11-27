@@ -1,15 +1,16 @@
 import logging
+from urllib.parse import urlencode
 from typing import Optional
 from datetime import datetime
 
 import asyncpg
 from fastapi import APIRouter, Query, Request, Depends
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 from api.apps.exhibitions.schemas import ExhibitionCreate
 from api.apps.exhibitions.services import ExhibitionService, get_db_pool
 from api.apps.exhibitions.utils import real_images
-from api.core.i18n import request_lang
+from api.core.i18n import localize, request_lang
 from api.core.machine_translate import translate_fields
 from api.core.templates import templates
 from asyncio import gather
@@ -17,6 +18,25 @@ from asyncio import gather
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='', tags=['Exhibitions Views'])
+
+PAGE_SIZE = 12
+
+
+def _legacy_page_redirect(request: Request):
+    """Old links used ?limit=&offset=; they move for good to ?page=N, other filters kept."""
+    qp = request.query_params
+    if 'limit' not in qp and 'offset' not in qp:
+        return None
+    try:  # the page that holds the first exhibition the old link showed
+        page = max(0, int(qp.get('offset') or 0)) // PAGE_SIZE + 1
+    except ValueError:
+        page = 1
+    params = [(k, v) for k, v in qp.multi_items() if k not in ('limit', 'offset', 'page')]
+    if page > 1:
+        params.append(('page', str(page)))
+    query = urlencode(params)
+    return RedirectResponse(localize(request.url.path, request_lang(request)) + ('?' + query if query else ''),
+                            status_code=301)
 
 
 @router.get('/', response_class=HTMLResponse, include_in_schema=False)
@@ -29,9 +49,11 @@ async def get_all_html(
     category: Optional[str] = Query(None),
     from_date: datetime = Query(None),
     until_date: datetime = Query(None),
-    limit: int = Query(12, ge=1, le=60),
-    offset: int = Query(0),
+    page: int = Query(1),
 ):
+    if redirect := _legacy_page_redirect(request):
+        return redirect
+    limit, offset = PAGE_SIZE, (max(page, 1) - 1) * PAGE_SIZE
     service = ExhibitionService(limit, offset, search)
 
     # фильтрация по множеству
