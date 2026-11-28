@@ -151,7 +151,12 @@ async def _azure(texts: list[str], lang: str, html: bool) -> list[str]:
 async def _google(texts: list[str], lang: str, html: bool) -> list[str]:
     global _paused_until
     if os.getenv('AZURE_TRANSLATOR_KEY', '').strip() and AZURE_CODES.get(lang, lang):
-        return await _azure(texts, lang, html)
+        try:
+            return await _azure(texts, lang, html)
+        except Exception:
+            # a wrong key (a Speech key answers 401) or a spent quota must not leave every
+            # description in English: log it and fall through to Google
+            logger.warning('Azure Translator failed for %s, trying Google', lang, exc_info=True)
     if not _key():
         if time.monotonic() < _paused_until:
             raise RuntimeError('keyless translation paused after throttling')
